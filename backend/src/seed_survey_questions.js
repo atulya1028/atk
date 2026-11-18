@@ -62,6 +62,12 @@ try {
       update: data,
     });
   }
+  const activeIds = questionRecords.map(record => record.id);
+  await prisma.surveyQuestion.deleteMany({
+    where: {
+      id: { notIn: activeIds },
+    },
+  });
   console.log(JSON.stringify({ event: 'survey_questions_synced', total: questionRecords.length, initial: initialRows.length, mental: questionRecords.length - initialRows.length }));
 } finally {
   await prisma.$disconnect();
