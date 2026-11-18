@@ -1,6 +1,6 @@
 # Novtek ATK
 
-Flutter wellbeing app with a PostgreSQL-backed API in [`backend/`](backend/).
+Flutter wellbeing app in [`app/`](app/) with a PostgreSQL-backed API in [`backend/`](backend/).
 
 ## Start the backend locally
 
@@ -9,11 +9,12 @@ Flutter wellbeing app with a PostgreSQL-backed API in [`backend/`](backend/).
 3. Run `docker compose up --build`. This starts PostgreSQL and the API at `http://localhost:8080`; the database migration runs on first startup.
 4. Verify your sender domain/address with an email provider, then set `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, and `OTP_FROM_EMAIL` in `backend/.env`. Without these values, email requests fail closed; OTP codes are never returned by the app.
 
-To run the API directly instead of in Docker, start only the database with `docker compose up -d db`, then run `npm ci`, `npm run db:generate`, `npm run migrate`, and `npm run dev` from `backend/`.
+To run the API directly instead of in Docker, start only the database with `docker compose up -d db`, then run `npm ci`, `npm run db:generate`, `npm run migrate`, and `NODE_ENV=development npm run dev` from `backend/`. The development mode allows Flutter Web's changing localhost port; production mode continues to enforce the configured origin allowlist.
 
 ## Run the Flutter app against the API
 
 ```sh
+cd app
 flutter pub get
 flutter run --dart-define=ATK_API_URL=http://localhost:8080
 ```
@@ -22,6 +23,7 @@ For the Android emulator, use `--dart-define=ATK_API_URL=http://10.0.2.2:8080`. 
 
 ## API
 
+- [Open the local API success page](http://localhost:8080/) — available when the local API is running.
 - `GET /health/live` — API process status.
 - `GET /health/ready` — API and database readiness.
 - `POST /auth/send-otp` — `{ "email": "you@example.com", "role": "user" }`; sends a real email verification code.

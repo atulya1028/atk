@@ -1,0 +1,875 @@
+[
+  {
+    "#": 1,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "How old are you (in completed years)?",
+    "Answer options": "- Numeric (years)",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 2,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "How would you describe your gender?",
+    "Answer options": "- Male\n- Female\n- Other\n- Prefer not to say",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 3,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "What is your current occupation or work status?",
+    "Answer options": "- Employed\n- Self-employed\n- Student\n- Unemployed\n- Retired",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 4,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "What is your current marital or relationship status?",
+    "Answer options": "- Single\n- Married/partnered\n- Separated/divorced\n- Widowed",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 5,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "How reliable do you feel the information provided by the informant is?",
+    "Answer options": "- Reliable\n- Partially reliable\n- Not reliable",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 6,
+    "Section": "Identifying Data",
+    "SectionSlug": "identifying_data",
+    "SectionOrder": 1,
+    "Question": "What is your relationship to the person providing information (if applicable)?",
+    "Answer options": "- Spouse/partner\n- Parent\n- Sibling\n- Child\n- Other",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 7,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Are you currently experiencing any financial stress?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 8,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Are you experiencing any relationship or marital difficulties at present?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 9,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Have you experienced any major life changes recently?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 10,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Is there a history of substance use in your family?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 11,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Is there any history of psychiatric illness in your family?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 12,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Is there significant conflict or instability within your family environment?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 13,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "How would you describe your ability to manage stress?",
+    "Answer options": "- Good\n- Fair\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 14,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Do you usually engage in leisure or recreational activities?",
+    "Answer options": "- Regular\n- Occasional\n- None",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 15,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Do you feel you receive emotional support from your family?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 16,
+    "Section": "Psychosocial Stressors & Protective Factors",
+    "SectionSlug": "psychosocial_stressors",
+    "SectionOrder": 2,
+    "Question": "Do you feel you have a generally positive and supportive peer group?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 17,
+    "Section": "Personal & Psychiatric History",
+    "SectionSlug": "personal_psychiatric_history",
+    "SectionOrder": 3,
+    "Question": "Have you ever experienced trauma or abuse at any point in your life?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 18,
+    "Section": "Personal & Psychiatric History",
+    "SectionSlug": "personal_psychiatric_history",
+    "SectionOrder": 3,
+    "Question": "Have you experienced symptoms of depression or anxiety?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 19,
+    "Section": "Personal & Psychiatric History",
+    "SectionSlug": "personal_psychiatric_history",
+    "SectionOrder": 3,
+    "Question": "Have you ever been diagnosed with ADHD or any other mental health condition?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 20,
+    "Section": "Personal & Psychiatric History",
+    "SectionSlug": "personal_psychiatric_history",
+    "SectionOrder": 3,
+    "Question": "Have you previously received any psychiatric or psychological treatment?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 21,
+    "Section": "Sleep & Daily Functioning",
+    "SectionSlug": "sleep_daily_functioning",
+    "SectionOrder": 4,
+    "Question": "How would you describe your overall sleep quality?",
+    "Answer options": "- Good\n- Fair\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 22,
+    "Section": "Sleep & Daily Functioning",
+    "SectionSlug": "sleep_daily_functioning",
+    "SectionOrder": 4,
+    "Question": "How would you describe your appetite recently?",
+    "Answer options": "- Normal\n- Reduced\n- Increased",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 23,
+    "Section": "Sleep & Daily Functioning",
+    "SectionSlug": "sleep_daily_functioning",
+    "SectionOrder": 4,
+    "Question": "How would you describe your usual daily routine?",
+    "Answer options": "- Structured\n- Partially structured\n- Disorganised",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 24,
+    "Section": "Sleep & Daily Functioning",
+    "SectionSlug": "sleep_daily_functioning",
+    "SectionOrder": 4,
+    "Question": "How regular has your attendance at work or school been recently?",
+    "Answer options": "- Regular\n- Irregular\n- Not attending",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 25,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "How stable is your current housing situation?",
+    "Answer options": "- Stable\n- Unstable\n- Homeless",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 26,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "Who do you currently live with?",
+    "Answer options": "- Alone\n- With family\n- With others",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 27,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "Do you feel you have adequate access to healthcare services?",
+    "Answer options": "- Good access\n- Limited access\n- No access",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 28,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "How would you describe your current financial resources?",
+    "Answer options": "- Adequate\n- Limited\n- None",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 29,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "Do you receive any cultural or religious support that is important to you?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 30,
+    "Section": "Cognitive & Behavioural Patterns",
+    "SectionSlug": "cognitive_behavioural_patterns",
+    "SectionOrder": 6,
+    "Question": "How would you describe your usual pattern of thinking?",
+    "Answer options": "- Normal\n- Negative/distorted",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 31,
+    "Section": "Cognitive & Behavioural Patterns",
+    "SectionSlug": "cognitive_behavioural_patterns",
+    "SectionOrder": 6,
+    "Question": "Do you consider yourself to be impulsive in your behaviour?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 32,
+    "Section": "Cognitive & Behavioural Patterns",
+    "SectionSlug": "cognitive_behavioural_patterns",
+    "SectionOrder": 6,
+    "Question": "Do you often engage in risk-taking behaviours?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 33,
+    "Section": "Cognitive & Behavioural Patterns",
+    "SectionSlug": "cognitive_behavioural_patterns",
+    "SectionOrder": 6,
+    "Question": "How would you describe your problem-solving skills?",
+    "Answer options": "- Good\n- Fair\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 34,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "Have you had any significant medical illnesses in the past?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 35,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "Have you ever been hospitalised for any medical or psychiatric reason?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 36,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you ever used alcohol or any other psychoactive substances?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 37,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you ever received treatment specifically for substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 38,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "Were there any significant difficulties or concerns during your development or childhood?",
+    "Answer options": "- No significant issues\n- Significant issues",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 39,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "What is the highest level of education you have completed?",
+    "Answer options": "- Primary\n- Secondary\n- Higher education",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 40,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "How would you describe your occupational or work history?",
+    "Answer options": "- Stable\n- Unstable\n- Unemployed",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 41,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "How would you describe your usual leisure activities and coping strategies?",
+    "Answer options": "- Good\n- Fair\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 42,
+    "Section": "Premorbid Personality",
+    "SectionSlug": "premorbid_personality",
+    "SectionOrder": 9,
+    "Question": "How would you describe your personality before the onset of your current difficulties?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 43,
+    "Section": "Premorbid Personality",
+    "SectionSlug": "premorbid_personality",
+    "SectionOrder": 9,
+    "Question": "How would you describe your relationships with other people?",
+    "Answer options": "- Good\n- Fair\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 44,
+    "Section": "Premorbid Personality",
+    "SectionSlug": "premorbid_personality",
+    "SectionOrder": 9,
+    "Question": "Do you currently have any hobbies or interests?",
+    "Answer options": "- Present\n- Absent",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 45,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your general appearance and behaviour during this interview?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 46,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your speech today?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 47,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your current mood and emotional expression?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 48,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your current thought processes?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 49,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "Have you experienced any unusual perceptions, such as seeing or hearing things others do not?",
+    "Answer options": "- Normal\n- Abnormal",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 50,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your insight into your current difficulties?",
+    "Answer options": "- Good\n- Partial\n- Poor",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 51,
+    "Section": "Mental Status Examination",
+    "SectionSlug": "mental_status_examination",
+    "SectionOrder": 10,
+    "Question": "How would you describe your ability to make sound judgements and decisions?",
+    "Answer options": "- Intact\n- Impaired",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 52,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you recently reduced or stopped your alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 53,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "When did the current withdrawal or physical symptoms first begin?",
+    "Answer options": "- Within 6 hours\n- 6–24 hours\n- >24 hours",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 54,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "On a scale from 1 to 10, how severe are these symptoms?",
+    "Answer options": "- 1–10 scale",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 55,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Do these symptoms tend to occur at a particular time of day?",
+    "Answer options": "- Morning\n- Afternoon\n- Evening\n- Night",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 56,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "How much are these symptoms interfering with your daily activities?",
+    "Answer options": "- Mild\n- Moderate\n- Severe",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 57,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you feel strong cravings to use alcohol or substances in order to relieve these symptoms?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 58,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you ever needed medical help because of withdrawal or related symptoms?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 59,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "At what age did you first start using alcohol or other substances?",
+    "Answer options": "- Numeric age",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 60,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "How would you best describe your usual pattern of alcohol or substance use?",
+    "Answer options": "- Daily\n- Weekly\n- Binge\n- Occasional",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 61,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you ever drink alcohol first thing in the morning?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 62,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you experienced withdrawal symptoms when you stop or reduce use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 63,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you experienced blackouts or memory gaps related to your drinking or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 64,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you developed any medical problems related to your alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 65,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Has your alcohol or substance use caused social, occupational, or legal problems?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 67,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "In what circumstances did you first start using alcohol or substances?",
+    "Answer options": "- Social\n- Stress\n- Curiosity\n- Other",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 68,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "How did you initially feel when you first used alcohol or substances?",
+    "Answer options": "- Pleasant\n- Neutral\n- Unpleasant",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 70,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "How do you usually take the substance or alcohol (route of administration)?",
+    "Answer options": "- Oral\n- Inhaled / Smoked\n- Snorted / Intranasal\n- Injected (IV/IM)\n- Transdermal\n- Rectal",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 71,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you noticed that you need more alcohol or substances to achieve the same effect?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 72,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you currently experience withdrawal symptoms when you stop or reduce use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 73,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you experience strong cravings for alcohol or substances?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 74,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you feel you have lost control over your alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 75,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Are you currently abstinent, or have you recently relapsed?",
+    "Answer options": "- Abstinent\n- Relapsed",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 76,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you had any medical complications related to your alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 77,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you experienced any psychological or emotional complications related to your use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 78,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you experienced social difficulties because of your use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 79,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Has your alcohol or substance use affected your work or studies?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 80,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Has your alcohol or substance use caused financial difficulties?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 81,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you had any legal problems related to your alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 82,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you received any treatment in the past for alcohol or substance use?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 83,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced tremors or shaking during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 84,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced sweating, chills, or fever during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 85,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced nausea, vomiting, or diarrhoea during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 86,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced anxiety, agitation, insomnia, or vivid dreams during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 87,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced seizures, hallucinations, or confusion during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 88,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you experienced palpitations or a rise in blood pressure during withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Recently reduced or stopped drinking = Yes"
+  },
+  {
+    "#": 89,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "Are you currently pregnant or planning a pregnancy?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Gender = Female"
+  },
+  {
+    "#": 90,
+    "Section": "Social & Environmental Factors",
+    "SectionSlug": "social_environmental_factors",
+    "SectionOrder": 5,
+    "Question": "Do you currently have any dependent children or vulnerable adults living with you?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 91,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you ever experienced delirium tremens during previous withdrawal episodes?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Withdrawal symptoms = Yes"
+  },
+  {
+    "#": 92,
+    "Section": "Withdrawal Questions",
+    "SectionSlug": "withdrawal_questions",
+    "SectionOrder": 11,
+    "Question": "Have you ever required hospital admission specifically because of alcohol withdrawal?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Ever needed medical help = Yes"
+  },
+  {
+    "#": 93,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Do you drive or operate heavy machinery while drinking or shortly after drinking?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 94,
+    "Section": "Past History",
+    "SectionSlug": "past_history",
+    "SectionOrder": 7,
+    "Question": "Are you currently taking any prescribed or over-the-counter medications?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 95,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you ever been diagnosed with liver disease, pancreatitis, or alcohol-related heart problems?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 96,
+    "Section": "Risk Assessment & Screening",
+    "SectionSlug": "risk_assessment_screening",
+    "SectionOrder": 0,
+    "Question": "Have you had thoughts of harming yourself or ending your life, either currently or in the past?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 97,
+    "Section": "Risk Assessment & Screening",
+    "SectionSlug": "risk_assessment_screening",
+    "SectionOrder": 0,
+    "Question": "Has anyone expressed serious concern about your memory, confusion, or ability to manage daily tasks?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Always show"
+  },
+  {
+    "#": 98,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Can you estimate your average alcohol intake in standard units per day or per week?",
+    "Answer options": "- Units/day\n- Units/week",
+    "Logic Builder": "Show if:\n- Past substance use? = Yes"
+  },
+  {
+    "#": 99,
+    "Section": "Substance Use History",
+    "SectionSlug": "substance_use_history",
+    "SectionOrder": 8,
+    "Question": "Have you ever completed a formal screening tool such as AUDIT or AUDIT-C?",
+    "Answer options": "- Yes\n- No",
+    "Logic Builder": "Show if:\n- Past treatment for substance use? = Yes"
+  }
+]

@@ -1,0 +1,162 @@
+EZYZIP REFERENCE REPORT
+Mental Health path, survey flow, and question inventory
+Prepared: 17 November 2026
+
+SCOPE AND METHOD
+This report documents the Mental Health-related parts of the ezyZIP project copy
+available at Downloads/ezyZip. It reviews the Flutter screens and API flow, then
+checks the included SQLite development database. It is a focused report about
+the Mental Health path, not a complete inventory of every file in the project.
+
+KEY FINDING
+ezyZIP has a selectable Mental Health path in its interface and supports sending
+the MENTAL category to its survey API. However, the included development database
+contains no MENTAL-category sections or questions. The questions listed later in
+this report are mental-health-related questions stored under the ADDICTION path;
+they are not a separate MENTAL questionnaire.
+
+1. THE MENTAL HEALTH SCREEN
+The old app's screen is named "Choose Your Path". Its subtitle reads:
+"Select the assessment track you want to focus on today."
+
+It displays two large cards on a full-screen gradient background:
+  * Addiction Assessment - "Substance use and dependency screening"
+  * Mental Health - "Emotional and psychological well-being"
+
+The Mental Health card uses a psychology icon, translucent white card fill, and
+white text. While a path is being saved, the screen shows a centered loading
+indicator and disables both cards. On success, the app replaces this screen with
+Home. This is a path-selection screen; the old Flutter source has no separate
+Mental Health questionnaire page file.
+
+2. WHAT HAPPENS WHEN MENTAL HEALTH IS SELECTED
+1. The card calls UserService.selectPath("MENTAL").
+2. The app POSTs surveyCategory=MENTAL to /user/select-path.
+3. On success, it stores MENTAL in local preferences as selectedCategory.
+4. The app navigates to Home. The Home header displays "Mental Health" as the
+   active category; tapping that category chip opens path selection again.
+5. SurveyApiService reads the selected category and sends it with the survey
+   type when starting a submission and requesting questions.
+6. The question API filters database records by both surveyType and
+   surveyCategory. Returned questions become individual question steps. Answers
+   are sent as the patient advances, and completed answers can be resumed.
+
+The question endpoint is category-aware, so a real database containing MENTAL
+question records could serve a Mental Health assessment. The interface and API
+support alone do not provide those question records.
+
+3. DATABASE CONTENT FOUND IN THE PROVIDED PROJECT COPY
+The included backend/prisma/dev.db contains:
+  * ADDICTION / INITIAL: 26 questions in 5 sections
+  * ADDICTION / DETAILED: 71 questions in 7 sections
+  * MENTAL / INITIAL: 0 sections and 0 questions
+  * MENTAL / DETAILED: 0 sections and 0 questions
+
+Therefore, this database snapshot cannot populate a separate Mental Health
+questionnaire. With no question records, the question endpoint's MENTAL query
+returns an empty list. The old survey-flow code always adds a Welcome/Start
+step before adding database questions, so the included data does not supply any
+actual MENTAL question steps.
+
+This conclusion applies to the project copy and development database inspected.
+It does not prove that a separately hosted ezyZIP database has no MENTAL data.
+
+4. MENTAL-HEALTH-RELATED QUESTIONS IN THE INITIAL ADDICTION ASSESSMENT
+These records are classified as ADDICTION / INITIAL in the database:
+
+q96  Have you had thoughts of harming yourself or ending your life, either
+     currently or in the past?
+     Options: Yes / No
+
+q97  Has anyone expressed serious concern about your memory, confusion, or
+     ability to manage daily tasks?
+     Options: Yes / No
+
+q11  Is there any history of psychiatric illness in your family?
+     Options: Yes / No
+
+q17  Have you ever experienced trauma or abuse at any point in your life?
+     Options: Yes / No
+
+q18  Have you experienced symptoms of depression or anxiety?
+     Options: Yes / No
+
+q19  Have you ever been diagnosed with ADHD or any other mental health
+     condition?
+     Options: Yes / No
+
+q20  Have you previously received any psychiatric or psychological treatment?
+     Options: Yes / No
+
+5. MENTAL STATUS EXAMINATION IN THE DETAILED ADDICTION ASSESSMENT
+The ezyZIP database has a section titled "Mental Status Examination". It is
+classified as ADDICTION / DETAILED, not MENTAL. These seven questions use
+single-select controls:
+
+q45  How would you describe your general appearance and behaviour during this
+     interview?
+     Options: Normal / Abnormal
+
+q46  How would you describe your speech today?
+     Options: Normal / Abnormal
+
+q47  How would you describe your current mood and emotional expression?
+     Options: Normal / Abnormal
+
+q48  How would you describe your current thought processes?
+     Options: Normal / Abnormal
+
+q49  Have you experienced any unusual perceptions, such as seeing or hearing
+     things others do not?
+     Options: Normal / Abnormal
+
+q50  How would you describe your insight into your current difficulties?
+     Options: Good / Partial / Poor
+
+q51  How would you describe your ability to make sound judgements and
+     decisions?
+     Options: Intact / Impaired
+
+The option records inspected for these seven questions all have scoreValue 0.
+The included data therefore does not define a numeric score for this section.
+
+6. OTHER RELATED ITEMS IN THE ADDICTION QUESTION BANK
+The database also includes these related questions, still under ADDICTION:
+
+q35  Have you ever been hospitalised for any medical or psychiatric reason?
+     Section: Past History (DETAILED)
+
+q63  Have you experienced blackouts or memory gaps related to your drinking or
+     substance use?
+     Section: Substance Use History (DETAILED)
+
+q86  Have you experienced anxiety, agitation, insomnia, or vivid dreams during
+     withdrawal?
+     Section: Withdrawal Questions (DETAILED)
+
+q87  Have you experienced seizures, hallucinations, or confusion during
+     withdrawal?
+     Section: Withdrawal Questions (DETAILED)
+
+7. WHAT THIS MEANS FOR A CLONE
+To reproduce the old screen's visible Mental Health entry point, copy its
+selection behavior and category indicator. To reproduce a working, separate
+Mental Health assessment, a MENTAL question bank is also required. It is absent
+from the local ezyZIP database inspected here. The seven Mental Status
+Examination questions are the closest distinct question set present, but the
+old database places them in Detailed Addiction and assigns them no numeric
+score.
+
+SOURCE FILES AND DATA
+  app/lib/pages/path_selection_page.dart
+  app/lib/pages/tabs/home_page.dart
+  app/lib/pages/survey_list/survey_flow_page.dart
+  app/lib/services/user_service.dart
+  app/lib/services/survey_api_service.dart
+  backend/src/routes/api/user/select-path/+server.ts
+  backend/src/routes/api/surveys/questions/+server.ts
+  backend/prisma/dev.db (local development snapshot)
+
+Database counts and question wording above were read from the included SQLite
+development database. Screen text and navigation behavior were checked against
+the Flutter source. No ezyZIP source files were modified.

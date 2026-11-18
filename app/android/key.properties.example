@@ -1,0 +1,4 @@
+storeFile=keys/atk-upload-key.jks
+storePassword=replace-me
+keyAlias=atk-upload
+keyPassword=replace-me
