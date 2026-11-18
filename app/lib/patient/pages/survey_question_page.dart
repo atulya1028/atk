@@ -12,7 +12,7 @@ import 'survey_questions.dart';
 /// unanswered question.
 ///
 /// - Tap an option and the survey saves the answer before moving on.
-/// - The top shows "N% Complete" with a progress line.
+/// - The top shows the percentage and number of saved answers.
 /// - The back arrow leaves the survey (answers are saved as you go).
 ///
 /// Pops with the server-calculated score when the last question is answered.
@@ -88,7 +88,8 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: Text(
-                  '${cubit.percent}% Complete',
+                  '${cubit.percent}% Complete · '
+                  '${cubit.answeredCount}/${cubit.totalPages} answered',
                   style: const TextStyle(
                     color: _teal,
                     fontWeight: FontWeight.w600,
@@ -122,8 +123,9 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
               itemCount: cubit.totalPages,
               itemBuilder: (context, i) {
                 final item = items[i];
+                final Widget step;
                 if (item.kind == AnswerKind.number) {
-                  return _NumberStep(
+                  step = _NumberStep(
                     item: item,
                     initialValue: state.answers[item.id],
                     enabled: !state.busy,
@@ -131,12 +133,36 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
                     onInvalid: (value) => cubit.validateNumber(item, value),
                     onSubmit: (value) => cubit.answer(item, value),
                   );
+                } else {
+                  step = _ChoiceStep(
+                    item: item,
+                    selected: state.answers[item.id],
+                    enabled: !state.busy,
+                    onPick: (value) => cubit.answer(item, value),
+                  );
                 }
-                return _ChoiceStep(
-                  item: item,
-                  selected: state.answers[item.id],
-                  enabled: !state.busy,
-                  onPick: (value) => cubit.answer(item, value),
+                final section = item.section;
+                if (widget.args.type != 'INITIAL' ||
+                    section == null ||
+                    section.isEmpty) {
+                  return step;
+                }
+                final sectionItems = items
+                    .where((question) => question.section == section)
+                    .toList();
+                final position = sectionItems.indexOf(item) + 1;
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                      child: Text(
+                        '$section · $position of ${sectionItems.length}',
+                        textAlign: TextAlign.center,
+                        style: Theme.of(context).textTheme.titleSmall,
+                      ),
+                    ),
+                    Expanded(child: step),
+                  ],
                 );
               },
             ),

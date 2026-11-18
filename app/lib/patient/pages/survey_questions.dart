@@ -19,6 +19,7 @@ class SurveyItem {
     this.concern,
     this.min,
     this.max,
+    this.section,
   });
 
   final String id;
@@ -32,6 +33,7 @@ class SurveyItem {
 
   final int? min;
   final int? max;
+  final String? section;
 }
 
 const _yesNo = ['Yes', 'No'];

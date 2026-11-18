@@ -55,16 +55,12 @@ class SurveyQuestionCubit extends Cubit<SurveyQuestionState> {
   final SurveyArgs args;
   List<SurveyItem> get items => args.questions;
   int get totalPages => items.length;
-  double get progress {
-    if (totalPages == 0) return 0;
+  int get answeredCount =>
+      items.where((item) => state.answers.containsKey(item.id)).length;
 
-    final answeredCount = items
-        .where((item) => state.answers.containsKey(item.id))
-        .length;
-    return answeredCount / totalPages;
-  }
+  double get progress => totalPages == 0 ? 0 : answeredCount / totalPages;
 
-  int get percent => (progress * 100).round();
+  int get percent => totalPages == 0 ? 0 : answeredCount * 100 ~/ totalPages;
 
   static int _firstUnanswered(
     List<SurveyItem> items,

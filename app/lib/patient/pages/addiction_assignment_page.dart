@@ -320,7 +320,8 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
           : 'Start Initial Assessment',
       description: state.initialInProgress
           ? 'Continue where you left off.'
-          : 'Check in on substance use and dependency.',
+          : 'Answer questions about substance use and health. '
+                'You can leave and resume later.',
       color: _primary,
       onTap: () => _openSurvey('INITIAL'),
     ),
