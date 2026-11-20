@@ -330,4 +330,161 @@ class AdminService {
       throw Exception(decoded['error'] as String? ?? 'Failed to delete patient.');
     }
   }
+
+  static Future<Map<String, dynamic>> getAnalytics({String? category}) async {
+    final headers = await _authHeaders();
+    final q = category != null && category.isNotEmpty && category != 'ALL' ? '?category=$category' : '';
+    final uri = Uri.parse('$baseUrl/admin/analytics$q');
+    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+
+    final decoded = response.body.isEmpty
+        ? <String, dynamic>{}
+        : jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(decoded['error'] as String? ?? 'Failed to load analytics.');
+    }
+    return decoded;
+  }
+
+  static Future<Map<String, dynamic>> getDiagnostics() async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/diagnostics');
+    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 25));
+
+    final decoded = response.body.isEmpty
+        ? <String, dynamic>{}
+        : jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(decoded['error'] as String? ?? 'Failed to load diagnostics.');
+    }
+    return decoded;
+  }
+
+  static Future<Map<String, dynamic>> sendTestEmail() async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/diagnostics/test-email');
+    final response = await http.post(uri, headers: headers).timeout(const Duration(seconds: 25));
+
+    final decoded = response.body.isEmpty
+        ? <String, dynamic>{}
+        : jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(decoded['error'] as String? ?? 'Failed to send test email.');
+    }
+    return decoded;
+  }
+
+  static Future<void> purgeLogs() async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/purge-logs');
+    final response = await http.post(uri, headers: headers).timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to purge logs.');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getSurveyEditor({String? category}) async {
+    final headers = await _authHeaders();
+    final q = category != null && category.isNotEmpty ? '?surveyCategory=$category' : '';
+    final uri = Uri.parse('$baseUrl/admin/survey-editor$q');
+    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+
+    final decoded = response.body.isEmpty
+        ? <String, dynamic>{}
+        : jsonDecode(response.body) as Map<String, dynamic>;
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(decoded['error'] as String? ?? 'Failed to load survey editor data.');
+    }
+    return decoded;
+  }
+
+  static Future<void> saveSurveySettings(Map<String, dynamic> settings) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/survey-editor/settings');
+    final response = await http
+        .post(uri, headers: headers, body: jsonEncode(settings))
+        .timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to save survey settings.');
+    }
+  }
+
+  static Future<void> saveQuestion(Map<String, dynamic> question) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/survey-editor/question');
+    final response = await http
+        .post(uri, headers: headers, body: jsonEncode(question))
+        .timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to save question.');
+    }
+  }
+
+  static Future<void> resetPatientSurvey(String userId) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/reset-patient-survey');
+    final response = await http
+        .post(uri, headers: headers, body: jsonEncode({'userId': userId}))
+        .timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to reset survey.');
+    }
+  }
+
+  static Future<void> updateSubmissionTriage(
+    String id, {
+    String? status,
+    String? assignedDoctorId,
+    String? clinicalNotes,
+  }) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/submissions/$id/triage');
+    final body = <String, dynamic>{};
+    if (status != null) body['status'] = status;
+    if (assignedDoctorId != null) body['assignedDoctorId'] = assignedDoctorId;
+    if (clinicalNotes != null) body['clinicalNotes'] = clinicalNotes;
+    final response = await http
+        .put(uri, headers: headers, body: jsonEncode(body))
+        .timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to update triage.');
+    }
+  }
+
+  static Future<void> deleteSubmission(String id) async {
+    final headers = await _authHeaders();
+    final uri = Uri.parse('$baseUrl/admin/submissions/$id');
+    final response = await http.delete(uri, headers: headers).timeout(const Duration(seconds: 25));
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      final decoded = response.body.isEmpty
+          ? <String, dynamic>{}
+          : jsonDecode(response.body) as Map<String, dynamic>;
+      throw Exception(decoded['error'] as String? ?? 'Failed to delete submission.');
+    }
+  }
 }

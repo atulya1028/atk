@@ -24,6 +24,7 @@ class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final _boxes = List.generate(6, (_) => TextEditingController());
   final _nodes = List.generate(6, (_) => FocusNode());
+  bool _isDoctorMode = false;
 
   @override
   void dispose() {
@@ -62,7 +63,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _sendCode() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    await context.read<LoginCubit>().sendCode(_email.text.trim());
+    await context.read<LoginCubit>().sendCode(_email.text.trim(), role: _isDoctorMode ? 'doctor' : 'user');
     if (mounted && context.read<LoginCubit>().state.otpSent) {
       _nodes.first.requestFocus();
     }
@@ -74,7 +75,7 @@ class _LoginPageState extends State<LoginPage> {
       context.read<LoginCubit>().showError(problem);
       return;
     }
-    await context.read<LoginCubit>().verify(_email.text.trim(), _code);
+    await context.read<LoginCubit>().verify(_email.text.trim(), _code, role: _isDoctorMode ? 'doctor' : 'user');
   }
 
   void _onBoxChanged(int i, String v) {
@@ -176,18 +177,20 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
-                                'Welcome back',
-                                style: TextStyle(
+                              Text(
+                                _isDoctorMode ? 'Doctor Portal' : 'Welcome back',
+                                style: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
                                   color: _ink,
                                 ),
                               ),
                               const SizedBox(height: 8),
-                              const Text(
-                                'Enter your email address. We will send you a verification code. No password needed.',
-                                style: TextStyle(
+                              Text(
+                                _isDoctorMode
+                                    ? 'Enter your registered clinician email address. We will send you a verification code.'
+                                    : 'Enter your email address. We will send you a verification code. No password needed.',
+                                style: const TextStyle(
                                   fontSize: 15,
                                   height: 1.5,
                                   color: _muted,
@@ -388,19 +391,26 @@ class _LoginPageState extends State<LoginPage> {
                               Center(
                                 child: TextButton(
                                   onPressed: () {
-                                    Navigator.of(context).pushNamed('/doctor');
+                                    setState(() {
+                                      _isDoctorMode = !_isDoctorMode;
+                                      _email.clear();
+                                      for (final c in _boxes) {
+                                        c.clear();
+                                      }
+                                    });
+                                    context.read<LoginCubit>().clearError();
                                   },
-                                  child: const Text.rich(
+                                  child: Text.rich(
                                     TextSpan(
-                                      text: 'Are you a doctor? ',
-                                      style: TextStyle(
+                                      text: _isDoctorMode ? 'Are you a patient? ' : 'Are you a doctor? ',
+                                      style: const TextStyle(
                                         fontSize: 14,
                                         color: _muted,
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: 'Doctor sign in',
-                                          style: TextStyle(
+                                          text: _isDoctorMode ? 'Patient sign in' : 'Doctor sign in',
+                                          style: const TextStyle(
                                             color: _teal,
                                             fontWeight: FontWeight.w700,
                                           ),

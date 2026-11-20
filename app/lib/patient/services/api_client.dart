@@ -97,14 +97,14 @@ class ApiClient {
     return decoded;
   }
 
-  static Future<void> sendOtp(String email) async {
-    await _request('/auth/send-otp', body: {'email': email, 'role': 'user'});
+  static Future<void> sendOtp(String email, {String role = 'user'}) async {
+    await _request('/auth/send-otp', body: {'email': email, 'role': role});
   }
 
-  static Future<bool> verifyOtp(String email, String otp) async {
+  static Future<bool> verifyOtp(String email, String otp, {String role = 'user'}) async {
     final result = await _request(
       '/auth/verify-otp',
-      body: {'email': email, 'otp': otp, 'role': 'user'},
+      body: {'email': email, 'otp': otp, 'role': role},
     );
     final accessToken = result['accessToken'] as String?;
     final refreshToken = result['refreshToken'] as String?;

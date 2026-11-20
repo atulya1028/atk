@@ -46,10 +46,10 @@ class LoginCubit extends Cubit<LoginState> {
 
   void showError(String message) => emit(state.copyWith(error: message));
 
-  Future<void> sendCode(String email) async {
+  Future<void> sendCode(String email, {String role = 'user'}) async {
     emit(state.copyWith(loading: true, clearError: true));
     try {
-      await ApiClient.sendOtp(email);
+      await ApiClient.sendOtp(email, role: role);
       emit(state.copyWith(loading: false, otpSent: true, seconds: 60));
       _startCountdown();
     } on ApiException catch (error) {
@@ -66,7 +66,7 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<void> verify(String email, String code) async {
+  Future<void> verify(String email, String code, {String role = 'user'}) async {
     emit(
       state.copyWith(
         loading: true,
@@ -75,7 +75,7 @@ class LoginCubit extends Cubit<LoginState> {
       ),
     );
     try {
-      final profileComplete = await ApiClient.verifyOtp(email, code);
+      final profileComplete = await ApiClient.verifyOtp(email, code, role: role);
       emit(state.copyWith(loading: false, profileComplete: profileComplete));
     } on ApiException catch (error) {
       emit(state.copyWith(loading: false, error: error.message));
