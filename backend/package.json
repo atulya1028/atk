@@ -1,39 +1,46 @@
 {
-  "name": "atk-api",
-  "version": "1.0.0",
-  "private": true,
-  "type": "module",
-  "scripts": {
-    "start": "node src/server.js",
-    "dev": "node --watch src/server.js",
-    "prestart": "prisma generate",
-    "predev": "prisma generate",
-    "migrate": "prisma migrate deploy",
-    "db:seed-questions": "node src/seed_survey_questions.js",
-    "studio": "prisma studio --config ./prisma.config.ts",
-    "check": "node --check src/server.js",
-    "db:generate": "prisma generate"
-  },
-  "engines": {
-    "node": ">=22.18"
-  },
-  "dependencies": {
-    "@prisma/adapter-pg": "^7.10.1",
-    "@prisma/client": "^7.10.1",
-    "cors": "^2.8.5",
-    "dotenv": "^16.6.1",
-    "express": "^5.1.0",
-    "express-rate-limit": "^8.1.0",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "nodemailer": "^10.6.0",
-    "pg": "^8.16.3",
-    "prisma": "^7.10.1",
-    "zod": "^4.1.5"
-  },
-  "allowScripts": {
-    "prisma@7.10.1": true,
-    "@prisma/engines@7.10.1": true
-  },
-  "devDependencies": {}
+	"name": "backend",
+	"private": true,
+	"version": "0.0.1",
+	"type": "module",
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"lint": "prettier --check .",
+		"format": "prettier --write .",
+		"setup:sqlite": "node scripts/setup-db.mjs sqlite",
+		"setup:mysql": "node scripts/setup-db.mjs mysql",
+		"db:seed": "npx tsx prisma/seed.ts"
+	},
+	"devDependencies": {
+		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/adapter-node": "^5.5.3",
+		"@sveltejs/kit": "^2.50.1",
+		"@sveltejs/vite-plugin-svelte": "^6.2.4",
+		"@tailwindcss/vite": "^4.1.18",
+		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "^25.2.1",
+		"@types/nodemailer": "^7.0.9",
+		"dotenv": "^17.2.4",
+		"prettier": "^3.8.1",
+		"prettier-plugin-svelte": "^3.4.1",
+		"prettier-plugin-tailwindcss": "^0.7.2",
+		"svelte": "^5.48.2",
+		"svelte-check": "^4.3.5",
+		"tailwindcss": "^4.1.18",
+		"tsx": "^4.21.0",
+		"typescript": "^5.9.3",
+		"vite": "^7.3.1"
+	},
+	"dependencies": {
+		"@prisma/client": "^6.19.2",
+		"chart.js": "^4.5.1",
+		"jsonwebtoken": "^9.0.3",
+		"nodemailer": "^8.0.0",
+		"prisma": "^6.19.2"
+	}
 }

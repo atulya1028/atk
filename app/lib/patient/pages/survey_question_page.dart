@@ -53,7 +53,7 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
       listener: (context, state) {
         if (state.error != null) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.error!)));
+              .showSnackBar(SnackBar(content: Text(state.error ?? "")));
           context.read<SurveyQuestionCubit>().clearError();
         }
         if (state.completed) {
@@ -198,11 +198,15 @@ class _ChoiceStep extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(top: 12),
                       child: SizedBox(
-                        width: double.infinity,
-                        // No fixed height: this matches the old option layout.
+                        width: (constraints.maxWidth * 0.88).clamp(0.0, 480.0),
                         child: OutlinedButton(
                           onPressed: enabled ? () => onPick(option) : null,
                           style: OutlinedButton.styleFrom(
+                            minimumSize: const Size(0, 40),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             foregroundColor: selected == option
                                 ? _SurveyQuestionPageState._teal
                                 : Colors.black,
@@ -212,11 +216,12 @@ class _ChoiceStep extends StatelessWidget {
                                   : _SurveyQuestionPageState._optionBorder,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: Text(
                             option,
+                            textAlign: TextAlign.center,
                             style: const TextStyle(fontSize: 16),
                           ),
                         ),
@@ -297,7 +302,7 @@ class _NumberStepState extends State<_NumberStep> {
                     filled: true,
                     fillColor: _SurveyQuestionPageState._bg,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                 ),
@@ -310,7 +315,7 @@ class _NumberStepState extends State<_NumberStep> {
                       foregroundColor: Colors.white,
                       minimumSize: const Size(0, 40),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                     child: const Text('Next', style: TextStyle(fontSize: 16)),

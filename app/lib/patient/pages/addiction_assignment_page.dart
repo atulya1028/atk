@@ -42,7 +42,10 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
     if (cubit.state.openingSurvey) return;
     cubit.setOpeningSurvey(true);
     try {
-      await _takeSurvey(type);
+      final score = await _takeSurvey(type);
+      if (score != null && mounted) {
+        await _showScoreDialog(type, score);
+      }
     } on ApiException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -70,6 +73,131 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
         if (!cubit.isClosed) cubit.setOpeningSurvey(false);
       }
     }
+  }
+
+  Future<void> _showScoreDialog(String type, int score) async {
+    final title = switch (type) {
+      'INITIAL' => 'Initial Assessment Complete',
+      'DETAILED' => 'Detailed Assessment Complete',
+      'MENTAL' || 'MENTAL_STANDALONE' => 'Mental Health Assessment Complete',
+      _ => 'Assessment Complete',
+    };
+    final isStage3Unlocked = score >= 30;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: _primary.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.check_circle_rounded, color: _primary, size: 26),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: _dark),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Your assessment responses have been evaluated.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: _primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: _primary.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    'CLINICAL SCORE',
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: _primary,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '$score',
+                    style: const TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                      color: _dark,
+                    ),
+                  ),
+                  Text(
+                    'points',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            if (type == 'INITIAL')
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isStage3Unlocked ? const Color(0xFFE8F5E9) : const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      isStage3Unlocked ? Icons.lock_open_rounded : Icons.info_outline,
+                      color: isStage3Unlocked ? const Color(0xFF2E7D32) : const Color(0xFFE65100),
+                      size: 20,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        isStage3Unlocked
+                            ? 'Score >= 30: Stage 3 Detailed Assessment is unlocked!'
+                            : 'Assessment recorded.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          color: isStage3Unlocked ? const Color(0xFF1B5E20) : const Color(0xFFBF360C),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: FilledButton.styleFrom(
+              backgroundColor: _primary,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('View Dashboard'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<int?> _takeSurvey(String type) async {
@@ -100,7 +228,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
       listener: (context, state) {
         if (state.error != null) {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(state.error!)));
+              .showSnackBar(SnackBar(content: Text(state.error ?? "")));
           context.read<AddictionDashboardCubit>().clearError();
         }
         if (state.signedOut) {
@@ -193,7 +321,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
               Container(
                 decoration: BoxDecoration(
                   color: const Color(0x1AF44336),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: IconButton(
                   icon: const Icon(
@@ -246,7 +374,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(24),
+              borderRadius: BorderRadius.circular(15),
               boxShadow: const [
                 BoxShadow(
                   color: Color(0x0D283D3B),
@@ -298,7 +426,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                   : state.detailedDone
                   ? 'Retake Detailed Assessment'
                   : 'Start Detailed Assessment',
-              description: state.detailedInProgress
+              description: state.detailedDone
+                  ? 'Completed • Score: ${state.detailedScore ?? 0} pts'
+                  : state.detailedInProgress
                   ? 'Continue where you left off.'
                   : 'Unlocked! Begin your thorough evaluation.',
               color: _dark,
@@ -320,8 +450,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
           : 'Start Initial Assessment',
       description: state.initialInProgress
           ? 'Continue where you left off.'
-          : 'Answer questions about substance use and health. '
-                'You can leave and resume later.',
+          : state.initialDone
+          ? 'Completed • Score: ${state.initialScore ?? 0} pts ${state.detailedUnlocked ? "(Stage 3 Unlocked)" : ""}'
+          : 'Answer questions about substance use and health. You can leave and resume later.',
       color: _primary,
       onTap: () => _openSurvey('INITIAL'),
     ),
@@ -334,7 +465,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
             : state.mentalDone
             ? 'Retake Mental Health Assessment'
             : 'Start Mental Health Assessment',
-        description: 'Complete a short mental health check-in.',
+        description: state.mentalDone
+            ? 'Completed • Score: ${state.mentalScore ?? 0} pts'
+            : 'Complete a short mental health check-in.',
         color: _dark,
         onTap: () => _openSurvey('MENTAL'),
       ),
@@ -376,10 +509,142 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
             value: '${state.surveyDays}',
             color: _dark,
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 28),
+          const Text(
+            'Assessment Scores',
+            style: TextStyle(
+              color: _dark,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: Colors.grey.shade200),
+              boxShadow: const [
+                BoxShadow(
+                  color: Color(0x08000000),
+                  blurRadius: 10,
+                  offset: Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                _ScoreRow(
+                  title: 'Initial Assessment (Stage 2)',
+                  score: state.initialDone ? '${state.initialScore ?? 0} pts' : 'Pending',
+                  badge: state.detailedUnlocked ? 'Stage 3 Qualified' : (state.initialDone ? 'Screened' : null),
+                  color: _primary,
+                  isCompleted: state.initialDone,
+                ),
+                const Divider(height: 24),
+                _ScoreRow(
+                  title: 'Mental Health Evaluation',
+                  score: state.mentalDone ? '${state.mentalScore ?? 0} pts' : (state.mentalInProgress ? 'In Progress' : 'Not Started'),
+                  badge: state.mentalDone ? 'Evaluated' : null,
+                  color: _dark,
+                  isCompleted: state.mentalDone,
+                ),
+                const Divider(height: 24),
+                _ScoreRow(
+                  title: 'Detailed Assessment (Stage 3)',
+                  score: state.detailedDone ? '${state.detailedScore ?? 0} pts' : (state.detailedUnlocked ? 'Unlocked' : 'Locked'),
+                  badge: state.detailedDone ? 'Complete' : (state.detailedUnlocked ? 'Available' : 'Needs Score 30+'),
+                  color: state.detailedUnlocked ? const Color(0xFF2E7D32) : Colors.grey,
+                  isCompleted: state.detailedDone,
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 28),
+          const Text(
+            'Actions',
+            style: TextStyle(
+              color: _dark,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 14),
           ..._assessmentActions(state),
         ],
       ),
+    );
+  }
+}
+
+class _ScoreRow extends StatelessWidget {
+  const _ScoreRow({
+    required this.title,
+    required this.score,
+    required this.color,
+    required this.isCompleted,
+    this.badge,
+  });
+
+  final String title;
+  final String score;
+  final Color color;
+  final bool isCompleted;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.12),
+            shape: BoxShape.circle,
+          ),
+          child: Icon(
+            isCompleted ? Icons.check_circle_rounded : Icons.pending_outlined,
+            color: color,
+            size: 20,
+          ),
+        ),
+        const SizedBox(width: 14),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  color: Color(0xFF283D3B),
+                ),
+              ),
+              if (badge != null) ...[
+                const SizedBox(height: 2),
+                Text(
+                  badge!,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w600,
+                    color: color,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        Text(
+          score,
+          style: TextStyle(
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+            color: isCompleted ? const Color(0xFF283D3B) : Colors.grey,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -392,15 +657,15 @@ class _CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: Colors.transparent,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: BorderRadius.circular(10),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(10),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: const Color(0x1A197278),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(10),
             border: Border.all(color: const Color(0x4D197278)),
           ),
           child: const Row(
@@ -447,7 +712,7 @@ class _StatTile extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 8),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
         boxShadow: const [
           BoxShadow(
             color: Color(0x08000000),
@@ -515,13 +780,13 @@ class _ActionTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(15),
         onTap: onTap,
         child: Container(
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: color,
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
                 color: color.withAlpha(77),

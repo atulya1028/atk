@@ -1,122 +1,208 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
-  importFileExtension = "ts"
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
-datasource db {
-  provider = "postgresql"
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Doctor {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  name              String?
+  otp               String?
+  otpCreatedAt      DateTime?
+  phoneNumber       String?
+  specialization    String?
+  servicePincode    String?
+  isProfileComplete Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  assignedSubmissions Submission[]
 }
 
 model User {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email           String?         @unique
-  role            String          @default("user")
-  emailVerifiedAt DateTime?       @map("email_verified_at") @db.Timestamptz(6)
-  phoneNumber     String?         @unique @map("phone_number")
-  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  profile         Profile?
-  refreshTokens   RefreshToken[]
-  surveys         SurveySubmission[]
-  wellbeingCheckIns WellbeingCheckIn[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  otp       String?  
+  otpCreatedAt DateTime?
 
-  @@map("users")
+  // Identifying Data (Stage 1)
+  age             String?
+  phoneNumber     String?
+  pinCode         String?
+  gender          String?
+  occupation      String?
+  maritalStatus   String?
+
+  // Progress Flags
+  isProfileComplete Boolean @default(false)
+  hasCompletedInitialSurvey Boolean @default(false)
+  hasUnlockedDetailedSurvey Boolean @default(false)
+  surveyCategory    String  @default("ADDICTION")
+
+  createdAt DateTime @default(now())
+  submissions Submission[]
 }
 
-model OtpChallenge {
-  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  email      String
-  role       String
-  codeHash   String    @map("code_hash")
-  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
-  attempts   Int       @default(0)
-  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
-  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@index([email, createdAt(sort: Desc)], map: "otp_challenges_email_created_idx")
-  @@map("otp_challenges")
+model Section {
+  id          Int        @id @default(autoincrement())
+  parentId    Int?
+  parent      Section?   @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Section[]  @relation("ParentChild")
+  slug        String     @unique
+  title       String
+  sectionType String     @default("general")
+  surveyType  String     @default("INITIAL") // "INITIAL" or "DETAILED"
+  surveyCategory String     @default("ADDICTION")
+  sortOrder   Int        @default(0)
+  questions   Question[]
+  displayRules DisplayRule[]
+  createdAt   DateTime   @default(now())
 }
 
-model Profile {
-  userId       String   @id @map("user_id") @db.Uuid
-  fullName     String   @map("full_name")
-  ageGroup     String   @map("age_group")
-  phoneNumber  String?  @map("phone_number")
-  postcode     String
-  gender       String
-  occupation   String
-  maritalStatus String  @map("marital_status")
-  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("profiles")
+model SurveySettings {
+  id             Int             @id @default(autoincrement())
+  surveyCategory String          @unique // ADDICTION, MENTAL
+  threshold      Int             @default(30)
+  criticalValue  Int             @default(50)
+  emailTemplate  EmailTemplate?
 }
 
-model RefreshToken {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId    String    @map("user_id") @db.Uuid
-  tokenHash String    @unique @map("token_hash")
-  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
-  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
-  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([expiresAt], map: "refresh_tokens_expiry_idx")
-  @@map("refresh_tokens")
+model Question {
+  id               Int      @id @default(autoincrement())
+  sectionId        Int?     
+  section          Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  parentQuestionId Int?
+  parentQuestion   Question? @relation("QuestionHierarchy", fields: [parentQuestionId], references: [id], onDelete: Cascade)
+  childQuestions   Question[] @relation("QuestionHierarchy")
+  
+  slug        String   @unique
+  text        String
+  description String?
+  inputType   String   @default("text")
+  isRequired  Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  metadata    String?
+  
+  options     Option[]
+  answers     Answer[]
+  
+  dependentRules DisplayRule[] @relation("TriggerQuestion")
+  prerequisites DisplayRule[] @relation("DependentQuestion")
+  QuestionDependency_QuestionDependency_triggerQuestionIdToQuestion   QuestionDependency[] @relation("QuestionDependency_triggerQuestionIdToQuestion")
+  QuestionDependency_QuestionDependency_dependentQuestionIdToQuestion QuestionDependency[] @relation("QuestionDependency_dependentQuestionIdToQuestion")
 }
 
-model SmsOtpRequest {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  phoneNumber String   @map("phone_number")
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+model Option {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  label      String
+  value      String
+  category   String   @default("standard")
+  sortOrder  Int      @default(0)
+  
+  scoreValue Int      @default(0)
+  metadata   String?
 
-  @@index([phoneNumber, createdAt(sort: Desc)], map: "sms_otp_requests_phone_created_idx")
-  @@map("sms_otp_requests")
+  answerChoices AnswerChoice[]
 }
 
-model SchemaMigration {
-  name      String   @id
-  appliedAt DateTime @default(now()) @map("applied_at") @db.Timestamptz(6)
+model DisplayRule {
+  id                  Int       @id @default(autoincrement())
+  
+  triggerQuestionId   Int
+  triggerQuestion     Question  @relation("TriggerQuestion", fields: [triggerQuestionId], references: [id], onDelete: Cascade)
+  
+  operator            String    @default("eq")
+  triggerValue        String
 
-  @@map("schema_migrations")
+  dependentQuestionId Int?
+  dependentQuestion   Question? @relation("DependentQuestion", fields: [dependentQuestionId], references: [id], onDelete: Cascade)
+
+  dependentSectionId  Int?
+  dependentSection    Section?  @relation(fields: [dependentSectionId], references: [id], onDelete: Cascade)
 }
 
-model SurveySubmission {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId      String   @map("user_id") @db.Uuid
-  type        String
-  answers     Json     @default("{}")
-  score       Int?
-  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+model Submission {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Tracking
+  surveyType  String    @default("INITIAL") // "INITIAL" or "DETAILED"
+  status      String    @default("DRAFT")   // "DRAFT" or "COMPLETED"
+  surveyCategory String @default("ADDICTION")
+  
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Int      @default(0)
+  answers     Answer[]
 
-  @@index([userId, type, updatedAt(sort: Desc)])
-  @@map("survey_submissions")
+  // Clinical Triage Workflow
+  triageStatus     String?   @default("NEW") // "NEW", "IN_REVIEW", "CONTACTED", "ASSIGNED", "RESOLVED"
+  assignedDoctorId Int?
+  assignedDoctor   Doctor?   @relation(fields: [assignedDoctorId], references: [id], onDelete: SetNull)
+  clinicalNotes    String?
 }
 
-model SurveyQuestion {
-  id          String   @id
-  surveyType  String   @map("survey_type")
-  questionId  String   @map("question_id")
-  sourceOrder Int      @map("source_order")
-  definition  Json
-  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+model Answer {
+  id           Int      @id @default(autoincrement())
+  submissionId Int
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  questionId   Int
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  valueString  String?
+  valueText    String?
+  valueInt     Int?
+  valueDec     Float?
+  valueBool    Boolean?
+  valueDate    DateTime? 
+  
+  legacyValueText String?
 
-  @@unique([surveyType, questionId], map: "survey_questions_type_question_key")
-  @@index([surveyType, sourceOrder], map: "survey_questions_type_order_idx")
-  @@map("survey_questions")
+  snapshot     String?
+  
+  choices      AnswerChoice[] 
+  createdAt    DateTime @default(now())
 }
 
-model WellbeingCheckIn {
-  userId    String   @map("user_id") @db.Uuid
-  topic     String
-  responses Json
-  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@id([userId, topic])
-  @@map("wellbeing_check_ins")
+model AnswerChoice {
+  id             Int    @id @default(autoincrement())
+  answerId       Int
+  answer         Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  questionOptionId Int
+  option         Option @relation(fields: [questionOptionId], references: [id], onDelete: Cascade)
 }
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  description String
+  createdAt   DateTime @default(now())
+}
+
+model EmailTemplate {
+  id               Int            @id @default(autoincrement())
+  surveySettingsId Int            @unique
+  surveySettings   SurveySettings @relation(fields: [surveySettingsId], references: [id], onDelete: Cascade)
+  
+  subject          String?
+  bodyHtml         String?
+  bodyText         String?
+}
+
+model QuestionDependency {
+  id                                                        Int      @id @default(autoincrement())
+  dependentQuestionId                                       Int
+  triggerQuestionId                                         Int
+  operator                                                  String   @default("eq")
+  triggerValue                                              String
+  Question_QuestionDependency_triggerQuestionIdToQuestion   Question @relation("QuestionDependency_triggerQuestionIdToQuestion", fields: [triggerQuestionId], references: [id], onDelete: Cascade)
+  Question_QuestionDependency_dependentQuestionIdToQuestion Question @relation("QuestionDependency_dependentQuestionIdToQuestion", fields: [dependentQuestionId], references: [id], onDelete: Cascade)
+}
+

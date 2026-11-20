@@ -54,12 +54,13 @@ class LoginCubit extends Cubit<LoginState> {
       _startCountdown();
     } on ApiException catch (error) {
       emit(state.copyWith(loading: false, error: error.message));
-    } catch (_) {
+    } catch (e) {
       emit(
         state.copyWith(
           loading: false,
-          error:
-              'Could not reach ${ApiClient.baseUrl}. Start the API and check the device address.',
+          error: e is ApiException
+              ? e.message
+              : 'Could not reach ${ApiClient.baseUrl}. Start the API and check the device address.',
         ),
       );
     }
@@ -78,11 +79,13 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(loading: false, profileComplete: profileComplete));
     } on ApiException catch (error) {
       emit(state.copyWith(loading: false, error: error.message));
-    } catch (_) {
+    } catch (e) {
       emit(
         state.copyWith(
           loading: false,
-          error: 'Could not reach the server. Check your connection and try again.',
+          error: e.toString().contains('Exception:')
+              ? e.toString().replaceAll('Exception: ', '')
+              : 'Could not reach the server. Check your connection and try again.',
         ),
       );
     }

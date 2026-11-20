@@ -92,7 +92,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                       height: 8,
                       decoration: BoxDecoration(
                         color: active ? _teal : const Color(0xFFC5D6D4),
-                        borderRadius: BorderRadius.circular(4),
+                        borderRadius: BorderRadius.circular(10),
                       ),
                     );
                   }),
@@ -109,7 +109,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                         style: FilledButton.styleFrom(
                           backgroundColor: _teal,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
                         child: Text(

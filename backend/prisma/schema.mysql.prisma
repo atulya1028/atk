@@ -1,0 +1,207 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Doctor {
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  name              String?
+  otp               String?
+  otpCreatedAt      DateTime?
+  phoneNumber       String?
+  specialization    String?
+  servicePincode    String?
+  isProfileComplete Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  assignedSubmissions Submission[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  otp       String?  
+  otpCreatedAt DateTime?
+
+  // Identifying Data (Stage 1)
+  age             String?
+  phoneNumber     String?
+  pinCode         String?
+  gender          String?
+  occupation      String?
+  maritalStatus   String?
+
+  // Progress Flags
+  isProfileComplete Boolean @default(false)
+  hasCompletedInitialSurvey Boolean @default(false)
+  hasUnlockedDetailedSurvey Boolean @default(false)
+  surveyCategory    String  @default("ADDICTION")
+
+  createdAt DateTime @default(now())
+  submissions Submission[]
+}
+
+model Section {
+  id          Int        @id @default(autoincrement())
+  parentId    Int?
+  parent      Section?   @relation("ParentChild", fields: [parentId], references: [id], onDelete: Cascade)
+  children    Section[]  @relation("ParentChild")
+  slug        String     @unique
+  title       String
+  sectionType String     @default("general")
+  surveyType  String     @default("INITIAL") // "INITIAL" or "DETAILED"
+  surveyCategory String     @default("ADDICTION")
+  sortOrder   Int        @default(0)
+  questions   Question[]
+  displayRules DisplayRule[]
+  createdAt   DateTime   @default(now())
+}
+
+model SurveySettings {
+  id             Int             @id @default(autoincrement())
+  surveyCategory String          @unique // ADDICTION, MENTAL
+  threshold      Int             @default(30)
+  criticalValue  Int             @default(50)
+  emailTemplate  EmailTemplate?
+}
+
+model Question {
+  id               Int      @id @default(autoincrement())
+  sectionId        Int?     
+  section          Section? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  parentQuestionId Int?
+  parentQuestion   Question? @relation("QuestionHierarchy", fields: [parentQuestionId], references: [id], onDelete: Cascade)
+  childQuestions   Question[] @relation("QuestionHierarchy")
+  
+  slug        String   @unique
+  text        String   @db.Text
+  description String?  @db.Text
+  inputType   String   @default("text")
+  isRequired  Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  
+  metadata    String?  @db.Text
+  
+  options     Option[]
+  answers     Answer[]
+  
+  dependentRules DisplayRule[] @relation("TriggerQuestion")
+  prerequisites DisplayRule[] @relation("DependentQuestion")
+  QuestionDependency_QuestionDependency_triggerQuestionIdToQuestion   QuestionDependency[] @relation("QuestionDependency_triggerQuestionIdToQuestion")
+  QuestionDependency_QuestionDependency_dependentQuestionIdToQuestion QuestionDependency[] @relation("QuestionDependency_dependentQuestionIdToQuestion")
+}
+
+model Option {
+  id         Int      @id @default(autoincrement())
+  questionId Int
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  label      String
+  value      String
+  category   String   @default("standard")
+  sortOrder  Int      @default(0)
+  
+  scoreValue Int      @default(0)
+  metadata   String?  @db.Text
+
+  answerChoices AnswerChoice[]
+}
+
+model DisplayRule {
+  id                  Int       @id @default(autoincrement())
+  
+  triggerQuestionId   Int
+  triggerQuestion     Question  @relation("TriggerQuestion", fields: [triggerQuestionId], references: [id], onDelete: Cascade)
+  
+  operator            String    @default("eq")
+  triggerValue        String
+
+  dependentQuestionId Int?
+  dependentQuestion   Question? @relation("DependentQuestion", fields: [dependentQuestionId], references: [id], onDelete: Cascade)
+
+  dependentSectionId  Int?
+  dependentSection    Section?  @relation(fields: [dependentSectionId], references: [id], onDelete: Cascade)
+}
+
+model Submission {
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Tracking
+  surveyType  String    @default("INITIAL") // "INITIAL" or "DETAILED"
+  status      String    @default("DRAFT")   // "DRAFT" or "COMPLETED"
+  surveyCategory String @default("ADDICTION")
+  
+  startedAt   DateTime  @default(now())
+  completedAt DateTime?
+  score       Int      @default(0)
+  answers     Answer[]
+
+  // Clinical Triage Workflow
+  triageStatus     String?   @default("NEW") // "NEW", "IN_REVIEW", "CONTACTED", "ASSIGNED", "RESOLVED"
+  assignedDoctorId Int?
+  assignedDoctor   Doctor?   @relation(fields: [assignedDoctorId], references: [id], onDelete: SetNull)
+  clinicalNotes    String?   @db.Text
+}
+
+model Answer {
+  id           Int      @id @default(autoincrement())
+  submissionId Int
+  submission   Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  questionId   Int
+  question     Question   @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  
+  valueString  String?  @db.Text
+  valueText    String?  @db.Text
+  valueInt     Int?
+  valueDec     Decimal?
+  valueBool    Boolean?
+  valueDate    DateTime? 
+  
+  legacyValueText String? @db.Text
+
+  snapshot     String?  @db.Text
+  
+  choices      AnswerChoice[] 
+  createdAt    DateTime @default(now())
+}
+
+model AnswerChoice {
+  id             Int    @id @default(autoincrement())
+  answerId       Int
+  answer         Answer @relation(fields: [answerId], references: [id], onDelete: Cascade)
+  questionOptionId Int
+  option         Option @relation(fields: [questionOptionId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          Int      @id @default(autoincrement())
+  action      String
+  description String   @db.Text
+  createdAt   DateTime @default(now())
+}
+
+model EmailTemplate {
+  id               Int            @id @default(autoincrement())
+  surveySettingsId Int            @unique
+  surveySettings   SurveySettings @relation(fields: [surveySettingsId], references: [id], onDelete: Cascade)
+  
+  subject          String?
+  bodyHtml         String?        @db.Text
+  bodyText         String?        @db.Text
+}
+
+model QuestionDependency {
+  id                                                        Int      @id @default(autoincrement())
+  dependentQuestionId                                       Int
+  triggerQuestionId                                         Int
+  operator                                                  String   @default("eq")
+  triggerValue                                              String
+  Question_QuestionDependency_triggerQuestionIdToQuestion   Question @relation("QuestionDependency_triggerQuestionIdToQuestion", fields: [triggerQuestionId], references: [id], onDelete: Cascade)
+  Question_QuestionDependency_dependentQuestionIdToQuestion Question @relation("QuestionDependency_dependentQuestionIdToQuestion", fields: [dependentQuestionId], references: [id], onDelete: Cascade)
+}

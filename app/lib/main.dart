@@ -1,3 +1,4 @@
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:atk/patient/pages/profile_setup_page.dart';
 import 'package:cupertino_ui/cupertino_ui.dart';
 import 'package:material_ui/material_ui.dart';
@@ -23,8 +24,14 @@ import 'patient/pages/sleep_relaxation_page.dart';
 import 'patient/pages/home_page.dart';
 import 'patient/pages/addiction_assignment_page.dart';
 import 'patient/pages/checkin_summary_page.dart';
+import 'doctor/doctor_login_page.dart';
+import 'doctor/doctor_profile_setup_page.dart';
+import 'doctor/doctor_dashboard_page.dart';
+import 'admin/admin_login_page.dart';
+import 'admin/admin_dashboard_page.dart';
 
 void main() {
+  usePathUrlStrategy();
   runApp(const MyApp());
 }
 
@@ -77,7 +84,7 @@ class MyApp extends StatelessWidget {
               elevation: 2,
               shadowColor: Colors.black.withValues(alpha: 0.05),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(15),
               ),
               color: Colors.white,
               margin: EdgeInsets.zero,
@@ -90,15 +97,15 @@ class MyApp extends StatelessWidget {
                 vertical: 16,
               ),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(15),
                 borderSide: BorderSide.none,
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(15),
                 borderSide: BorderSide(color: Colors.grey.shade200),
               ),
               focusedBorder: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(16)),
+                borderRadius: BorderRadius.all(Radius.circular(15)),
                 borderSide: BorderSide(color: Color(0xFF197278), width: 1.5),
               ),
               labelStyle: const TextStyle(color: Colors.grey),
@@ -111,7 +118,7 @@ class MyApp extends StatelessWidget {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 54),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 textStyle: const TextStyle(
                   fontSize: 16,
@@ -122,7 +129,7 @@ class MyApp extends StatelessWidget {
             filledButtonTheme: FilledButtonThemeData(
               style: FilledButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(15),
                 ),
                 textStyle: const TextStyle(fontWeight: FontWeight.w600),
               ),
@@ -180,6 +187,95 @@ class MyApp extends StatelessWidget {
                     ModalRoute.of(context)?.settings.arguments as String? ?? '',
               ),
             ),
+            '/doctor': (context) => const DoctorLoginPage(),
+            '/doctor-setup': (context) => const DoctorProfileSetupPage(),
+            '/doctor-dashboard': (context) => const DoctorDashboardPage(),
+            '/admin': (context) => const AdminLoginPage(),
+            '/admin-dashboard': (context) => const AdminDashboardPage(),
+          },
+
+          onGenerateRoute: (settings) {
+            final rawName = settings.name?.trim() ?? '';
+            final uri = Uri.tryParse(rawName);
+            var path = uri?.path.toLowerCase() ?? '';
+            if (path.isEmpty && rawName.isNotEmpty) {
+              path = rawName.toLowerCase();
+            }
+            if (!path.startsWith('/')) {
+              path = '/$path';
+            }
+            if (path.length > 1 && path.endsWith('/')) {
+              path = path.substring(0, path.length - 1);
+            }
+
+            switch (path) {
+              case '/admin':
+              case '/admin/login':
+              case '/admin-login':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const AdminLoginPage(),
+                );
+              case '/admin-dashboard':
+              case '/admin/dashboard':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const AdminDashboardPage(),
+                );
+              case '/doctor':
+              case '/doctor/login':
+              case '/doctor-login':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const DoctorLoginPage(),
+                );
+              case '/doctor-dashboard':
+              case '/doctor/dashboard':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const DoctorDashboardPage(),
+                );
+              case '/doctor-setup':
+              case '/doctor/setup':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => const DoctorProfileSetupPage(),
+                );
+              case '/login':
+              case '/patient':
+              case '/patient/login':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (_) => BlocProvider(
+                    create: (_) => LoginCubit(),
+                    child: const LoginPage(),
+                  ),
+                );
+              case '/home':
+              case '/patient/home':
+              case '/patient/dashboard':
+                return MaterialPageRoute(
+                  settings: settings,
+                  builder: (context) => BlocProvider(
+                    create: (_) => HomeCubit()..loadSurveyStats(),
+                    child: HomePage(
+                      email: settings.arguments as String? ?? '',
+                    ),
+                  ),
+                );
+              default:
+                return null;
+            }
+          },
+
+          onUnknownRoute: (settings) {
+            return MaterialPageRoute(
+              settings: settings,
+              builder: (_) => BlocProvider(
+                create: (_) => IntroCubit(),
+                child: const IntroSliderPage(),
+              ),
+            );
           },
         );
       },

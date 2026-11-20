@@ -95,7 +95,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
   }
 
   Future<void> _submitProfile() async {
-    if (_isSaving || !_formKey.currentState!.validate()) return;
+    if (_isSaving || !(_formKey.currentState?.validate() ?? false)) return;
     setState(() => _isSaving = true);
     try {
       final phone = _phoneController.text.trim();
@@ -149,7 +149,7 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(_loadError!),
+                  Text(_loadError ?? ""),
                   TextButton(
                     onPressed: _loadProfile,
                     child: const Text('Retry'),
@@ -238,32 +238,25 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
                         enabled: !_isSaving,
                         controller: _pinController,
                         decoration: const InputDecoration(
-                          labelText: 'Postcode (Mandatory)',
+                          labelText: 'Pincode / Postcode (Mandatory)',
+                          hintText: 'e.g. 302017 or SW1A 1AA',
                         ),
-                        // 1. Change keyboard from number-only to standard text
                         keyboardType: TextInputType.text,
-                        // 2. Allow letters, numbers, and spaces instead of digitsOnly
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(
-                            RegExp(r'[a-zA-Z0-9\s]'),
-                          ),
-                          LengthLimitingTextInputFormatter(
-                            8,
-                          ), // Matched to your maxLength
+                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),
+                          LengthLimitingTextInputFormatter(8),
                         ],
                         validator: (v) {
-                          final value = v?.trim() ?? '';
-
+                          final value = (v ?? '').trim();
                           if (value.isEmpty) {
-                            return 'Postcode is mandatory';
+                            return 'Pincode is mandatory';
                           }
-
-                          // 3. Validate alphanumeric characters (e.g., 5 to 8 characters long)
-                          if (!RegExp(r'^[a-zA-Z0-9\s]{5,8}$')
-                              .hasMatch(value)) {
-                            return 'Enter a valid alphanumeric postcode';
+                          if (value.length < 2 || value.length > 8) {
+                            return 'Pincode must be between 2 and 8 characters';
                           }
-
+                          if (!RegExp(r'^[a-zA-Z0-9\s]{2,8}$').hasMatch(value)) {
+                            return 'Pincode can only contain text and numbers (max 8 characters)';
+                          }
                           return null;
                         },
                       ),

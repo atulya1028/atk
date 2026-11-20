@@ -61,7 +61,7 @@ class _LoginPageState extends State<LoginPage> {
   // ---------- Actions ----------
 
   Future<void> _sendCode() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!(_formKey.currentState?.validate() ?? false)) return;
     await context.read<LoginCubit>().sendCode(_email.text.trim());
     if (mounted && context.read<LoginCubit>().state.otpSent) {
       _nodes.first.requestFocus();
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: const BoxDecoration(
                       color: Color(0xFFF5F7F6),
                       borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(36),
+                        top: Radius.circular(15),
                       ),
                     ),
                     child: SingleChildScrollView(
@@ -215,6 +215,14 @@ class _LoginPageState extends State<LoginPage> {
                                 textInputAction: TextInputAction.done,
                                 onFieldSubmitted: (_) => _sendCode(),
                                 decoration: _fieldDecoration('you@example.com'),
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                                  TextInputFormatter.withFunction((oldValue, newValue) {
+                                    return newValue.copyWith(
+                                      text: newValue.text.toLowerCase(),
+                                    );
+                                  }),
+                                ],
                                 validator: _validateEmail,
                               ),
 
@@ -259,7 +267,7 @@ class _LoginPageState extends State<LoginPage> {
                                               contentPadding: EdgeInsets.zero,
                                               enabledBorder: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(14),
+                                                    BorderRadius.circular(15),
                                                 borderSide: BorderSide(
                                                   color: state.error != null
                                                       ? _danger
@@ -269,7 +277,7 @@ class _LoginPageState extends State<LoginPage> {
                                               ),
                                               focusedBorder: OutlineInputBorder(
                                                 borderRadius:
-                                                    BorderRadius.circular(14),
+                                                    BorderRadius.circular(15),
                                                 borderSide: const BorderSide(
                                                   color: _teal,
                                                   width: 2,
@@ -335,7 +343,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (state.error != null) ...[
                                 const SizedBox(height: 12),
                                 Text(
-                                  state.error!,
+                                  state.error ?? "",
                                   style: const TextStyle(
                                     color: _danger,
                                     fontWeight: FontWeight.w600,
@@ -353,7 +361,7 @@ class _LoginPageState extends State<LoginPage> {
                                   style: FilledButton.styleFrom(
                                     backgroundColor: _teal,
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(16),
+                                      borderRadius: BorderRadius.circular(15),
                                     ),
                                   ),
                                   child: state.loading
@@ -380,13 +388,7 @@ class _LoginPageState extends State<LoginPage> {
                               Center(
                                 child: TextButton(
                                   onPressed: () {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'Doctor sign-in is not available yet.',
-                                        ),
-                                      ),
-                                    );
+                                    Navigator.of(context).pushNamed('/doctor');
                                   },
                                   child: const Text.rich(
                                     TextSpan(
@@ -430,23 +432,23 @@ class _LoginPageState extends State<LoginPage> {
       fillColor: Colors.white,
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: _border, width: 1.5),
       ),
       disabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: _border, width: 1.5),
       ),
       focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: _teal, width: 2),
       ),
       errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: _danger, width: 1.5),
       ),
       focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: _danger, width: 2),
       ),
     );

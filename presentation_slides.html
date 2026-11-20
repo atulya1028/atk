@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novtek ATK - Executive Presentation Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .slide-page {
+                page-break-after: always !important;
+                break-after: page !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                display: flex !important;
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Action Bar -->
+    <header class="no-print border-b border-slate-800 bg-slate-900/90 backdrop-blur px-8 py-3.5 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-600 text-white font-black text-xs px-2.5 py-1 rounded tracking-widest uppercase">ATK Clinical</span>
+            <span class="text-xs font-bold text-slate-400">Executive Presentation Slide Deck</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <span id="slideCounter" class="text-xs font-mono font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
+                Slide 1 of 8
+            </span>
+            <button onclick="window.print()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download Slides as PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- Slide Presentation Container -->
+    <main class="flex-1 flex items-center justify-center p-6 md:p-12">
+        <div class="w-full max-w-5xl aspect-[16/9] bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl p-12 flex flex-col justify-between slide-page relative overflow-hidden">
+
+            <!-- SLIDE 1: Title -->
+            <div class="slide flex-1 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>NOVTEK HEALTHCARE &bull; CLINICAL ASSESSMENT SUITE</span>
+                    <span>CONFIDENTIAL</span>
+                </div>
+
+                <div class="space-y-4 my-auto">
+                    <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold px-3 py-1 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        Healthcare Triage Architecture
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                        Novtek ATK Platform
+                    </h1>
+                    <p class="text-lg md:text-xl text-slate-400 max-w-2xl leading-relaxed">
+                        An intelligent, evidence-based assessment and automated clinical triage ecosystem for Addiction Recovery and Mental Health wellbeing.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-3 gap-6 pt-6 border-t border-slate-800 text-xs text-slate-400">
+                    <div>
+                        <span class="block font-black text-white text-sm">Dual Pathways</span>
+                        <span>Addiction & Mental Health</span>
+                    </div>
+                    <div>
+                        <span class="block font-black text-white text-sm">Automated Triage</span>
+                        <span>Severity alerts & doctor routing</span>
+                    </div>
+                    <div>
+                        <span class="block font-black text-white text-sm">Cloud Ready</span>
+                        <span>AWS Docker & RDS MySQL</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Clinical Pathways -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>CLINICAL PATHWAYS</span>
+                    <span>DUAL PROTOCOL ARCHITECTURE</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Personalized Assessment Pathways</h2>
+                        <p class="text-sm text-slate-400">Targeted protocols specifically tailored to distinct clinical objectives.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="rounded-xl border border-indigo-500/30 bg-indigo-950/20 p-6 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="p-2 rounded-lg bg-indigo-500/20 text-indigo-400 text-xl">🌱</span>
+                                <h3 class="text-lg font-black text-white">Addiction Recovery</h3>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Evaluates substance dependency severity (Alcohol SADQ, DAST-10, Nicotine, and Opioid screening) with withdrawal risk metrics and harm reduction triage.
+                            </p>
+                            <span class="inline-block text-[10px] font-bold text-indigo-400 bg-indigo-900/40 px-2 py-0.5 rounded">
+                                Custom Threshold: 30 / 50 pts
+                            </span>
+                        </div>
+
+                        <div class="rounded-xl border border-pink-500/30 bg-pink-950/20 p-6 space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="p-2 rounded-lg bg-pink-500/20 text-pink-400 text-xl">🧠</span>
+                                <h3 class="text-lg font-black text-white">Mental Health Wellbeing</h3>
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Stratifies anxiety, depression, mood disruption, and cognitive strain using validated clinical scales with immediate red-flag detection for self-harm ideation.
+                            </p>
+                            <span class="inline-block text-[10px] font-bold text-pink-400 bg-pink-900/40 px-2 py-0.5 rounded">
+                                Critical Alert Threshold: 50 pts
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 2 / 8</div>
+            </div>
+
+            <!-- SLIDE 3: 3-Stage Assessment Model -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>PATIENT PROTOCOL</span>
+                    <span>3-STAGE ASSESSMENT FUNNEL</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Adaptive Assessment Flow</h2>
+                        <p class="text-sm text-slate-400">Optimizes respondent engagement while capturing deep clinical data.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-2">
+                            <span class="text-xs font-black text-indigo-400 uppercase">Stage 1</span>
+                            <h3 class="text-base font-bold text-white">Demographics</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Age, Gender, Postcode, Occupation, and Contact details to establish baseline records and territory routing.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-2">
+                            <span class="text-xs font-black text-indigo-400 uppercase">Stage 2</span>
+                            <h3 class="text-base font-bold text-white">Initial Screening</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                High-level preliminary questionnaire. If cumulative score meets qualification threshold (e.g. &ge; 30), Stage 3 unlocks.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-indigo-600/40 bg-indigo-950/20 p-5 space-y-2">
+                            <span class="text-xs font-black text-indigo-400 uppercase">Stage 3</span>
+                            <h3 class="text-base font-bold text-white">Detailed Evaluation</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                In-depth clinical inquiry with conditional logic branching. Automatically triggers critical risk alerts if score &ge; 50.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 3 / 8</div>
+            </div>
+
+            <!-- SLIDE 4: Triage & Escalation -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>CLINICAL SAFETY</span>
+                    <span>AUTOMATED TRIAGE & ALERTS</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Real-Time Risk Escalation</h2>
+                        <p class="text-sm text-slate-400">Zero-delay response protocols for vulnerable participants.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="rounded-xl border border-rose-500/30 bg-rose-950/20 p-6 space-y-3">
+                            <div class="flex items-center gap-2 text-rose-400 font-bold text-sm">
+                                <span>🚨</span> Automated Admin Alerts
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Instant email dispatch to Super Admin with participant demographics, critical score, and response summary whenever score &ge; Critical Value.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-indigo-500/30 bg-indigo-950/20 p-6 space-y-3">
+                            <div class="flex items-center gap-2 text-indigo-400 font-bold text-sm">
+                                <span>✉️</span> Participant Outreach
+                            </div>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Customizable HTML follow-up email automatically dispatched to the participant with UK NHS compliant support helplines and immediate guidance.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg bg-slate-900 border border-slate-800 p-4 flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-400">Lifecycle Status Progression:</span>
+                        <div class="flex gap-2">
+                            <span class="bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-mono">NEW</span> &rarr;
+                            <span class="bg-amber-900/40 text-amber-300 px-2 py-0.5 rounded font-mono">IN_REVIEW</span> &rarr;
+                            <span class="bg-blue-900/40 text-blue-300 px-2 py-0.5 rounded font-mono">CONTACTED</span> &rarr;
+                            <span class="bg-emerald-900/40 text-emerald-300 px-2 py-0.5 rounded font-mono">RESOLVED</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 4 / 8</div>
+            </div>
+
+            <!-- SLIDE 5: Clinician & Doctor Management -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>HEALTHCARE NETWORK</span>
+                    <span>PRACTITIONER ALLOCATION</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Postcode-Based Clinician Routing</h2>
+                        <p class="text-sm text-slate-400">Connecting participants with accredited local practitioners.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-2">
+                            <span class="text-2xl">🩺</span>
+                            <h3 class="text-sm font-bold text-white">Practitioner Profiles</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Manage medical credentials, contact details, specializations, and verified account status.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-2">
+                            <span class="text-2xl">📍</span>
+                            <h3 class="text-sm font-bold text-white">Territory Postcodes</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Allocate multi-pincode service areas (e.g. SW1A, 110001) for automated territorial matching.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-5 space-y-2">
+                            <span class="text-2xl">📊</span>
+                            <h3 class="text-sm font-bold text-white">Caseload Monitor</h3>
+                            <p class="text-xs text-slate-400 leading-relaxed">
+                                Live tracking of reachable participants and critical severity cases assigned per practitioner.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 5 / 8</div>
+            </div>
+
+            <!-- SLIDE 6: Admin Command Suite -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>ADMIN COMMAND SUITE</span>
+                    <span>ANALYTICS & GOVERNANCE</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Clinical Governance Dashboard</h2>
+                        <p class="text-sm text-slate-400">Comprehensive administrative control and clinical oversight.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>📑</span> Collapsible Side Drawer
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Expandable/collapsible desktop drawer (w-64 &harr; w-20) with active badges, live triage counters, and mobile slide-out overlay.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>📉</span> Funnel & Hotspots
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                6-stage drop-off tracking from registration to critical triage, plus geographic postcode risk hotspot clustering and CSV export.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>📝</span> Full Question CRUD
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Complete control to Add, Edit, and Delete questions with all 5 input types (select, multi-select, yes/no, text, number) and 1-click delete.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>🔄</span> Participant Care & Reset
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Direct enrollment (+ Add Participant modal), demographic profile editor, and 1-click survey reset allowing participants to retake assessments.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>🔒</span> Audit Trail & Purge
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Timestamped logs of every admin action with date filtering, 1-click CSV export, and safe multi-tier log purge options (7, 30, 90 days, all).
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-1.5">
+                            <h3 class="text-xs font-bold text-white flex items-center gap-2">
+                                <span>☁️</span> AWS & Telemetry Modal
+                            </h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Live AWS RDS MySQL connection metrics, latency ms, SES email delivery test trigger, and container runtime health telemetry.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 6 / 8</div>
+            </div>
+
+            <!-- SLIDE 7: Mobile App Experience -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>PATIENT EXPERIENCE</span>
+                    <span>CROSS-PLATFORM MOBILE APP</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Flutter Mobile Application</h2>
+                        <p class="text-sm text-slate-400">Native iOS and Android client for seamless patient interaction and clinical routing.</p>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-2xl">📱</span>
+                            <h3 class="text-xs font-bold text-white">Native App Drawer</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Global drawer for seamless pathway switching, assessment history, profile, and crisis helplines.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-2xl">🔐</span>
+                            <h3 class="text-xs font-bold text-white">Passwordless Login</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Secure email OTP authentication with automatic code invalidation and 45-second resend timer.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-2xl">🔔</span>
+                            <h3 class="text-xs font-bold text-white">Offline Alerts</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Local daily check-in reminders and 3-day inactivity re-engagement alerts that run completely offline.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-2xl">🩺</span>
+                            <h3 class="text-xs font-bold text-white">Doctor Mobile Portal</h3>
+                            <p class="text-[11px] text-slate-400 leading-relaxed">
+                                Dedicated practitioner login tab with real-time matching of critical patients in their territory.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-xs text-slate-500">Slide 7 / 8</div>
+            </div>
+
+            <!-- SLIDE 8: AWS Cloud Architecture -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>ENTERPRISE CLOUD</span>
+                    <span>AWS DEPLOYMENT ARCHITECTURE</span>
+                </div>
+
+                <div class="my-auto space-y-6">
+                    <div>
+                        <h2 class="text-3xl font-black text-white tracking-tight">Scalable Cloud Infrastructure</h2>
+                        <p class="text-sm text-slate-400">Production-grade security, containerization, and automation.</p>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-4">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-xs font-bold text-indigo-400">Compute</span>
+                            <h3 class="text-sm font-bold text-white">AWS App Runner / ECS</h3>
+                            <p class="text-[11px] text-slate-400">Multi-stage Alpine Docker container running Node SvelteKit.</p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-xs font-bold text-indigo-400">Database</span>
+                            <h3 class="text-sm font-bold text-white">AWS RDS MySQL 8.0</h3>
+                            <p class="text-[11px] text-slate-400">Managed relational database with auto-push schema sync.</p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-xs font-bold text-indigo-400">Email</span>
+                            <h3 class="text-sm font-bold text-white">AWS SES</h3>
+                            <p class="text-[11px] text-slate-400">High-deliverability Simple Email Service for critical alerts.</p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900 p-4 space-y-2">
+                            <span class="text-xs font-bold text-indigo-400">CI/CD</span>
+                            <h3 class="text-sm font-bold text-white">GitHub Actions</h3>
+                            <p class="text-[11px] text-slate-400">Automated build, test, and ECR container deployment.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-500 pt-4 border-t border-slate-800">
+                    <span>Slide 8 / 8</span>
+                    <span class="text-indigo-400 font-bold">&copy; 2026 Novtek Health &bull; All Rights Reserved</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Bottom Presentation Controls -->
+    <footer class="no-print border-t border-slate-800 bg-slate-900 px-8 py-4 flex items-center justify-between">
+        <div class="text-xs text-slate-400 flex items-center gap-4">
+            <span>Use <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">&larr;</kbd> <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">&rarr;</kbd> or <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">Space</kbd> to navigate</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="prevBtn" onclick="prevSlide()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer">
+                &larr; Previous
+            </button>
+            <button id="nextBtn" onclick="nextSlide()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-5 py-2 rounded-lg transition-all cursor-pointer">
+                Next &rarr;
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('slideCounter');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((s, i) => {
+                if (i === index) {
+                    s.classList.remove('hidden');
+                    s.classList.add('flex');
+                } else {
+                    s.classList.add('hidden');
+                    s.classList.remove('flex');
+                }
+            });
+            counter.textContent = `Slide ${index + 1} of ${slides.length}`;
+            document.getElementById('prevBtn').disabled = (index === 0);
+            document.getElementById('nextBtn').textContent = (index === slides.length - 1) ? 'Finish' : 'Next →';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            }
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

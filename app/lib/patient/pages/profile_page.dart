@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(15),
                             border: Border.all(color: Colors.grey.shade200),
                           ),
                           child: FutureBuilder<Map<String, dynamic>>(
@@ -166,7 +166,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               foregroundColor: Colors.red,
                               elevation: 0,
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                                borderRadius: BorderRadius.circular(15),
                               ),
                             ),
                           ),
@@ -205,13 +205,13 @@ class _ProfileListTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(15),
         onTap: onTap,
         child: Container(
           margin: const EdgeInsets.only(bottom: 16),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.04),

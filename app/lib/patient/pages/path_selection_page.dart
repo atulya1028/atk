@@ -173,16 +173,16 @@ class _PathCard extends StatelessWidget {
     final foreground = alternate ? Colors.white : const Color(0xFF283D3B);
     return Material(
       color: alternate ? Colors.white.withValues(alpha: 0.16) : Colors.white,
-      borderRadius: BorderRadius.circular(24),
+      borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
+        borderRadius: BorderRadius.circular(15),
         child: Container(
           width: double.infinity,
           constraints: const BoxConstraints(minHeight: 144),
           padding: const EdgeInsets.all(24),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(24),
+            borderRadius: BorderRadius.circular(15),
             border: alternate
                 ? Border.all(color: Colors.white.withValues(alpha: 0.35))
                 : null,

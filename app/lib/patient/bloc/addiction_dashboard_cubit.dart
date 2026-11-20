@@ -10,11 +10,14 @@ class AddictionDashboardState {
     this.surveyDays = 0,
     this.initialDone = false,
     this.initialInProgress = false,
+    this.initialScore,
     this.mentalDone = false,
     this.mentalInProgress = false,
+    this.mentalScore,
     this.detailedDone = false,
     this.detailedInProgress = false,
     this.detailedUnlocked = false,
+    this.detailedScore,
     this.openingSurvey = false,
     this.error,
     this.signedOut = false,
@@ -27,11 +30,14 @@ class AddictionDashboardState {
   final int surveyDays;
   final bool initialDone;
   final bool initialInProgress;
+  final int? initialScore;
   final bool mentalDone;
   final bool mentalInProgress;
+  final int? mentalScore;
   final bool detailedDone;
   final bool detailedInProgress;
   final bool detailedUnlocked;
+  final int? detailedScore;
   final bool openingSurvey;
   final String? error;
   final bool signedOut;
@@ -44,11 +50,14 @@ class AddictionDashboardState {
     int? surveyDays,
     bool? initialDone,
     bool? initialInProgress,
+    int? initialScore,
     bool? mentalDone,
     bool? mentalInProgress,
+    int? mentalScore,
     bool? detailedDone,
     bool? detailedInProgress,
     bool? detailedUnlocked,
+    int? detailedScore,
     bool? openingSurvey,
     String? error,
     bool clearError = false,
@@ -61,11 +70,14 @@ class AddictionDashboardState {
     surveyDays: surveyDays ?? this.surveyDays,
     initialDone: initialDone ?? this.initialDone,
     initialInProgress: initialInProgress ?? this.initialInProgress,
+    initialScore: initialScore ?? this.initialScore,
     mentalDone: mentalDone ?? this.mentalDone,
     mentalInProgress: mentalInProgress ?? this.mentalInProgress,
+    mentalScore: mentalScore ?? this.mentalScore,
     detailedDone: detailedDone ?? this.detailedDone,
     detailedInProgress: detailedInProgress ?? this.detailedInProgress,
     detailedUnlocked: detailedUnlocked ?? this.detailedUnlocked,
+    detailedScore: detailedScore ?? this.detailedScore,
     openingSurvey: openingSurvey ?? this.openingSurvey,
     error: clearError ? null : error ?? this.error,
     signedOut: signedOut ?? this.signedOut,
@@ -104,10 +116,13 @@ class AddictionDashboardCubit extends Cubit<AddictionDashboardState> {
               initial?['hasCompleted'] == true ||
               initial?['status'] == 'COMPLETED',
           initialInProgress: initial?['status'] == 'IN_PROGRESS',
+          initialScore: initial?['score'] as int?,
           mentalDone: mental?['status'] == 'COMPLETED',
           mentalInProgress: mental?['status'] == 'IN_PROGRESS',
+          mentalScore: mental?['score'] as int?,
           detailedDone: detailedLatest?['status'] == 'COMPLETED',
           detailedInProgress: detailedLatest?['status'] == 'IN_PROGRESS',
+          detailedScore: detailedLatest?['score'] as int?,
           detailedUnlocked: detailed?['unlocked'] as bool? ?? false,
           completedSurveys: stats['completedSurveys'] as int,
           totalAnswers: stats['totalAnswers'] as int,

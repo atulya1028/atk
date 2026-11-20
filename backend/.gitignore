@@ -1,5 +1,29 @@
-node_modules/
-src/generated/prisma/
+node_modules
+
+# Output
+.output
+.vercel
+.netlify
+.wrangler
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Env
 .env
-backups/
-npm-debug.log*
+.env.*
+!.env.example
+!.env.test
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
+
+/../generated/prisma
+
+# SQLite
+*.db
+*.db-journal

@@ -34,14 +34,14 @@ class AnxietyWorryPage extends StatelessWidget {
   }) {
     return Material(
       color: selected ? const Color(0xFFE5F3F2) : Colors.white,
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(15),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(15),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(15),
             border: Border.all(
               color: selected ? teal : const Color(0xFFE1E8E8),
               width: selected ? 1.6 : 1,
@@ -124,7 +124,7 @@ class AnxietyWorryPage extends StatelessWidget {
                     const SizedBox(height: 12),
 
                     ClipRRect(
-                      borderRadius: BorderRadius.circular(20),
+                      borderRadius: BorderRadius.circular(15),
                       child: const LinearProgressIndicator(
                         value: 0.5,
                         minHeight: 6,
@@ -220,7 +220,7 @@ class AnxietyWorryPage extends StatelessWidget {
                       padding: const EdgeInsets.all(15),
                       decoration: BoxDecoration(
                         color: const Color(0xFFEAF3F2),
-                        borderRadius: BorderRadius.circular(14),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       child: const Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,7 +260,7 @@ class AnxietyWorryPage extends StatelessWidget {
                           disabledBackgroundColor: const Color(0xFFB8CDCE),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(15),
                           ),
                         ),
                         child: Text(

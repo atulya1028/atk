@@ -94,7 +94,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                           SizedBox(height: 8),
 
                           ClipRRect(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(15),
                             child: LinearProgressIndicator(
                               value: 0.25,
                               minHeight: 5,
@@ -117,7 +117,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),
-                              borderRadius: BorderRadius.circular(19),
+                              borderRadius: BorderRadius.circular(15),
                             ),
                             child: Row(
                               children: [
@@ -219,7 +219,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                                       color: selected
                                           ? const Color(0xFFE8EFEB)
                                           : Colors.white,
-                                      borderRadius: BorderRadius.circular(13),
+                                      borderRadius: BorderRadius.circular(10),
                                       border: Border.all(
                                         color: selected
                                             ? teal
@@ -239,7 +239,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                                           : [],
                                     ),
                                     child: InkWell(
-                                      borderRadius: BorderRadius.circular(13),
+                                      borderRadius: BorderRadius.circular(10),
                                       onTap: () {
                                         context.read<WellbeingCubit>().select(
                                           'feeling',
@@ -322,9 +322,9 @@ class EmotionalWellbeingPage extends StatelessWidget {
 
                             return Material(
                               color: Colors.transparent,
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(10),
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(12),
+                                borderRadius: BorderRadius.circular(10),
                                 onTap: () {
                                   context.read<WellbeingCubit>().select(
                                     'duration',
@@ -342,7 +342,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                                     color: selected
                                         ? const Color(0xFFE8EFEB)
                                         : Colors.white,
-                                    borderRadius: BorderRadius.circular(12),
+                                    borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: selected
                                           ? teal
@@ -401,7 +401,7 @@ class EmotionalWellbeingPage extends StatelessWidget {
                                 foregroundColor: Colors.white,
                                 elevation: 0,
                                 shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(13),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
                               ),
                               child: Row(

@@ -58,7 +58,10 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
       );
       if (!mounted || completed == null) return;
       setState(() => _assessmentStatus = 'COMPLETED');
-      Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+      await _showMentalScoreDialog(completed);
+      if (mounted) {
+        Navigator.of(context).popUntil(ModalRoute.withName('/home'));
+      }
     } on ApiException catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context)
@@ -79,6 +82,93 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
     } finally {
       if (mounted) setState(() => _openingAssessment = false);
     }
+  }
+
+  Future<void> _showMentalScoreDialog(int score) async {
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: teal.withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(Icons.psychology_rounded, color: teal, size: 26),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Mental Health Score',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: ink),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Your mental health assessment has been calculated.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: teal.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: teal.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    'ASSESSMENT SCORE',
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: teal,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '$score',
+                    style: const TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                      color: ink,
+                    ),
+                  ),
+                  Text(
+                    'points',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: FilledButton.styleFrom(
+              backgroundColor: teal,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: const Text('Continue'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -293,8 +383,8 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
       decoration: const BoxDecoration(
         color: Color(0xFFE8EFEB),
         borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(30),
-          bottomRight: Radius.circular(30),
+          bottomLeft: Radius.circular(15),
+          bottomRight: Radius.circular(15),
         ),
       ),
       child: Row(
@@ -336,7 +426,7 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         color: const Color(0xFFE8EFEB),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(15),
       ),
       child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -400,14 +490,14 @@ class _TopicCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 13),
       child: Material(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(21),
+        borderRadius: BorderRadius.circular(15),
         child: InkWell(
           onTap: onTap,
-          borderRadius: BorderRadius.circular(21),
+          borderRadius: BorderRadius.circular(15),
           child: Container(
             padding: const EdgeInsets.all(17),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(21),
+              borderRadius: BorderRadius.circular(15),
               border: Border.all(color: const Color(0xFFECEBE6)),
             ),
             child: Row(
@@ -417,7 +507,7 @@ class _TopicCard extends StatelessWidget {
                   height: 57,
                   decoration: BoxDecoration(
                     color: color,
-                    borderRadius: BorderRadius.circular(17),
+                    borderRadius: BorderRadius.circular(15),
                   ),
                   child: Icon(icon, color: iconColor, size: 27),
                 ),
