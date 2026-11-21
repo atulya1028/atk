@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter/services.dart';
 import 'package:atk/patient/bloc/login_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+import 'package:atk/patient/services/api_client.dart';
 
 /// Passwordless email sign-in with a one-time verification code.
 class LoginPage extends StatefulWidget {
@@ -25,6 +26,73 @@ class _LoginPageState extends State<LoginPage> {
   final _boxes = List.generate(6, (_) => TextEditingController());
   final _nodes = List.generate(6, (_) => FocusNode());
   bool _isDoctorMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    ApiClient.loadSavedBaseUrl();
+  }
+
+  void _showServerSettingsDialog() {
+    final controller = TextEditingController(text: ApiClient.baseUrl);
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Server Connection'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Backend API URL for your network:',
+              style: TextStyle(fontSize: 13, color: Colors.black54),
+            ),
+            const SizedBox(height: 12),
+            TextField(
+              controller: controller,
+              decoration: const InputDecoration(
+                labelText: 'Backend URL',
+                hintText: 'http://192.168.31.29:3000',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Wrap(
+              spacing: 8,
+              runSpacing: 4,
+              children: [
+                ActionChip(
+                  label: const Text('Wi-Fi (192.168.31.29)'),
+                  onPressed: () => controller.text = 'http://192.168.31.29:3000',
+                ),
+                ActionChip(
+                  label: const Text('Emulator (10.0.2.2)'),
+                  onPressed: () => controller.text = 'http://10.0.2.2:3000',
+                ),
+              ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              ApiClient.setBaseUrl(controller.text);
+              Navigator.pop(ctx);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Server set to ${ApiClient.baseUrl}')),
+              );
+              setState(() {});
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   void dispose() {
@@ -125,19 +193,26 @@ class _LoginPageState extends State<LoginPage> {
                           : const EdgeInsets.fromLTRB(24, 12, 24, 20),
                       child: Column(
                         children: [
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: SizedBox(
-                              width: 44,
-                              height: 44,
-                              child: BackButton(
-                                color: Colors.white,
-                                onPressed: () => Navigator.pushReplacementNamed(
-                                  context,
-                                  '/intro',
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: BackButton(
+                                  color: Colors.white,
+                                  onPressed: () => Navigator.pushReplacementNamed(
+                                    context,
+                                    '/intro',
+                                  ),
                                 ),
                               ),
-                            ),
+                              IconButton(
+                                icon: const Icon(Icons.dns_outlined, color: Colors.white70),
+                                tooltip: 'Server Settings',
+                                onPressed: _showServerSettingsDialog,
+                              ),
+                            ],
                           ),
                           if (!compact) const Spacer(),
                           if (!compact)

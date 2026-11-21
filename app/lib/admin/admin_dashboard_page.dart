@@ -438,69 +438,99 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   // CSV EXPORTS
   // =========================================================================
   void _exportSubmissionsCsv() {
-    final buffer = StringBuffer();
-    buffer.writeln('ID,Patient Name,Email,Stage,Score,Severity,Status,Assigned Doctor,Submitted Date');
+    try {
+      final buffer = StringBuffer();
+      buffer.writeln('ID,Patient Name,Email,Stage,Score,Severity,Status,Assigned Doctor,Submitted Date');
 
-    for (final s in _submissions) {
-      final score = s['score'] ?? 0;
-      final severity = score >= 50 ? 'CRITICAL' : (score >= 21 ? 'MODERATE' : 'MILD');
-      final doctor = _doctors.firstWhere((d) => d['id'] == s['assignedDoctorId'], orElse: () => null);
-      final doctorName = doctor != null ? (doctor['name'] ?? doctor['email'] ?? '') : '';
+      for (final s in _submissions) {
+        final score = s['score'] ?? 0;
+        final severity = score >= 50 ? 'CRITICAL' : (score >= 21 ? 'MODERATE' : 'MILD');
+        final doctor = _doctors.firstWhere((d) => d['id'] == s['assignedDoctorId'], orElse: () => null);
+        final doctorName = doctor != null ? (doctor['name'] ?? doctor['email'] ?? '') : '';
 
-      buffer.writeln(
-        '"${s['id']}","${s['patientName'] ?? ''}","${s['email'] ?? ''}","${s['type'] ?? ''}",$score,"$severity","${s['status'] ?? 'COMPLETED'}","$doctorName","${s['createdAt'] ?? ''}"',
+        buffer.writeln(
+          '"${s['id']}","${s['patientName'] ?? ''}","${s['email'] ?? ''}","${s['type'] ?? ''}",$score,"$severity","${s['status'] ?? 'COMPLETED'}","$doctorName","${s['createdAt'] ?? ''}"',
+        );
+      }
+
+      CsvExporter.export(
+        filename: 'ATK_Submissions_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
+        content: buffer.toString(),
       );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Submissions CSV exported successfully.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export Submissions CSV: $e'), backgroundColor: _rose600),
+        );
+      }
     }
-
-    CsvExporter.export(
-      filename: 'ATK_Submissions_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
-      content: buffer.toString(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Submissions CSV exported.')));
   }
 
   void _exportAnalyticsCsv() {
-    final buffer = StringBuffer();
-    buffer.writeln('ATK Clinical Analytics Report - Category: $_analyticsCategory');
-    buffer.writeln('Generated: ${DateTime.now().toIso8601String()}');
-    buffer.writeln();
+    try {
+      final buffer = StringBuffer();
+      buffer.writeln('ATK Clinical Analytics Report - Category: $_analyticsCategory');
+      buffer.writeln('Generated: ${DateTime.now().toIso8601String()}');
+      buffer.writeln();
 
-    buffer.writeln('Key Metrics,Value');
-    buffer.writeln('Total Completed Assessments,${_analytics['totalCompletedSubmissions'] ?? _submissions.length}');
-    buffer.writeln('Critical Severity Alerts,${_analytics['criticalAlertsCount'] ?? 0}');
-    buffer.writeln();
+      buffer.writeln('Key Metrics,Value');
+      buffer.writeln('Total Completed Assessments,${_analytics['totalCompletedSubmissions'] ?? _submissions.length}');
+      buffer.writeln('Critical Severity Alerts,${_analytics['criticalAlertsCount'] ?? 0}');
+      buffer.writeln();
 
-    buffer.writeln('Progression Funnel Stage,Participants,Percentage');
-    final funnel = (_analytics['funnel'] as List<dynamic>?) ?? [];
-    for (final f in funnel) {
-      buffer.writeln('"${f['stage']}",${f['count']},${f['pct']}%');
+      buffer.writeln('Progression Funnel Stage,Participants,Percentage');
+      final funnel = (_analytics['funnel'] as List<dynamic>?) ?? [];
+      for (final f in funnel) {
+        buffer.writeln('"${f['stage']}",${f['count']},${f['pct']}%');
+      }
+      buffer.writeln();
+
+      buffer.writeln('Pincode,Total Assessments,Critical Cases,Critical Ratio');
+      final topPincodes = (_analytics['topPincodes'] as List<dynamic>?) ?? [];
+      for (final p in topPincodes) {
+        buffer.writeln('"${p['pincode']}",${p['totalSubmissions']},${p['criticalCount']},${p['criticalRate']}%');
+      }
+
+      CsvExporter.export(
+        filename: 'ATK_Analytics_${_analyticsCategory}_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
+        content: buffer.toString(),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Analytics CSV exported successfully.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export Analytics CSV: $e'), backgroundColor: _rose600),
+        );
+      }
     }
-    buffer.writeln();
-
-    buffer.writeln('Pincode,Total Assessments,Critical Cases,Critical Ratio');
-    final topPincodes = (_analytics['topPincodes'] as List<dynamic>?) ?? [];
-    for (final p in topPincodes) {
-      buffer.writeln('"${p['pincode']}",${p['totalSubmissions']},${p['criticalCount']},${p['criticalRate']}%');
-    }
-
-    CsvExporter.export(
-      filename: 'ATK_Analytics_${_analyticsCategory}_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
-      content: buffer.toString(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Analytics CSV exported.')));
   }
 
   void _exportLogsCsv() {
-    final buffer = StringBuffer();
-    buffer.writeln('Timestamp,Action Type,Activity Details,IP / Agent');
-    for (final log in _logs) {
-      buffer.writeln('"${log['createdAt'] ?? ''}","${log['action'] ?? ''}","${log['details'] ?? ''}","${log['ip'] ?? ''}"');
+    try {
+      final buffer = StringBuffer();
+      buffer.writeln('Timestamp,Action Type,Activity Details,IP / Agent');
+      for (final log in _logs) {
+        buffer.writeln('"${log['createdAt'] ?? ''}","${log['action'] ?? ''}","${log['details'] ?? ''}","${log['ip'] ?? ''}"');
+      }
+      CsvExporter.export(
+        filename: 'ATK_Audit_Logs_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
+        content: buffer.toString(),
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audit Logs CSV exported successfully.')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to export Audit Logs CSV: $e'), backgroundColor: _rose600),
+        );
+      }
     }
-    CsvExporter.export(
-      filename: 'ATK_Audit_Logs_${DateTime.now().toIso8601String().substring(0, 10)}.csv',
-      content: buffer.toString(),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Audit Logs CSV exported.')));
   }
 
   Future<void> _purgeLogs() async {
@@ -593,7 +623,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               child: Text(
-                _adminProfile['email'] as String? ?? 'Super Admin',
+                _adminProfile['fullName'] != null && (_adminProfile['fullName'] as String).isNotEmpty
+                    ? '${_adminProfile['fullName']} (${_adminProfile['email'] ?? 'Super Admin'})'
+                    : (_adminProfile['email'] as String? ?? 'Novtek Admin'),
                 style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.grey),
               ),
             ),
@@ -865,12 +897,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                         child: const Text('SA', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: _adminPrimary)),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Super Admin', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _adminPrimary)),
-                            Text('AWS Cloud (Live)', style: TextStyle(fontSize: 9, color: _emerald600)),
+                            Text(_adminProfile['fullName'] as String? ?? 'Novtek Admin', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _adminPrimary)),
+                            Text(_adminProfile['email'] as String? ?? 'atulyaagrawaljaipur@gmail.com', style: const TextStyle(fontSize: 9, color: _emerald600)),
                           ],
                         ),
                       ),
@@ -1362,8 +1394,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                   ),
                                 );
                                 if (ok == true) {
-                                  await AdminService.deleteSubmission(id);
-                                  _loadAllData();
+                                  try {
+                                    await AdminService.deleteSubmission(id);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Submission deleted successfully.')),
+                                      );
+                                    }
+                                    _loadAllData();
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error deleting submission: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                                      );
+                                    }
+                                  }
                                 }
                               },
                             ),
@@ -1523,8 +1568,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           onPressed: () async {
                             final id = doc['id'] as String?;
                             if (id != null) {
-                              await AdminService.deleteDoctor(id);
-                              _loadAllData();
+                              try {
+                                await AdminService.deleteDoctor(id);
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('Clinician removed successfully.')),
+                                  );
+                                }
+                                _loadAllData();
+                              } catch (e) {
+                                if (mounted) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Error removing clinician: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                                  );
+                                }
+                              }
                             }
                           },
                         ),
@@ -1566,27 +1624,40 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
           FilledButton(
             onPressed: () async {
-              if (doctor == null) {
-                await AdminService.createDoctor(
-                  fullName: nameCtrl.text.trim(),
-                  email: emailCtrl.text.trim(),
-                  specialization: specCtrl.text.trim(),
-                  servicePincode: pinCtrl.text.trim(),
-                  phoneNumber: phoneCtrl.text.trim(),
-                );
-              } else {
-                await AdminService.updateDoctor(
-                  doctor['id'] as String,
-                  fullName: nameCtrl.text.trim(),
-                  specialization: specCtrl.text.trim(),
-                  servicePincode: pinCtrl.text.trim(),
-                  phoneNumber: phoneCtrl.text.trim(),
-                );
+              try {
+                if (doctor == null) {
+                  await AdminService.createDoctor(
+                    fullName: nameCtrl.text.trim(),
+                    email: emailCtrl.text.trim(),
+                    specialization: specCtrl.text.trim(),
+                    servicePincode: pinCtrl.text.trim(),
+                    phoneNumber: phoneCtrl.text.trim(),
+                  );
+                } else {
+                  await AdminService.updateDoctor(
+                    doctor['id'] as String,
+                    fullName: nameCtrl.text.trim(),
+                    specialization: specCtrl.text.trim(),
+                    servicePincode: pinCtrl.text.trim(),
+                    phoneNumber: phoneCtrl.text.trim(),
+                  );
+                }
+                if (ctx.mounted) Navigator.of(ctx).pop();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(doctor == null ? 'Clinician added successfully.' : 'Clinician updated successfully.')),
+                  );
+                }
+                _loadAllData();
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(content: Text('Error saving clinician: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                  );
+                }
               }
-              if (ctx.mounted) Navigator.of(ctx).pop();
-              _loadAllData();
             },
-            child: const Text('Save Clinician'),
+            child: Text(doctor == null ? 'Save Clinician' : 'Update Clinician'),
           ),
         ],
       ),
@@ -1676,8 +1747,21 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                           ),
                         );
                         if (ok == true) {
-                          await AdminService.resetPatientSurvey(id);
-                          _loadAllData();
+                          try {
+                            await AdminService.resetPatientSurvey(id);
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Patient survey progress reset successfully.')),
+                              );
+                            }
+                            _loadAllData();
+                          } catch (e) {
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Error resetting survey: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                              );
+                            }
+                          }
                         }
                       },
                     ),
@@ -2302,9 +2386,22 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             onPressed: () async {
               final val = int.tryParse(ctrl.text.trim());
               if (val != null) {
-                await AdminService.saveSurveySettings({key: val});
-                if (ctx.mounted) Navigator.of(ctx).pop();
-                _loadSurveyEditor();
+                try {
+                  await AdminService.saveSurveySettings({key: val});
+                  if (ctx.mounted) Navigator.of(ctx).pop();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Threshold setting updated successfully.')),
+                    );
+                  }
+                  _loadSurveyEditor();
+                } catch (e) {
+                  if (ctx.mounted) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text('Error updating threshold: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                    );
+                  }
+                }
               }
             },
             child: const Text('Save'),
@@ -2339,14 +2436,27 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
           FilledButton(
             onPressed: () async {
-              await AdminService.saveSurveySettings({
-                'emailTemplate': {
-                  'subject': subjCtrl.text.trim(),
-                  'bodyHtml': bodyCtrl.text.trim(),
+              try {
+                await AdminService.saveSurveySettings({
+                  'emailTemplate': {
+                    'subject': subjCtrl.text.trim(),
+                    'bodyHtml': bodyCtrl.text.trim(),
+                  }
+                });
+                if (ctx.mounted) Navigator.of(ctx).pop();
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Follow-up email template saved successfully.')),
+                  );
                 }
-              });
-              if (ctx.mounted) Navigator.of(ctx).pop();
-              _loadSurveyEditor();
+                _loadSurveyEditor();
+              } catch (e) {
+                if (ctx.mounted) {
+                  ScaffoldMessenger.of(ctx).showSnackBar(
+                    SnackBar(content: Text('Error saving template: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                  );
+                }
+              }
             },
             child: const Text('Save Template'),
           ),
@@ -2370,13 +2480,26 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
           FilledButton(
             onPressed: () async {
               if (textCtrl.text.trim().isNotEmpty) {
-                await AdminService.saveQuestion({
-                  'sectionId': sectionId,
-                  'text': textCtrl.text.trim(),
-                  'type': 'select',
-                });
-                if (ctx.mounted) Navigator.of(ctx).pop();
-                _loadSurveyEditor();
+                try {
+                  await AdminService.saveQuestion({
+                    'sectionId': sectionId,
+                    'text': textCtrl.text.trim(),
+                    'type': 'select',
+                  });
+                  if (ctx.mounted) Navigator.of(ctx).pop();
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Question added successfully.')),
+                    );
+                  }
+                  _loadSurveyEditor();
+                } catch (e) {
+                  if (ctx.mounted) {
+                    ScaffoldMessenger.of(ctx).showSnackBar(
+                      SnackBar(content: Text('Error adding question: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                    );
+                  }
+                }
               }
             },
             child: const Text('Add Question'),

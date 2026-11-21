@@ -10,25 +10,42 @@ class ApiClient {
   ApiClient._();
 
   static const _configuredBaseUrl = String.fromEnvironment('ATK_API_URL');
+  static String? _customBaseUrl;
+
   static String get baseUrl => _baseUrl;
+
+  static void setBaseUrl(String url) {
+    _customBaseUrl = url.trim().replaceAll(RegExp(r'/+$'), '');
+    AppStorage.write(key: 'custom_api_url', value: _customBaseUrl!);
+  }
+
+  static Future<void> loadSavedBaseUrl() async {
+    final saved = await AppStorage.read(key: 'custom_api_url');
+    if (saved != null && saved.isNotEmpty) {
+      _customBaseUrl = saved.trim().replaceAll(RegExp(r'/+$'), '');
+    }
+  }
+
   static String get _baseUrl {
+    if (_customBaseUrl != null && _customBaseUrl!.isNotEmpty) return _customBaseUrl!;
     if (_configuredBaseUrl.isNotEmpty) return _configuredBaseUrl;
     if (kIsWeb) {
       final origin = Uri.base.origin;
       if (origin.isNotEmpty && !origin.startsWith('null') && !origin.startsWith('file://')) {
         final uri = Uri.tryParse(origin);
         if (uri != null && (uri.host == 'localhost' || uri.host == '127.0.0.1')) {
-          if (uri.port != 8080) {
-            return 'http://${uri.host}:8080';
+          if (uri.port != 3000) {
+            return 'http://${uri.host}:3000';
           }
         }
         return origin;
       }
     }
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      return 'http://10.0.2.2:8080';
+      // Default to host computer's local Wi-Fi IP and Port 3000 for physical devices
+      return 'http://192.168.31.29:3000';
     }
-    return 'http://localhost:8080';
+    return 'http://localhost:3000';
   }
 
   static void _requireSecureTransport() {
@@ -73,7 +90,13 @@ class ApiClient {
         body: body == null ? null : jsonEncode(body),
       ),
     }).timeout(const Duration(seconds: 60));
-    var response = await send();
+    http.Response response;
+    try {
+      response = await send();
+    } catch (e) {
+      if (e is ApiException) rethrow;
+      throw ApiException('Unable to connect to ATK server: ${e.toString().replaceFirst('Exception: ', '')}');
+    }
     if (authenticated &&
         response.statusCode == 401 &&
         path != '/auth/refresh') {
@@ -82,7 +105,12 @@ class ApiClient {
         final newToken = await AppStorage.read(key: 'atk_access_token');
         if (newToken != null) {
           headers['Authorization'] = 'Bearer $newToken';
-          response = await send();
+          try {
+            response = await send();
+          } catch (e) {
+            if (e is ApiException) rethrow;
+            throw ApiException('Unable to connect to ATK server: ${e.toString().replaceFirst('Exception: ', '')}');
+          }
         }
       }
     }

@@ -5,8 +5,13 @@ class CsvExporter {
   CsvExporter._();
 
   static void export({required String filename, required String content}) {
-    if (kIsWeb) {
-      downloadCsvWeb(filename, content);
+    try {
+      if (kIsWeb) {
+        downloadCsvWeb(filename, content);
+      }
+    } catch (e) {
+      debugPrint('CsvExporter error: $e');
+      rethrow;
     }
   }
 }

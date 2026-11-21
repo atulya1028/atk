@@ -2,8 +2,7 @@ import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
 
-    if (event.url.pathname.startsWith('/api')) {
-
+    if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/auth')) {
         if (event.request.method === 'OPTIONS') {
             return new Response(null, {
                 headers: {
@@ -28,7 +27,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
     const response = await resolve(event);
 
-    if (event.url.pathname.startsWith('/api')) {
+    if (event.url.pathname.startsWith('/api') || event.url.pathname.startsWith('/auth')) {
         response.headers.set('Access-Control-Allow-Origin', '*');
         response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
         response.headers.set('Access-Control-Allow-Headers', '*');

@@ -40,19 +40,40 @@ class AdminService {
     };
   }
 
+  static Future<http.Response> _sendSafe(Future<http.Response> Function() action) async {
+    try {
+      return await action();
+    } catch (e) {
+      if (e is Exception) {
+        final msg = e.toString().replaceFirst('Exception: ', '');
+        throw Exception(msg);
+      }
+      throw Exception('Network connection error: $e');
+    }
+  }
+
+  static Map<String, dynamic> _safeJsonDecode(String body) {
+    if (body.isEmpty) return <String, dynamic>{};
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      return <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     final uri = Uri.parse('$baseUrl/auth/send-otp');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(
           uri,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email.trim().toLowerCase(), 'role': 'admin'}),
         )
-        .timeout(const Duration(seconds: 30));
+        .timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
@@ -65,7 +86,7 @@ class AdminService {
 
   static Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
     final uri = Uri.parse('$baseUrl/auth/verify-otp');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(
           uri,
           headers: {'Content-Type': 'application/json'},
@@ -75,11 +96,9 @@ class AdminService {
             'role': 'admin',
           }),
         )
-        .timeout(const Duration(seconds: 30));
+        .timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
@@ -104,11 +123,9 @@ class AdminService {
   static Future<Map<String, dynamic>> getProfile() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/profile');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load admin profile.');
