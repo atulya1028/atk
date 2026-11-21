@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
               controller: controller,
               decoration: const InputDecoration(
                 labelText: 'Backend URL',
-                hintText: 'http://192.168.31.29:3000',
+                hintText: 'http://novtekatk.51.20.4.247.nip.io',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -61,6 +61,10 @@ class _LoginPageState extends State<LoginPage> {
               spacing: 8,
               runSpacing: 4,
               children: [
+                ActionChip(
+                  label: const Text('AWS Cloud (51.20.4.247)'),
+                  onPressed: () => controller.text = 'http://novtekatk.51.20.4.247.nip.io',
+                ),
                 ActionChip(
                   label: const Text('Wi-Fi (192.168.31.29)'),
                   onPressed: () => controller.text = 'http://192.168.31.29:3000',

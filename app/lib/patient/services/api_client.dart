@@ -42,8 +42,8 @@ class ApiClient {
       }
     }
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
-      // Default to host computer's local Wi-Fi IP and Port 3000 for physical devices
-      return 'http://192.168.31.29:3000';
+      // Default to live AWS Cloud server for physical devices & emulators
+      return 'http://novtekatk.51.20.4.247.nip.io';
     }
     return 'http://localhost:3000';
   }
