@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" width="100%" height="100%">
+  <defs>
+    <!-- Simple, Vibrant Modern Gradient -->
+    <linearGradient id="simpleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+
+    <!-- Soft Ambient Glow -->
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="16" flood-color="#4F46E5" flood-opacity="0.22" />
+    </filter>
+  </defs>
+
+  <!-- ICON: Ultra-Clean Rounded Cross Emblem (Squircle Base) -->
+  <g transform="translate(30, 20)">
+    <!-- Base Squircle with vibrant gradient -->
+    <rect x="0" y="0" width="140" height="140" rx="40" fill="url(#simpleGrad)" filter="url(#softGlow)" />
+    
+    <!-- Pure White Rounded Medical Cross -->
+    <!-- Horizontal Bar -->
+    <rect x="34" y="55" width="72" height="30" rx="15" fill="#FFFFFF" />
+    <!-- Vertical Bar -->
+    <rect x="55" y="34" width="30" height="72" rx="15" fill="#FFFFFF" />
+    
+    <!-- Central Vital Dot Accent -->
+    <circle cx="70" cy="70" r="6" fill="#06B6D4" />
+  </g>
+
+  <!-- TYPOGRAPHY: Minimalist, Airy & Modern -->
+  <g transform="translate(200, 60)">
+    <!-- Main Brand Name -->
+    <text x="0" y="44" 
+          font-family="system-ui, -apple-system, 'SF Pro Display', 'Inter', sans-serif" 
+          font-size="44" 
+          font-weight="800" 
+          letter-spacing="-0.5" 
+          fill="#0F172A">
+      novtek
+    </text>
+
+    <!-- Minimalist ATK Pill Badge -->
+    <g transform="translate(170, 12)">
+      <rect x="0" y="0" width="68" height="34" rx="17" fill="#EEF2FF" />
+      <text x="34" y="23" 
+            text-anchor="middle" 
+            font-family="system-ui, -apple-system, 'Inter', sans-serif" 
+            font-size="16" 
+            font-weight="800" 
+            letter-spacing="1" 
+            fill="#4F46E5">
+        atk
+      </text>
+    </g>
+
+    <!-- Clean Subtitle -->
+    <text x="2" y="78" 
+          font-family="system-ui, -apple-system, 'Inter', sans-serif" 
+          font-size="13" 
+          font-weight="600" 
+          letter-spacing="2" 
+          fill="#64748B">
+      CLINICAL CARE &amp; TRIAGE
+    </text>
+  </g>
+</svg>

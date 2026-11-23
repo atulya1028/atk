@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 240" width="100%" height="100%">
+  <defs>
+    <!-- Background & Icon Gradients -->
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#2563EB" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+
+    <linearGradient id="pulseGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+
+    <linearGradient id="badgeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+
+    <!-- Subtle Drop Shadow for Medical Precision -->
+    <filter id="glowShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#4F46E5" flood-opacity="0.28" />
+    </filter>
+  </defs>
+
+  <!-- ICON CONTAINER (Squircle + Shield + Medical Synapse) -->
+  <g transform="translate(40, 20)">
+    <!-- Base Squircle -->
+    <rect x="0" y="0" width="200" height="200" rx="48" fill="#0F172A" />
+    
+    <!-- Shield Outline with Gradient -->
+    <path d="M 100,28 
+             C 142,28 166,48 166,88 
+             C 166,138 128,168 100,180 
+             C 72,168 34,138 34,88 
+             C 34,48 58,28 100,28 Z" 
+          fill="url(#shieldGrad)" 
+          filter="url(#glowShadow)" />
+
+    <!-- Negative Space Clinical Plus / Medical Cross -->
+    <path d="M 88,64 H 112 V 88 H 136 V 112 H 112 V 136 H 88 V 112 H 64 V 88 H 88 Z" 
+          fill="#FFFFFF" 
+          opacity="0.95" />
+
+    <!-- Ascending Recovery Pulse Line Overlay -->
+    <path d="M 50,100 L 78,100 L 92,72 L 108,128 L 122,94 L 134,100 L 150,100" 
+          fill="none" 
+          stroke="url(#pulseGrad)" 
+          stroke-width="5" 
+          stroke-linecap="round" 
+          stroke-linejoin="round" />
+
+    <!-- Synaptic Wellness Nodes -->
+    <circle cx="92" cy="72" r="4.5" fill="#FFFFFF" />
+    <circle cx="108" cy="128" r="4.5" fill="#34D399" />
+    <circle cx="122" cy="94" r="4" fill="#38BDF8" />
+  </g>
+
+  <!-- LOGO TYPOGRAPHY LOCKUP -->
+  <g transform="translate(270, 75)">
+    <!-- Brand Name: NOVTEK -->
+    <text x="0" y="44" 
+          font-family="system-ui, -apple-system, 'SF Pro Display', 'Inter', sans-serif" 
+          font-size="46" 
+          font-weight="900" 
+          letter-spacing="2" 
+          fill="#0F172A">
+      NOVTEK
+    </text>
+
+    <!-- Badge: ATK -->
+    <g transform="translate(225, 6)">
+      <rect x="0" y="0" width="105" height="42" rx="10" fill="url(#badgeGrad)" />
+      <text x="52.5" y="28" 
+            text-anchor="middle" 
+            font-family="system-ui, -apple-system, 'SF Pro Display', 'Inter', sans-serif" 
+            font-size="22" 
+            font-weight="900" 
+            letter-spacing="1.5" 
+            fill="#FFFFFF">
+        ATK
+      </text>
+    </g>
+
+    <!-- Subtitle: CLINICAL CARE & TRIAGE PLATFORM -->
+    <text x="2" y="80" 
+          font-family="system-ui, -apple-system, 'Inter', sans-serif" 
+          font-size="13" 
+          font-weight="700" 
+          letter-spacing="4" 
+          fill="#64748B">
+      ADDICTION TRIAGE &amp; CLINICAL INTELLIGENCE
+    </text>
+
+    <!-- Micro Metadata Chips -->
+    <g transform="translate(2, 98)">
+      <circle cx="4" cy="5" r="3.5" fill="#10B981" />
+      <text x="14" y="9" 
+            font-family="system-ui, -apple-system, sans-serif" 
+            font-size="10" 
+            font-weight="600" 
+            letter-spacing="1" 
+            fill="#059669">
+        CLINICIAN LINKED • HARM REDUCTION • POPULATION HEALTH
+      </text>
+    </g>
+  </g>
+</svg>

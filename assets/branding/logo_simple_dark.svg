@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 180" width="100%" height="100%">
+  <defs>
+    <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+
+    <filter id="darkGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="16" flood-color="#06B6D4" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Dark Background -->
+  <rect width="100%" height="100%" rx="20" fill="#0F172A" />
+
+  <!-- ICON: Glowing Gradient Cross -->
+  <g transform="translate(30, 20)">
+    <!-- Base Squircle -->
+    <rect x="0" y="0" width="140" height="140" rx="40" fill="#1E293B" stroke="#334155" stroke-width="1.5" />
+    
+    <!-- Cross with Gradient -->
+    <rect x="34" y="55" width="72" height="30" rx="15" fill="url(#ribbonGrad)" filter="url(#darkGlow)" />
+    <rect x="55" y="34" width="30" height="72" rx="15" fill="url(#ribbonGrad)" filter="url(#darkGlow)" />
+    
+    <!-- Center white core dot -->
+    <circle cx="70" cy="70" r="5" fill="#FFFFFF" />
+  </g>
+
+  <!-- TYPOGRAPHY -->
+  <g transform="translate(200, 60)">
+    <text x="0" y="44" 
+          font-family="system-ui, -apple-system, 'SF Pro Display', 'Inter', sans-serif" 
+          font-size="44" 
+          font-weight="800" 
+          letter-spacing="-0.5" 
+          fill="#FFFFFF">
+      novtek
+    </text>
+
+    <!-- Minimalist ATK Pill Badge -->
+    <g transform="translate(170, 12)">
+      <rect x="0" y="0" width="68" height="34" rx="17" fill="url(#ribbonGrad)" />
+      <text x="34" y="23" 
+            text-anchor="middle" 
+            font-family="system-ui, -apple-system, 'Inter', sans-serif" 
+            font-size="16" 
+            font-weight="800" 
+            letter-spacing="1" 
+            fill="#FFFFFF">
+        atk
+      </text>
+    </g>
+
+    <text x="2" y="78" 
+          font-family="system-ui, -apple-system, 'Inter', sans-serif" 
+          font-size="13" 
+          font-weight="600" 
+          letter-spacing="2" 
+          fill="#94A3B8">
+      CLINICAL CARE &amp; TRIAGE
+    </text>
+  </g>
+</svg>

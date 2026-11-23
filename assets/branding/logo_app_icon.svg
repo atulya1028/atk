@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Canvas Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="30%" r="80%">
+      <stop offset="0%" stop-color="#1E293B" />
+      <stop offset="100%" stop-color="#0F172A" />
+    </radialGradient>
+
+    <!-- Shield Core Gradient -->
+    <linearGradient id="shieldCore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1" />
+      <stop offset="45%" stop-color="#4F46E5" />
+      <stop offset="85%" stop-color="#0EA5E9" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+
+    <!-- Glowing Pulse Gradient -->
+    <linearGradient id="activePulse" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="50%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#34D399" />
+    </linearGradient>
+
+    <!-- Ambient Shadow -->
+    <filter id="ambientShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="32" flood-color="#4F46E5" flood-opacity="0.38" />
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0EA5E9" flood-opacity="0.25" />
+    </filter>
+
+    <filter id="nodeGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- BACKGROUND SQUIRCLE -->
+  <rect x="16" y="16" width="480" height="480" rx="112" fill="url(#bgGlow)" stroke="#334155" stroke-width="2" />
+
+  <!-- CLINICAL SHIELD MESH -->
+  <g filter="url(#ambientShadow)">
+    <path d="M 256,76 
+             C 360,76 416,124 416,220 
+             C 416,338 324,408 256,436 
+             C 188,408 96,338 96,220 
+             C 96,124 152,76 256,76 Z" 
+          fill="url(#shieldCore)" />
+  </g>
+
+  <!-- INNER COMPASSION CROSS (Clean White Negative Space) -->
+  <path d="M 226,160 H 286 V 218 H 344 V 278 H 286 V 336 H 226 V 278 H 168 V 218 H 226 Z" 
+        fill="#FFFFFF" 
+        opacity="0.96" />
+
+  <!-- DYNAMIC NEURAL PULSE (Triage Signal) -->
+  <path d="M 132,248 L 202,248 L 236,178 L 276,318 L 310,234 L 340,248 L 380,248" 
+        fill="none" 
+        stroke="url(#activePulse)" 
+        stroke-width="12" 
+        stroke-linecap="round" 
+        stroke-linejoin="round" />
+
+  <!-- VITAL NODES WITH GLOW -->
+  <circle cx="236" cy="178" r="9" fill="#FFFFFF" filter="url(#nodeGlow)" />
+  <circle cx="276" cy="318" r="10" fill="#34D399" filter="url(#nodeGlow)" />
+  <circle cx="310" cy="234" r="8" fill="#38BDF8" filter="url(#nodeGlow)" />
+
+  <!-- MICRO BRAND STAMP -->
+  <text x="256" y="472" 
+        text-anchor="middle" 
+        font-family="system-ui, -apple-system, sans-serif" 
+        font-size="16" 
+        font-weight="900" 
+        letter-spacing="5" 
+        fill="#64748B">
+    NOVTEK ATK
+  </text>
+</svg>

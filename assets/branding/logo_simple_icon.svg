@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Smooth angled gradient -->
+    <linearGradient id="iconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F46E5" />
+      <stop offset="50%" stop-color="#06B6D4" />
+      <stop offset="100%" stop-color="#10B981" />
+    </linearGradient>
+
+    <!-- Deep Ambient Shadow -->
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="24" stdDeviation="32" flood-color="#4F46E5" flood-opacity="0.35" />
+      <feDropShadow dx="0" dy="6" stdDeviation="12" flood-color="#06B6D4" flood-opacity="0.25" />
+    </filter>
+  </defs>
+
+  <!-- Background Base Canvas -->
+  <rect width="100%" height="100%" fill="#F8FAFC" />
+
+  <!-- SQUIRCLE ICON WITH GRADIENT -->
+  <rect x="56" y="56" width="400" height="400" rx="116" fill="url(#iconGradient)" filter="url(#shadow)" />
+
+  <!-- CRISP PURE WHITE CLINICAL CROSS -->
+  <!-- Horizontal Bar -->
+  <rect x="146" y="216" width="220" height="80" rx="40" fill="#FFFFFF" />
+  <!-- Vertical Bar -->
+  <rect x="216" y="146" width="80" height="220" rx="40" fill="#FFFFFF" />
+
+  <!-- CENTRAL CYAN ACCENT DOT -->
+  <circle cx="256" cy="256" r="16" fill="#06B6D4" />
+</svg>
