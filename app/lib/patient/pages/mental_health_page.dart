@@ -4,6 +4,7 @@ import 'package:atk/patient/bloc/survey_question_cubit.dart';
 import 'package:atk/patient/models/survey_args.dart';
 import 'package:atk/patient/services/api_client.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 import 'survey_question_page.dart';
 
@@ -175,41 +176,43 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: background,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildHeader(context),
+      body: NovtekInteractiveBackground(
+        isDark: false,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHeader(context),
 
-              ResponsiveContent(
-                maxWidth: 1040,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(22, 28, 22, 30),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'YOUR WELLBEING',
-                        style: TextStyle(
-                          color: teal,
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 2,
+                ResponsiveContent(
+                  maxWidth: 1040,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(22, 28, 22, 30),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'YOUR WELLBEING',
+                          style: TextStyle(
+                            color: teal,
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 2,
+                          ),
                         ),
-                      ),
 
-                      const SizedBox(height: 10),
+                        const SizedBox(height: 10),
 
-                      const Text(
-                        'Make space for\nyour mind.',
-                        style: TextStyle(
-                          color: ink,
-                          fontSize: 34,
-                          height: 1.12,
-                          fontWeight: FontWeight.w800,
+                        const Text(
+                          'Make space for\nyour mind.',
+                          style: TextStyle(
+                            color: ink,
+                            fontSize: 34,
+                            height: 1.12,
+                            fontWeight: FontWeight.w800,
+                          ),
                         ),
-                      ),
 
                       const SizedBox(height: 12),
 
@@ -372,6 +375,7 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
             ],
           ),
         ),
+      ),
       ),
     );
   }

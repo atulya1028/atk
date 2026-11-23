@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:atk/patient/bloc/wellbeing_cubit.dart';
 import 'package:atk/patient/widgets/submit_wellbeing_check_in.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 class AnxietyWorryPage extends StatelessWidget {
   const AnxietyWorryPage({super.key});
@@ -88,8 +89,10 @@ class AnxietyWorryPage extends StatelessWidget {
               style: TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          body: SafeArea(
-            child: SingleChildScrollView(
+          body: NovtekInteractiveBackground(
+            isDark: false,
+            child: SafeArea(
+              child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: ResponsiveContent(
                 maxWidth: 760,
@@ -278,6 +281,7 @@ class AnxietyWorryPage extends StatelessWidget {
                 ),
               ),
             ),
+          ),
           ),
         );
       },

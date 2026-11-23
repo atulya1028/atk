@@ -23,7 +23,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   Timer? _resendTimer;
   int _secondsRemaining = 0;
 
-  static const Color _adminPrimary = Color(0xFF0F172A); // Slate 900
   static const Color _adminAccent = Color(0xFF0284C7); // Sky 600
   static const Color _adminDark = Color(0xFF1E293B);
 
@@ -167,8 +166,9 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _adminPrimary,
-      body: SafeArea(
+      body: NovtekInteractiveBackground(
+        isDark: true,
+        child: SafeArea(
         bottom: false,
         child: Column(
           children: [
@@ -456,6 +456,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

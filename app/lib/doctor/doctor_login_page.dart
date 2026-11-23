@@ -164,8 +164,9 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _primaryColor,
-      body: SafeArea(
+      body: NovtekInteractiveBackground(
+        isDark: true,
+        child: SafeArea(
         bottom: false,
         child: Column(
           children: [
@@ -491,6 +492,7 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
           ],
         ),
       ),
-    );
+    ),
+  );
   }
 }

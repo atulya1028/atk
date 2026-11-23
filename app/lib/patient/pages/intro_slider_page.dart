@@ -65,10 +65,10 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       builder: (context, page) {
         final isLast = page == _slides.length - 1;
         return Scaffold(
-          backgroundColor: const Color(0xFFF8FAFC),
-          body: SafeArea(
-            child: Column(
-              children: [
+          body: NovtekInteractiveBackground(
+            child: SafeArea(
+              child: Column(
+                children: [
                 Expanded(
                   child: PageView.builder(
                     controller: _controller,
@@ -139,7 +139,8 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
               ],
             ),
           ),
-        );
+        ),
+      );
       },
     );
   }

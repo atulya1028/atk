@@ -518,9 +518,11 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: _loadDashboardData,
-        child: SingleChildScrollView(
+      body: NovtekInteractiveBackground(
+        isDark: false,
+        child: RefreshIndicator(
+          onRefresh: _loadDashboardData,
+          child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           child: Center(
@@ -835,6 +837,7 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
         ),
       ),
     ),
+  ),
   ),
 );
   }

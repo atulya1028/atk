@@ -1,4 +1,5 @@
 import 'package:material_ui/material_ui.dart';
+export 'novtek_interactive_background.dart';
 
 /// Minimalist, Simple & Attractive Novtek ATK Logo Icon
 class NovtekLogoIcon extends StatelessWidget {

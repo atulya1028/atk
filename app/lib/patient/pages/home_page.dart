@@ -54,16 +54,19 @@ class HomePage extends StatelessWidget {
   Widget _buildHome(BuildContext context, HomeState state) {
     return Scaffold(
       backgroundColor: HomePage._canvas,
-      body: SafeArea(
-        child: IndexedStack(
-          index: state.selectedTab,
-          children: [
-            _dashboard(context, state),
-            _progressTab(context, state),
-            state.selectedTab == 2
-                ? ProfileScreen(onLogout: () => _logout(context))
-                : const SizedBox.shrink(),
-          ],
+      body: NovtekInteractiveBackground(
+        isDark: false,
+        child: SafeArea(
+          child: IndexedStack(
+            index: state.selectedTab,
+            children: [
+              _dashboard(context, state),
+              _progressTab(context, state),
+              state.selectedTab == 2
+                  ? ProfileScreen(onLogout: () => _logout(context))
+                  : const SizedBox.shrink(),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: NavigationBar(

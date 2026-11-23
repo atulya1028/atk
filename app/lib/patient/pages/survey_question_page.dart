@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 
 import 'package:atk/patient/bloc/survey_question_cubit.dart';
 import 'package:atk/patient/models/survey_args.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 import 'survey_questions.dart';
 
@@ -109,62 +110,65 @@ class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
           ),
         ),
       ),
-      body: state.page == -1
-          ? Center(
-              child: FilledButton(
-                onPressed: state.busy ? null : cubit.finish,
-                child: Text(state.busy ? 'Submitting…' : 'Finish assessment'),
-              ),
-            )
-          : PageView.builder(
-              controller: _controller,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: cubit.totalPages,
-              itemBuilder: (context, i) {
-                final item = items[i];
-                final Widget step;
-                if (item.kind == AnswerKind.number) {
-                  step = _NumberStep(
-                    item: item,
-                    initialValue: state.answers[item.id],
-                    enabled: !state.busy,
-                    error: state.numberError,
-                    onInvalid: (value) => cubit.validateNumber(item, value),
-                    onSubmit: (value) => cubit.answer(item, value),
-                  );
-                } else {
-                  step = _ChoiceStep(
-                    item: item,
-                    selected: state.answers[item.id],
-                    enabled: !state.busy,
-                    onPick: (value) => cubit.answer(item, value),
-                  );
-                }
-                final section = item.section;
-                if (widget.args.type != 'INITIAL' ||
-                    section == null ||
-                    section.isEmpty) {
-                  return step;
-                }
-                final sectionItems = items
-                    .where((question) => question.section == section)
-                    .toList();
-                final position = sectionItems.indexOf(item) + 1;
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                      child: Text(
-                        '$section · $position of ${sectionItems.length}',
-                        textAlign: TextAlign.center,
-                        style: Theme.of(context).textTheme.titleSmall,
+      body: NovtekInteractiveBackground(
+        isDark: false,
+        child: state.page == -1
+            ? Center(
+                child: FilledButton(
+                  onPressed: state.busy ? null : cubit.finish,
+                  child: Text(state.busy ? 'Submitting…' : 'Finish assessment'),
+                ),
+              )
+            : PageView.builder(
+                controller: _controller,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: cubit.totalPages,
+                itemBuilder: (context, i) {
+                  final item = items[i];
+                  final Widget step;
+                  if (item.kind == AnswerKind.number) {
+                    step = _NumberStep(
+                      item: item,
+                      initialValue: state.answers[item.id],
+                      enabled: !state.busy,
+                      error: state.numberError,
+                      onInvalid: (value) => cubit.validateNumber(item, value),
+                      onSubmit: (value) => cubit.answer(item, value),
+                    );
+                  } else {
+                    step = _ChoiceStep(
+                      item: item,
+                      selected: state.answers[item.id],
+                      enabled: !state.busy,
+                      onPick: (value) => cubit.answer(item, value),
+                    );
+                  }
+                  final section = item.section;
+                  if (widget.args.type != 'INITIAL' ||
+                      section == null ||
+                      section.isEmpty) {
+                    return step;
+                  }
+                  final sectionItems = items
+                      .where((question) => question.section == section)
+                      .toList();
+                  final position = sectionItems.indexOf(item) + 1;
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                        child: Text(
+                          '$section · $position of ${sectionItems.length}',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleSmall,
+                        ),
                       ),
-                    ),
-                    Expanded(child: step),
-                  ],
-                );
-              },
-            ),
+                      Expanded(child: step),
+                    ],
+                  );
+                },
+              ),
+      ),
     );
   }
 }

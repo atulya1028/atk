@@ -709,15 +709,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
                           // Active Content Body
                           Expanded(
-                            child: RefreshIndicator(
-                              onRefresh: _loadAllData,
-                              child: SingleChildScrollView(
-                                physics: const AlwaysScrollableScrollPhysics(),
-                                padding: const EdgeInsets.all(20),
-                                child: Center(
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(maxWidth: 1280),
-                                    child: _buildActiveTabContent(),
+                            child: NovtekInteractiveBackground(
+                              isDark: false,
+                              child: RefreshIndicator(
+                                onRefresh: _loadAllData,
+                                child: SingleChildScrollView(
+                                  physics: const AlwaysScrollableScrollPhysics(),
+                                  padding: const EdgeInsets.all(20),
+                                  child: Center(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(maxWidth: 1280),
+                                      child: _buildActiveTabContent(),
+                                    ),
                                   ),
                                 ),
                               ),
