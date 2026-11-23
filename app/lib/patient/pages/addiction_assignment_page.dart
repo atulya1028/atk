@@ -306,7 +306,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                       first.isEmpty ? 'Welcome!' : 'Welcome, $first!',
                       style: const TextStyle(
                         color: _dark,
-                        fontSize: 24,
+                        fontSize: 18,
                         fontWeight: FontWeight.w700,
                       ),
                     ),

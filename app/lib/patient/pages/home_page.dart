@@ -211,23 +211,23 @@ class _Header extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
-          width: 72,
-          height: 72,
-          padding: const EdgeInsets.all(6),
+          width: 56,
+          height: 56,
+          padding: const EdgeInsets.all(4),
           decoration: BoxDecoration(
             color: Colors.white,
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: const Color(0xFF4F46E5).withValues(alpha: 0.15),
-                blurRadius: 16,
-                offset: const Offset(0, 4),
+                color: const Color(0xFF4F46E5).withValues(alpha: 0.12),
+                blurRadius: 12,
+                offset: const Offset(0, 3),
               ),
             ],
           ),
-          child: const NovtekLogoIcon(size: 60),
+          child: const NovtekLogoIcon(size: 46),
         ),
-        const SizedBox(width: 16),
+        const SizedBox(width: 14),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -237,7 +237,7 @@ class _Header extends StatelessWidget {
                 style: TextStyle(
                   color: HomePage._ink,
                   fontWeight: FontWeight.w700,
-                  fontSize: wide ? 30 : 24,
+                  fontSize: wide ? 20 : 17,
                 ),
               ),
               const SizedBox(height: 8),
@@ -287,9 +287,9 @@ class _Header extends StatelessWidget {
           style: IconButton.styleFrom(
             backgroundColor: const Color(0xFFFFEBEB),
             foregroundColor: const Color(0xFFE34F4F),
-            fixedSize: const Size(54, 54),
+            fixedSize: const Size(44, 44),
           ),
-          icon: const Icon(Icons.logout_rounded),
+          icon: const Icon(Icons.logout_rounded, size: 20),
         ),
       ],
     );
