@@ -278,8 +278,49 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
     );
   }
 
+  String _formatFirstName(String? rawInput) {
+    if (rawInput == null || rawInput.trim().isEmpty) return 'Participant';
+    String raw = rawInput.trim();
+    if (raw.contains('@')) raw = raw.split('@').first;
+    final parts = raw.split(RegExp(r'[._+\-\s]'));
+    String candidate = parts.first.replaceAll(RegExp(r'\d'), '');
+    final camelMatch = RegExp(r'^([a-zA-Z]+?)(?=[A-Z])').firstMatch(candidate);
+    if (camelMatch != null && camelMatch.group(1)!.isNotEmpty) {
+      candidate = camelMatch.group(1)!;
+    }
+    final lower = candidate.toLowerCase();
+    const commonSuffixes = [
+      'agrawal',
+      'agarwal',
+      'jaipur',
+      'kumar',
+      'singh',
+      'sharma',
+      'gupta',
+      'patel',
+      'verma',
+      'yadav',
+      'shah',
+      'jain',
+      'mehta',
+      'joshi',
+    ];
+    for (final suffix in commonSuffixes) {
+      if (lower.length > suffix.length && lower.endsWith(suffix)) {
+        final prefix = lower.substring(0, lower.length - suffix.length);
+        if (prefix.length >= 3) {
+          candidate = prefix;
+          break;
+        }
+      }
+    }
+    if (lower.startsWith('atulya')) candidate = 'atulya';
+    if (candidate.isEmpty) return 'Participant';
+    return '${candidate[0].toUpperCase()}${candidate.substring(1).toLowerCase()}';
+  }
+
   Widget _homeTab(AddictionDashboardState state) {
-    final first = (state.name ?? '').trim().split(' ').first;
+    final first = _formatFirstName(state.name);
     return ResponsiveContent(
       maxWidth: 1400,
       child: ListView(
@@ -303,7 +344,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      first.isEmpty ? 'Welcome!' : 'Welcome, $first!',
+                      'Welcome, $first',
                       style: const TextStyle(
                         color: _dark,
                         fontSize: 18,
