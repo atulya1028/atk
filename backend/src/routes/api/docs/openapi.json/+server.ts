@@ -61,10 +61,8 @@ export const GET = () => {
                                     schema: {
                                         type: 'object',
                                         properties: {
-                                            debug_otp: {
-                                                type: 'string',
-                                                description: 'For development only: The OTP code sent.'
-                                            }
+                                            success: { type: 'boolean' },
+                                            message: { type: 'string' }
                                         }
                                     }
                                 }
@@ -72,6 +70,9 @@ export const GET = () => {
                         },
                         '400': {
                             description: 'Bad Request'
+                        },
+                        '503': {
+                            description: 'Unable to send verification email'
                         }
                     }
                 }

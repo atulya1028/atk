@@ -1,6 +1,4 @@
 import { createHash, randomInt } from 'node:crypto';
-import fs from 'node:fs';
-import path from 'node:path';
 import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import jwt from 'jsonwebtoken';
@@ -13,18 +11,6 @@ const otpLifetime = 5 * 60 * 1000;
 
 function hashOtp(otp: string): string {
     return createHash('sha256').update(otp).digest('hex');
-}
-
-function logMail(message: string) {
-    try {
-        const logDir = path.resolve('logs');
-        if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
-        const logFile = path.join(logDir, 'email.log');
-        const timestamp = new Date().toISOString();
-        fs.appendFileSync(logFile, `[${timestamp}] ${message}\n`);
-    } catch (e) {
-        console.error('Failed to write to email.log:', e);
-    }
 }
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -78,30 +64,11 @@ export const POST: RequestHandler = async ({ request }) => {
                           </div>`
                 });
 
-                logMail(`SUCCESS: Sent DOCTOR OTP ${otp} to ${email}. MessageId: ${info?.messageId || 'unknown'}`);
-                console.log(`[DOCTOR MAILER] OTP for ${email}: ${otp}`);
-
-                return json({
-                    success: true,
-                    message: 'OTP sent successfully to your doctor email',
-                    debug_otp: otp
-                });
-            } catch (mailErr: any) {
-                const errDetails = {
-                    host: process.env.SMTP_HOST,
-                    port: process.env.SMTP_PORT,
-                    user: process.env.SMTP_USER,
-                    error: mailErr?.message
-                };
-                logMail(`ERROR: Failed to send DOCTOR OTP to ${email}. Details: ${JSON.stringify(errDetails)}`);
-                console.error('DOCTOR_SMTP_ERROR_DETAILS:', errDetails);
-                console.log(`[DOCTOR FALLBACK MAILER] OTP for ${email}: ${otp}`);
-
-                return json({
-                    success: true,
-                    message: 'OTP generated (development/fallback mode)',
-                    debug_otp: otp
-                });
+                console.log('Doctor OTP email accepted:', info.messageId);
+                return json({ success: true, message: 'OTP sent successfully to your doctor email' });
+            } catch (error) {
+                console.error('Doctor OTP email delivery failed:', error);
+                return json({ error: 'Unable to send verification email. Please try again.' }, { status: 503 });
             }
         }
 

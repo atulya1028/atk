@@ -1,25 +1,21 @@
 import nodemailer from 'nodemailer';
 import { env } from '$env/dynamic/private';
 
-/**
- * Reusable SMTP transporter with environment variables.
- * We prioritize reusing the connection to avoid handshake overhead and potential rate issues.
- */
+const localhost = ['localhost', '127.0.0.1', '::1'].includes(env.SMTP_HOST);
+const secure = env.SMTP_SECURE === 'true';
+
 export const transporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
     port: Number(env.SMTP_PORT),
-    secure: env.SMTP_SECURE === 'true',
-    auth: {
-        user: env.SMTP_USER,
-        pass: env.SMTP_PASS,
-    },
-    tls: {
-        // Many dev/staging SMTP servers have certificate validation issues
-        rejectUnauthorized: false
-    },
-    // Disabled pooling to prevent unhandled ECONNRESET crashes in development
-    pool: false,
-} as any);
+    secure,
+    requireTLS: !localhost && !secure,
+    auth: env.SMTP_USER || env.SMTP_PASS
+        ? { user: env.SMTP_USER, pass: env.SMTP_PASS }
+        : undefined,
+    connectionTimeout: 10000,
+    greetingTimeout: 10000,
+    socketTimeout: 15000
+});
 
 // Add error listener to the transporter to prevent process-crashing unhandled events
 transporter.on('error', (err) => {

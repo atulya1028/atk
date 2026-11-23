@@ -3,25 +3,16 @@ import { prisma } from '$lib/server/prisma';
 import { transporter } from '$lib/server/mailer';
 import { env } from '$env/dynamic/private';
 import type { RequestHandler } from './$types';
-import fs from 'fs';
-import path from 'path';
-
-function logMail(message: string) {
-    const logDir = path.resolve('logs');
-    if (!fs.existsSync(logDir)) fs.mkdirSync(logDir);
-    const logFile = path.join(logDir, 'email.log');
-    const timestamp = new Date().toISOString();
-    fs.appendFileSync(logFile, `[${timestamp}] ${message}\n`);
-}
+import { randomInt } from 'node:crypto';
 
 export const POST: RequestHandler = async ({ request }) => {
     try {
-        const body = await request.json();
-        const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : '';
-        const role = body.role || 'user';
+        const body = await request.json().catch(() => null);
+        const email = typeof body?.email === 'string' ? body.email.trim().toLowerCase() : '';
+        const role = body?.role || 'user';
         if (!email) return json({ error: 'Email required' }, { status: 400 });
 
-        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        const otp = String(randomInt(100000, 1000000));
 
         const now = new Date();
         try {
@@ -55,7 +46,6 @@ export const POST: RequestHandler = async ({ request }) => {
                 });
             }
         } catch (dbError: any) {
-            logMail(`DATABASE_ERROR: Failed to upsert ${role} ${email}. Error: ${dbError.message}`);
             console.error("DATABASE_ERROR_DETAILS:", dbError);
             return json({ error: 'Database synchronization issue. Please run migrations.' }, { status: 500 });
         }
@@ -78,39 +68,12 @@ export const POST: RequestHandler = async ({ request }) => {
                       </div>`
             });
 
-            // Log for debugging
-            logMail(`SUCCESS: Sent OTP ${otp} to ${email}. MessageId: ${info.messageId}`);
-            console.log(`[MAILER] OTP for ${email}: ${otp}`);
-            console.log(`Email successfully sent to ${email}: ${info.messageId}`);
-
-            return json({
-                success: true,
-                message: 'OTP sent successfully',
-                debug_otp: otp
-            });
-        } catch (e: any) {
-            const errDetails = {
-                host: process.env.SMTP_HOST,
-                port: process.env.SMTP_PORT,
-                user: process.env.SMTP_USER,
-                error: e.message,
-                code: e.code,
-                command: e.command
-            };
-            logMail(`ERROR: Failed to send to ${email}. Details: ${JSON.stringify(errDetails)}`);
-            console.error("SMTP_ERROR_DETAILS:", errDetails);
-
-            // Fallback for development/testing when SMTP is offline or misconfigured
-            console.log(`[FALLBACK MAILER] OTP for ${email}: ${otp}`);
-            return json({
-                success: true,
-                message: 'OTP sent (SMTP offline fallback)',
-                debug_otp: otp,
-                otp: otp
-            });
+            console.log('OTP email accepted:', info.messageId);
+            return json({ success: true, message: 'OTP sent successfully' });
+        } catch (error) {
+            console.error('OTP email delivery failed:', error);
+            return json({ error: 'Unable to send verification email. Please try again.' }, { status: 503 });
         }
-
-        return json({ success: true, message: 'OTP sent successfully' });
     } catch (e) {
         console.error(e);
         return json({ error: 'Internal Server Error' }, { status: 500 });

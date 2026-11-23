@@ -163,28 +163,9 @@ The codebase enforces a comprehensive dual-tier `try ... catch` exception handli
 
 ## 6. Execution Commands & Quick Start Reference
 
-### 6.1 Backend Commands (Node.js & PM2)
+### 6.1 Local Backend
 
-```bash
-# Install dependencies
-cd backend && npm install
-
-# Start PostgreSQL database (Docker)
-docker compose up -d db
-
-# Apply migrations & seed survey questions
-npm run db:generate
-npm run migrate
-npm run db:seed-questions
-
-# Start development server
-npm run dev
-
-# Start production server with PM2
-pm2 start src/server.js --name "novtek-atk"
-pm2 restart novtek-atk
-pm2 logs novtek-atk
-```
+Follow the [local backend setup](../README.md#start-the-backend-locally) to run the Node.js server with SQLite.
 
 ### 6.2 Frontend Commands (Flutter Web & Mobile)
 
