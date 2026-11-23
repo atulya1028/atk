@@ -216,6 +216,7 @@ class AdminService {
           body: jsonEncode({
             'email': email.trim().toLowerCase(),
             'fullName': fullName.trim(),
+            'name': fullName.trim(),
             if (specialization != null) 'specialization': specialization.trim(),
             if (phoneNumber != null) 'phoneNumber': phoneNumber.trim(),
             if (servicePincode != null) 'servicePincode': servicePincode.trim(),
@@ -249,6 +250,7 @@ class AdminService {
           headers: headers,
           body: jsonEncode({
             if (fullName != null) 'fullName': fullName.trim(),
+            if (fullName != null) 'name': fullName.trim(),
             if (specialization != null) 'specialization': specialization.trim(),
             if (phoneNumber != null) 'phoneNumber': phoneNumber.trim(),
             if (servicePincode != null) 'servicePincode': servicePincode.trim(),

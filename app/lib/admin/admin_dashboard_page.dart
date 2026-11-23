@@ -446,7 +446,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         final score = s['score'] ?? 0;
         final severity = score >= 50 ? 'CRITICAL' : (score >= 21 ? 'MODERATE' : 'MILD');
         final doctor = _doctors.firstWhere((d) => d['id'] == s['assignedDoctorId'], orElse: () => null);
-        final doctorName = doctor != null ? (doctor['name'] ?? doctor['email'] ?? '') : '';
+        final doctorName = doctor != null ? (doctor['fullName'] ?? doctor['name'] ?? doctor['email'] ?? '') : '';
 
         buffer.writeln(
           '"${s['id']}","${s['patientName'] ?? ''}","${s['email'] ?? ''}","${s['type'] ?? ''}",$score,"$severity","${s['status'] ?? 'COMPLETED'}","$doctorName","${s['createdAt'] ?? ''}"',
@@ -1464,10 +1464,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   Widget _buildDoctorsTab() {
     final filtered = _doctors.where((d) {
       final text = _doctorSearch.toLowerCase();
-      final name = (d['name'] ?? '').toString().toLowerCase();
+      final name = (d['fullName'] ?? d['name'] ?? '').toString().toLowerCase();
       final email = (d['email'] ?? '').toString().toLowerCase();
       final spec = (d['specialization'] ?? '').toString().toLowerCase();
-      return text.isEmpty || name.contains(text) || email.contains(text) || spec.contains(text);
+      final pin = (d['servicePincode'] ?? '').toString().toLowerCase();
+      return text.isEmpty || name.contains(text) || email.contains(text) || spec.contains(text) || pin.contains(text);
     }).toList();
 
     return Column(
@@ -1532,6 +1533,12 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             separatorBuilder: (_, _) => const SizedBox(height: 8),
             itemBuilder: (ctx, i) {
               final doc = filtered[i] as Map<String, dynamic>;
+              final rawName = (doc['fullName'] ?? doc['name'] ?? '').toString().trim();
+              final displayName = rawName.isNotEmpty ? rawName : 'Unnamed Doctor';
+              final initials = rawName.length >= 2
+                  ? rawName.substring(0, 2).toUpperCase()
+                  : (rawName.isNotEmpty ? rawName.toUpperCase() : 'DR');
+
               return Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
@@ -1539,14 +1546,14 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                   children: [
                     CircleAvatar(
                       backgroundColor: _indigo50,
-                      child: Text((doc['name'] ?? 'DR').toString().substring(0, 2).toUpperCase(), style: const TextStyle(color: _indigo600, fontWeight: FontWeight.bold, fontSize: 12)),
+                      child: Text(initials, style: const TextStyle(color: _indigo600, fontWeight: FontWeight.bold, fontSize: 12)),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Dr. ${doc['name'] ?? 'Unnamed Doctor'}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _adminPrimary)),
+                          Text('Dr. $displayName', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _adminPrimary)),
                           Text(doc['email'] ?? '', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
                         ],
                       ),
@@ -1598,69 +1605,180 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   void _openAddDoctorDialog([Map<String, dynamic>? doctor]) {
-    final nameCtrl = TextEditingController(text: doctor?['name'] ?? '');
-    final emailCtrl = TextEditingController(text: doctor?['email'] ?? '');
-    final specCtrl = TextEditingController(text: doctor?['specialization'] ?? 'General Medicine');
-    final pinCtrl = TextEditingController(text: doctor?['servicePincode'] ?? '302017');
-    final phoneCtrl = TextEditingController(text: doctor?['phoneNumber'] ?? '');
+    final nameCtrl = TextEditingController(text: (doctor?['fullName'] ?? doctor?['name'] ?? '').toString());
+    final emailCtrl = TextEditingController(text: (doctor?['email'] ?? '').toString());
+    final specCtrl = TextEditingController(text: (doctor?['specialization'] ?? 'General Medicine').toString());
+    final pinCtrl = TextEditingController(text: (doctor?['servicePincode'] ?? '302017').toString());
+    final phoneCtrl = TextEditingController(text: (doctor?['phoneNumber'] ?? '').toString());
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(doctor == null ? 'Add Clinician' : 'Edit Clinician'),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: nameCtrl, decoration: const InputDecoration(labelText: 'Full Name')),
-              TextField(controller: emailCtrl, decoration: const InputDecoration(labelText: 'Email Address')),
-              TextField(controller: specCtrl, decoration: const InputDecoration(labelText: 'Specialization')),
-              TextField(controller: pinCtrl, decoration: const InputDecoration(labelText: 'Service Pincodes (comma separated)')),
-              TextField(controller: phoneCtrl, decoration: const InputDecoration(labelText: 'Phone Number')),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              try {
-                if (doctor == null) {
-                  await AdminService.createDoctor(
-                    fullName: nameCtrl.text.trim(),
-                    email: emailCtrl.text.trim(),
-                    specialization: specCtrl.text.trim(),
-                    servicePincode: pinCtrl.text.trim(),
-                    phoneNumber: phoneCtrl.text.trim(),
-                  );
-                } else {
-                  await AdminService.updateDoctor(
-                    doctor['id'] as String,
-                    fullName: nameCtrl.text.trim(),
-                    specialization: specCtrl.text.trim(),
-                    servicePincode: pinCtrl.text.trim(),
-                    phoneNumber: phoneCtrl.text.trim(),
-                  );
-                }
-                if (ctx.mounted) Navigator.of(ctx).pop();
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(doctor == null ? 'Clinician added successfully.' : 'Clinician updated successfully.')),
-                  );
-                }
-                _loadAllData();
-              } catch (e) {
-                if (ctx.mounted) {
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(content: Text('Error saving clinician: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
-                  );
-                }
-              }
-            },
-            child: Text(doctor == null ? 'Save Clinician' : 'Update Clinician'),
-          ),
-        ],
-      ),
+      builder: (ctx) {
+        bool isSubmitting = false;
+        String? dialogError;
+        return StatefulBuilder(
+          builder: (context, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: Text(
+                doctor == null ? 'Add Clinician' : 'Edit Clinician',
+                style: const TextStyle(fontWeight: FontWeight.bold, color: _adminPrimary),
+              ),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (dialogError != null) ...[
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: _rose50,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: const Color(0x4DE11D48)),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(Icons.error_outline, size: 16, color: _rose600),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                dialogError!,
+                                style: const TextStyle(color: _rose600, fontSize: 12, fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                    TextField(
+                      controller: nameCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Full Name',
+                        hintText: 'e.g. Dr. Umesh',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: emailCtrl,
+                      enabled: doctor == null,
+                      decoration: InputDecoration(
+                        labelText: 'Email Address',
+                        hintText: 'doctor@example.com',
+                        border: OutlineInputBorder(),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        helperText: doctor == null ? null : 'Email cannot be changed after registration',
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: specCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Specialization',
+                        hintText: 'e.g. Physician, Addiction Medicine',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: pinCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Service Pincodes (comma separated)',
+                        hintText: 'e.g. 302017, 302018',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    TextField(
+                      controller: phoneCtrl,
+                      decoration: const InputDecoration(
+                        labelText: 'Phone Number',
+                        hintText: 'e.g. 9876543210',
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: isSubmitting ? null : () => Navigator.of(ctx).pop(),
+                  child: const Text('Cancel'),
+                ),
+                FilledButton(
+                  style: FilledButton.styleFrom(backgroundColor: _indigo600),
+                  onPressed: isSubmitting
+                      ? null
+                      : () async {
+                          final fullName = nameCtrl.text.trim();
+                          final email = emailCtrl.text.trim().toLowerCase();
+                          if (fullName.length < 2) {
+                            setDialogState(() => dialogError = 'Please enter a valid full name (at least 2 characters).');
+                            return;
+                          }
+                          if (doctor == null && (!email.contains('@') || !email.contains('.'))) {
+                            setDialogState(() => dialogError = 'Please enter a valid email address.');
+                            return;
+                          }
+
+                          setDialogState(() {
+                            isSubmitting = true;
+                            dialogError = null;
+                          });
+
+                          final scaffoldMessenger = ScaffoldMessenger.of(context);
+                          final navigator = Navigator.of(ctx);
+
+                          try {
+                            if (doctor == null) {
+                              await AdminService.createDoctor(
+                                fullName: fullName,
+                                email: email,
+                                specialization: specCtrl.text.trim(),
+                                servicePincode: pinCtrl.text.trim(),
+                                phoneNumber: phoneCtrl.text.trim(),
+                              );
+                            } else {
+                              await AdminService.updateDoctor(
+                                doctor['id'] as String,
+                                fullName: fullName,
+                                specialization: specCtrl.text.trim(),
+                                servicePincode: pinCtrl.text.trim(),
+                                phoneNumber: phoneCtrl.text.trim(),
+                              );
+                            }
+                            if (ctx.mounted) navigator.pop();
+                            if (mounted) {
+                              scaffoldMessenger.showSnackBar(
+                                SnackBar(
+                                  content: Text(doctor == null ? 'Clinician added successfully.' : 'Clinician updated successfully.'),
+                                  backgroundColor: _emerald600,
+                                ),
+                              );
+                              _loadAllData();
+                            }
+                          } catch (e) {
+                            setDialogState(() {
+                              isSubmitting = false;
+                              dialogError = e.toString().replaceFirst('Exception: ', '');
+                            });
+                          }
+                        },
+                  child: isSubmitting
+                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(doctor == null ? 'Save Clinician' : 'Update Clinician'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 

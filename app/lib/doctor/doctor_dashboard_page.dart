@@ -80,7 +80,7 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
   }
 
   Future<void> _showEditProfileDialog() async {
-    final nameCtrl = TextEditingController(text: _doctor['name']?.toString() ?? '');
+    final nameCtrl = TextEditingController(text: (_doctor['fullName'] ?? _doctor['name'])?.toString() ?? '');
     final specCtrl = TextEditingController(
       text: _doctor['specialization']?.toString() ?? 'General Practitioner',
     );
@@ -490,7 +490,7 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    final doctorName = _doctor['name'] ?? 'Doctor';
+    final doctorName = _doctor['fullName'] ?? _doctor['name'] ?? 'Doctor';
     final email = _doctor['email'] ?? '';
     final specialization = _doctor['specialization'] ?? 'General Practitioner';
     final phone = _doctor['phoneNumber'] ?? 'Not set';
