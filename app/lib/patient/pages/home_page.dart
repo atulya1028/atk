@@ -18,7 +18,7 @@ class HomePage extends StatelessWidget {
   String get _firstName {
     final localPart = email.split('@').first;
     final name = localPart.replaceAll(RegExp(r'\d'), '');
-    final first = name.isEmpty ? 'there' : name;
+    final first = name.isEmpty ? 'Participant' : name;
     return '${first[0].toUpperCase()}${first.substring(1)}';
   }
 
@@ -233,7 +233,7 @@ class _Header extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Welcome, $name!',
+                name,
                 style: TextStyle(
                   color: HomePage._ink,
                   fontWeight: FontWeight.w700,
