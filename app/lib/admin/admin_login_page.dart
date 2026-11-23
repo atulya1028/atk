@@ -34,10 +34,12 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
   }
 
   Future<void> _checkExistingSession() async {
-    final token = await AdminService.getToken();
-    if (token != null && token.isNotEmpty && mounted) {
-      Navigator.of(context).pushReplacementNamed('/admin-dashboard');
-    }
+    try {
+      final token = await AdminService.getToken();
+      if (token != null && token.isNotEmpty && mounted) {
+        Navigator.of(context).pushReplacementNamed('/admin-dashboard');
+      }
+    } catch (_) {}
   }
 
   @override

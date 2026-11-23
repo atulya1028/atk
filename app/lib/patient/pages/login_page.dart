@@ -137,10 +137,12 @@ class _LoginPageState extends State<LoginPage> {
 
   Future<void> _sendCode() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    await context.read<LoginCubit>().sendCode(_email.text.trim(), role: _isDoctorMode ? 'doctor' : 'user');
-    if (mounted && context.read<LoginCubit>().state.otpSent) {
-      _nodes.first.requestFocus();
-    }
+    try {
+      await context.read<LoginCubit>().sendCode(_email.text.trim(), role: _isDoctorMode ? 'doctor' : 'user');
+      if (mounted && context.read<LoginCubit>().state.otpSent) {
+        _nodes.first.requestFocus();
+      }
+    } catch (_) {}
   }
 
   Future<void> _verify() async {
@@ -149,7 +151,9 @@ class _LoginPageState extends State<LoginPage> {
       context.read<LoginCubit>().showError(problem);
       return;
     }
-    await context.read<LoginCubit>().verify(_email.text.trim(), _code, role: _isDoctorMode ? 'doctor' : 'user');
+    try {
+      await context.read<LoginCubit>().verify(_email.text.trim(), _code, role: _isDoctorMode ? 'doctor' : 'user');
+    } catch (_) {}
   }
 
   void _onBoxChanged(int i, String v) {

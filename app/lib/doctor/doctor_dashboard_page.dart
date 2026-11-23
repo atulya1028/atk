@@ -396,7 +396,9 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
     );
 
     if (confirmed == true) {
-      await DoctorService.signOut();
+      try {
+        await DoctorService.signOut();
+      } catch (_) {}
       if (!mounted) return;
       Navigator.of(context).pushNamedAndRemoveUntil('/login', (route) => false);
     }

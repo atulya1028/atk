@@ -69,7 +69,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
       }
     } finally {
       if (!cubit.isClosed) {
-        await cubit.loadSurveyStatus();
+        try {
+          await cubit.loadSurveyStatus();
+        } catch (_) {}
         if (!cubit.isClosed) cubit.setOpeningSurvey(false);
       }
     }
@@ -216,7 +218,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
   }
 
   Future<void> _logout() async {
-    await context.read<AddictionDashboardCubit>().logout();
+    try {
+      await context.read<AddictionDashboardCubit>().logout();
+    } catch (_) {}
   }
 
   @override

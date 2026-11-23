@@ -138,7 +138,7 @@ class AdminService {
     final headers = await _authHeaders();
     final q = category != null && category.isNotEmpty ? '?category=$category' : '';
     final uri = Uri.parse('$baseUrl/admin/stats$q');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -155,7 +155,7 @@ class AdminService {
     final headers = await _authHeaders();
     final q = stage != null && stage.isNotEmpty ? '?stage=$stage' : '';
     final uri = Uri.parse('$baseUrl/admin/submissions$q');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -171,7 +171,7 @@ class AdminService {
   static Future<List<dynamic>> getLogs() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/logs');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -187,7 +187,7 @@ class AdminService {
   static Future<List<dynamic>> getDoctors() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/doctors');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -209,7 +209,7 @@ class AdminService {
   }) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/doctors');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(
           uri,
           headers: headers,
@@ -222,7 +222,7 @@ class AdminService {
             if (servicePincode != null) 'servicePincode': servicePincode.trim(),
           }),
         )
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -244,7 +244,7 @@ class AdminService {
   }) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/doctors/$id');
-    final response = await http
+    final response = await _sendSafe(() => http
         .put(
           uri,
           headers: headers,
@@ -256,7 +256,7 @@ class AdminService {
             if (servicePincode != null) 'servicePincode': servicePincode.trim(),
           }),
         )
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -272,7 +272,7 @@ class AdminService {
   static Future<void> deleteDoctor(String id) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/doctors/$id');
-    final response = await http.delete(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -285,7 +285,7 @@ class AdminService {
   static Future<List<dynamic>> getPatients() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/patients');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -310,7 +310,7 @@ class AdminService {
   }) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/patients/$id');
-    final response = await http
+    final response = await _sendSafe(() => http
         .put(
           uri,
           headers: headers,
@@ -324,7 +324,7 @@ class AdminService {
             if (maritalStatus != null) 'maritalStatus': maritalStatus.trim(),
           }),
         )
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -340,7 +340,7 @@ class AdminService {
   static Future<void> deletePatient(String id) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/patients/$id');
-    final response = await http.delete(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -354,7 +354,7 @@ class AdminService {
     final headers = await _authHeaders();
     final q = category != null && category.isNotEmpty && category != 'ALL' ? '?category=$category' : '';
     final uri = Uri.parse('$baseUrl/admin/analytics$q');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -369,7 +369,7 @@ class AdminService {
   static Future<Map<String, dynamic>> getDiagnostics() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/diagnostics');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -384,7 +384,7 @@ class AdminService {
   static Future<Map<String, dynamic>> sendTestEmail() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/diagnostics/test-email');
-    final response = await http.post(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.post(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -399,7 +399,7 @@ class AdminService {
   static Future<void> purgeLogs() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/purge-logs');
-    final response = await http.post(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.post(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -413,7 +413,7 @@ class AdminService {
     final headers = await _authHeaders();
     final q = category != null && category.isNotEmpty ? '?surveyCategory=$category' : '';
     final uri = Uri.parse('$baseUrl/admin/survey-editor$q');
-    final response = await http.get(uri, headers: headers).timeout(const Duration(seconds: 30));
+    final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -428,9 +428,9 @@ class AdminService {
   static Future<void> saveSurveySettings(Map<String, dynamic> settings) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/survey-editor/settings');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(uri, headers: headers, body: jsonEncode(settings))
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -443,9 +443,9 @@ class AdminService {
   static Future<void> saveQuestion(Map<String, dynamic> question) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/survey-editor/question');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(uri, headers: headers, body: jsonEncode(question))
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -458,9 +458,9 @@ class AdminService {
   static Future<void> resetPatientSurvey(String userId) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/reset-patient-survey');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(uri, headers: headers, body: jsonEncode({'userId': userId}))
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -482,9 +482,9 @@ class AdminService {
     if (status != null) body['status'] = status;
     if (assignedDoctorId != null) body['assignedDoctorId'] = assignedDoctorId;
     if (clinicalNotes != null) body['clinicalNotes'] = clinicalNotes;
-    final response = await http
+    final response = await _sendSafe(() => http
         .put(uri, headers: headers, body: jsonEncode(body))
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty
@@ -497,7 +497,7 @@ class AdminService {
   static Future<void> deleteSubmission(String id) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/admin/submissions/$id');
-    final response = await http.delete(uri, headers: headers).timeout(const Duration(seconds: 25));
+    final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       final decoded = response.body.isEmpty

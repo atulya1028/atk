@@ -26,12 +26,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _reload() => setState(() => _account = ApiClient.getAccountProfile());
 
   Future<void> _editProfile() async {
-    final saved = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
-        builder: (_) => const ProfileSetupPage(isEditing: true),
-      ),
-    );
-    if (mounted && saved == true) _reload();
+    try {
+      final saved = await Navigator.of(context).push<bool>(
+        MaterialPageRoute(
+          builder: (_) => const ProfileSetupPage(isEditing: true),
+        ),
+      );
+      if (mounted && saved == true) _reload();
+    } catch (_) {}
   }
 
   @override

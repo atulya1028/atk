@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../patient/services/api_client.dart';
@@ -32,15 +33,26 @@ class DoctorService {
     };
   }
 
+  static Future<http.Response> _sendSafe(Future<http.Response> Function() action) async {
+    try {
+      return await action();
+    } catch (e) {
+      if (e is TimeoutException) {
+        throw Exception('Request timed out. Please check your network connection.');
+      }
+      throw Exception('Network connection error: ${e.toString().replaceFirst('Exception: ', '')}');
+    }
+  }
+
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     final uri = Uri.parse('$baseUrl/auth/send-otp');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(
           uri,
           headers: {'Content-Type': 'application/json'},
           body: jsonEncode({'email': email.trim().toLowerCase(), 'role': 'doctor'}),
         )
-        .timeout(const Duration(seconds: 60));
+        .timeout(const Duration(seconds: 60)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -57,7 +69,7 @@ class DoctorService {
 
   static Future<Map<String, dynamic>> verifyOtp(String email, String otp) async {
     final uri = Uri.parse('$baseUrl/auth/verify-otp');
-    final response = await http
+    final response = await _sendSafe(() => http
         .post(
           uri,
           headers: {'Content-Type': 'application/json'},
@@ -67,7 +79,7 @@ class DoctorService {
             'role': 'doctor',
           }),
         )
-        .timeout(const Duration(seconds: 60));
+        .timeout(const Duration(seconds: 60)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -95,9 +107,9 @@ class DoctorService {
   static Future<Map<String, dynamic>> getProfile() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/doctor/profile');
-    final response = await http
+    final response = await _sendSafe(() => http
         .get(uri, headers: headers)
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -120,7 +132,7 @@ class DoctorService {
   }) async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/doctor/profile');
-    final response = await http
+    final response = await _sendSafe(() => http
         .put(
           uri,
           headers: headers,
@@ -131,7 +143,7 @@ class DoctorService {
             if (phoneNumber != null) 'phoneNumber': phoneNumber.trim(),
           }),
         )
-        .timeout(const Duration(seconds: 25));
+        .timeout(const Duration(seconds: 25)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}
@@ -149,9 +161,9 @@ class DoctorService {
   static Future<Map<String, dynamic>> getPatients() async {
     final headers = await _authHeaders();
     final uri = Uri.parse('$baseUrl/doctor/patients');
-    final response = await http
+    final response = await _sendSafe(() => http
         .get(uri, headers: headers)
-        .timeout(const Duration(seconds: 30));
+        .timeout(const Duration(seconds: 30)));
 
     final decoded = response.body.isEmpty
         ? <String, dynamic>{}

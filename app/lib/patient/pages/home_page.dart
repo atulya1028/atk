@@ -57,12 +57,16 @@ class HomePage extends StatelessWidget {
   }
 
   Future<void> _logout(BuildContext context) async {
-    await context.read<HomeCubit>().logout();
+    try {
+      await context.read<HomeCubit>().logout();
+    } catch (_) {}
   }
 
   Future<void> _openAssessment(BuildContext context) async {
-    await Navigator.pushNamed<void>(context, '/path_selection');
-    if (context.mounted) await context.read<HomeCubit>().loadSurveyStats();
+    try {
+      await Navigator.pushNamed<void>(context, '/path_selection');
+      if (context.mounted) await context.read<HomeCubit>().loadSurveyStats();
+    } catch (_) {}
   }
 
   @override

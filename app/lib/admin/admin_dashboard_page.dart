@@ -73,7 +73,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Future<void> _loadAllData() async {
-    final token = await AdminService.getToken();
+    String? token;
+    try {
+      token = await AdminService.getToken();
+    } catch (_) {}
     if (token == null || token.isEmpty) {
       if (mounted) {
         Navigator.of(context).pushReplacementNamed('/admin');
@@ -174,7 +177,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     );
 
     if (confirmed == true) {
-      await AdminService.signOut();
+      try {
+        await AdminService.signOut();
+      } catch (_) {}
       if (!mounted) return;
       Navigator.of(context).pushReplacementNamed('/admin');
     }

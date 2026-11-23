@@ -20,10 +20,12 @@ class ApiClient {
   }
 
   static Future<void> loadSavedBaseUrl() async {
-    final saved = await AppStorage.read(key: 'custom_api_url');
-    if (saved != null && saved.isNotEmpty) {
-      _customBaseUrl = saved.trim().replaceAll(RegExp(r'/+$'), '');
-    }
+    try {
+      final saved = await AppStorage.read(key: 'custom_api_url');
+      if (saved != null && saved.isNotEmpty) {
+        _customBaseUrl = saved.trim().replaceAll(RegExp(r'/+$'), '');
+      }
+    } catch (_) {}
   }
 
   static String get _baseUrl {
