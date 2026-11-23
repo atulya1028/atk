@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:material_ui/material_ui.dart';
 import 'admin_service.dart';
 import 'csv_exporter.dart';
+import '../common/widgets/novtek_brand_widgets.dart';
 
 const Color _adminPrimary = Color(0xFF0F172A); // Slate 900
 const Color _indigo600 = Color(0xFF4F46E5);
@@ -805,28 +806,9 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               mainAxisAlignment: _isDrawerCollapsed ? MainAxisAlignment.center : MainAxisAlignment.spaceBetween,
               children: [
                 if (!_isDrawerCollapsed)
-                  Row(
-                    children: [
-                      Container(
-                        width: 32,
-                        height: 32,
-                        decoration: BoxDecoration(
-                          color: _indigo600,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(Icons.medication_liquid_rounded, color: Colors.white, size: 18),
-                      ),
-                      const SizedBox(width: 10),
-                      const Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('NOVTEK ATK', style: TextStyle(fontSize: 11, fontWeight: FontWeight.w900, color: _adminPrimary, letterSpacing: 0.5)),
-                          Text('CLINICAL ADMIN', style: TextStyle(fontSize: 8, fontWeight: FontWeight.bold, color: Colors.grey, letterSpacing: 1.0)),
-                        ],
-                      ),
-                    ],
-                  ),
+                  const NovtekBrandLockup(iconSize: 32, subtitle: 'CLINICAL ADMIN')
+                else
+                  const NovtekLogoIcon(size: 28),
                 IconButton(
                   icon: Icon(_isDrawerCollapsed ? Icons.chevron_right_rounded : Icons.chevron_left_rounded, size: 18, color: Colors.grey),
                   onPressed: () => setState(() => _isDrawerCollapsed = !_isDrawerCollapsed),

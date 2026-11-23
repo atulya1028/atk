@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'admin_dashboard_page.dart';
 import 'admin_service.dart';
+import '../common/widgets/novtek_brand_widgets.dart';
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -179,20 +180,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.12),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white.withValues(alpha: 0.2)),
-                      ),
-                      child: const Icon(
-                        Icons.admin_panel_settings_rounded,
-                        size: 46,
-                        color: Colors.white,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
+                    const NovtekLogoIcon(size: 64),
+                    const SizedBox(height: 14),
                     const Text(
                       'Novtek ATK Admin',
                       style: TextStyle(

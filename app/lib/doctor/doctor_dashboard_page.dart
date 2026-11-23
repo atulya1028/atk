@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
 import 'doctor_profile_setup_page.dart';
 import 'doctor_service.dart';
+import '../common/widgets/novtek_brand_widgets.dart';
 
 class DoctorDashboardPage extends StatefulWidget {
   const DoctorDashboardPage({super.key, this.initialDoctor});
@@ -500,10 +501,7 @@ class _DoctorDashboardPageState extends State<DoctorDashboardPage> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text(
-          'Novtek ATK - Doctor Portal',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: const NovtekBrandLockup(iconSize: 28, subtitle: 'CLINICAL DOCTOR'),
         backgroundColor: Colors.white,
         foregroundColor: _secondaryColor,
         elevation: 1,
