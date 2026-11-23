@@ -971,11 +971,50 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   // =========================================================================
   // TAB 0: DASHBOARD OVERVIEW (EZY-ZIP MATCH)
   // =========================================================================
+  int get _malePatientCount {
+    final fromStats = (_stats['maleCount'] as num?)?.toInt();
+    if (fromStats != null && fromStats > 0) return fromStats;
+    return _patients.where((p) {
+      final g = (p['gender'] ?? '').toString().toLowerCase().trim();
+      return g == 'male' || g == 'm';
+    }).length;
+  }
+
+  int get _femalePatientCount {
+    final fromStats = (_stats['femaleCount'] as num?)?.toInt();
+    if (fromStats != null && fromStats > 0) return fromStats;
+    return _patients.where((p) {
+      final g = (p['gender'] ?? '').toString().toLowerCase().trim();
+      return g == 'female' || g == 'f';
+    }).length;
+  }
+
+  List<Map<String, dynamic>> _getGenderDistributionFromPatients() {
+    int male = 0;
+    int female = 0;
+    int other = 0;
+    for (final p in _patients) {
+      final g = (p['gender'] ?? '').toString().toLowerCase().trim();
+      if (g == 'male' || g == 'm') {
+        male++;
+      } else if (g == 'female' || g == 'f') {
+        female++;
+      } else if (g.isNotEmpty) {
+        other++;
+      }
+    }
+    return [
+      {'label': 'Male', 'count': male, 'value': male},
+      {'label': 'Female', 'count': female, 'value': female},
+      {'label': 'Non-Binary', 'count': 0, 'value': 0},
+      {'label': 'Other', 'count': other, 'value': other},
+    ];
+  }
+
   Widget _buildOverviewTab() {
-    final totalUsers = (_stats['totalUsers'] as num?)?.toInt() ?? 0;
-    final profileCompleted = (_stats['profileCompleted'] as num?)?.toInt() ?? 0;
-    final initialSurvey = (_stats['initialSurveyCompleted'] as num?)?.toInt() ?? 0;
-    final detailedSurvey = (_stats['detailedSurveyCompleted'] as num?)?.toInt() ?? 0;
+    final totalUsers = (_stats['totalUsers'] as num?)?.toInt() ?? _patients.length;
+    final initialSurvey = (_stats['initialSurveyCompleted'] as num?)?.toInt() ?? (_stats['totalStage2'] as num?)?.toInt() ?? 0;
+    final detailedSurvey = (_stats['detailedSurveyCompleted'] as num?)?.toInt() ?? (_stats['totalStage3Unlocked'] as num?)?.toInt() ?? 0;
     final active7d = (_stats['active7d'] as num?)?.toInt() ?? 0;
     final active30d = (_stats['active30d'] as num?)?.toInt() ?? 0;
 
@@ -1020,7 +1059,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               crossAxisSpacing: 12,
               childAspectRatio: isWide ? 1.4 : 1.6,
               children: [
-                _buildKpiCard('REGISTERED USERS', '$totalUsers', '$profileCompleted PROFILE COMPLETED', Icons.people_outline, _indigo600),
+                _buildKpiCard('REGISTERED USERS', '$totalUsers', '$_malePatientCount MALE • $_femalePatientCount FEMALE', Icons.people_outline, _indigo600),
                 _buildKpiCard('STAGE 2 COMPLETED', '$initialSurvey', 'INITIAL SURVEY', Icons.assignment_turned_in_outlined, _emerald600),
                 _buildKpiCard('STAGE 3 UNLOCKED', '$detailedSurvey', 'DETAILED SURVEY', Icons.lock_open_rounded, const Color(0xFF9333EA)),
                 _buildKpiCard('TOTAL SUBMISSIONS', '${_submissions.length}', 'STAGE 2 & 3 COMBINED', Icons.folder_shared_outlined, _amber600),
@@ -1074,11 +1113,11 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(child: _buildDistributionCard('AGE GROUP DISTRIBUTION', (_segmentation['ageGroup'] as List<dynamic>?) ?? [])),
+            Expanded(child: _buildDistributionCard('AGE GROUP DISTRIBUTION', ((_segmentation['ageGroup'] ?? _segmentation['age']) as List<dynamic>?) ?? [])),
             const SizedBox(width: 12),
-            Expanded(child: _buildDistributionCard('GENDER IDENTITY', (_segmentation['gender'] as List<dynamic>?) ?? [])),
+            Expanded(child: _buildDistributionCard('GENDER IDENTITY', (_segmentation['gender'] as List<dynamic>?) ?? _getGenderDistributionFromPatients())),
             const SizedBox(width: 12),
-            Expanded(child: _buildDistributionCard('MARITAL STATUS', (_segmentation['maritalStatus'] as List<dynamic>?) ?? [])),
+            Expanded(child: _buildDistributionCard('MARITAL STATUS', ((_segmentation['maritalStatus'] ?? _segmentation['marital']) as List<dynamic>?) ?? [])),
           ],
         ),
         const SizedBox(height: 20),
@@ -1220,27 +1259,70 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   Widget _buildDistributionCard(String title, List<dynamic> items) {
+    var displayItems = items;
+    if (displayItems.isEmpty && title.contains('GENDER')) {
+      displayItems = _getGenderDistributionFromPatients();
+    }
+
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(title, style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w900, color: Colors.grey, letterSpacing: 0.5)),
+              if (title.contains('GENDER'))
+                const Icon(Icons.wc_rounded, size: 14, color: _indigo600),
+            ],
+          ),
           const SizedBox(height: 10),
-          if (items.isEmpty)
+          if (displayItems.isEmpty)
             const Text('No data recorded', style: TextStyle(fontSize: 11, color: Colors.grey))
           else
-            ...items.map((item) {
+            ...displayItems.map((item) {
               final label = (item['label'] ?? item['group'] ?? 'Other').toString();
-              final count = (item['count'] as num?)?.toInt() ?? 0;
+              final count = ((item['count'] ?? item['value']) as num?)?.toInt() ?? 0;
+              final isMale = label.toLowerCase() == 'male';
+              final isFemale = label.toLowerCase() == 'female';
+
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 3),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(label, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                    Text('$count', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _adminPrimary)),
+                    Row(
+                      children: [
+                        if (isMale)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 6),
+                            child: Icon(Icons.male_rounded, size: 14, color: Colors.blue),
+                          )
+                        else if (isFemale)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 6),
+                            child: Icon(Icons.female_rounded, size: 14, color: Colors.pink),
+                          ),
+                        Text(label, style: const TextStyle(fontSize: 12, color: Colors.black87, fontWeight: FontWeight.w500)),
+                      ],
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: count > 0 ? (isFemale ? Colors.pink.shade50 : isMale ? Colors.blue.shade50 : _indigo50) : Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '$count',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: count > 0 ? (isFemale ? Colors.pink.shade700 : isMale ? Colors.blue.shade700 : _indigo600) : Colors.grey.shade600,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -1798,6 +1880,42 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       children: [
         const Text('PARTICIPANT DIRECTORY', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w900, color: _adminPrimary)),
         const Text('REGISTERED PATIENTS, DEMOGRAPHICS & SURVEY RESET CONTROLS', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.grey)),
+        const SizedBox(height: 10),
+
+        // Demographic summary pills
+        Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: Colors.grey.shade100, borderRadius: BorderRadius.circular(16)),
+              child: Text('Total: ${_patients.length}', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: _adminPrimary)),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(16)),
+              child: Row(
+                children: [
+                  const Icon(Icons.male_rounded, size: 14, color: Colors.blue),
+                  const SizedBox(width: 4),
+                  Text('Male: $_malePatientCount', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.blue)),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              decoration: BoxDecoration(color: Colors.pink.shade50, borderRadius: BorderRadius.circular(16)),
+              child: Row(
+                children: [
+                  const Icon(Icons.female_rounded, size: 14, color: Colors.pink),
+                  const SizedBox(width: 4),
+                  Text('Female: $_femalePatientCount', style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.pink)),
+                ],
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 14),
 
         TextField(
@@ -1826,6 +1944,8 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             itemBuilder: (ctx, i) {
               final p = filtered[i] as Map<String, dynamic>;
               final id = (p['userId'] ?? p['id'] ?? '').toString();
+              final isFemale = p['gender']?.toString().toLowerCase() == 'female';
+              final isMale = p['gender']?.toString().toLowerCase() == 'male';
 
               return Container(
                 padding: const EdgeInsets.all(14),
@@ -1833,11 +1953,18 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                 child: Row(
                   children: [
                     CircleAvatar(
-                      backgroundColor: Colors.grey.shade100,
-                      child: Text((p['fullName'] ?? p['name'] ?? 'U').toString().substring(0, 1).toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold, color: _adminPrimary)),
+                      backgroundColor: isFemale ? Colors.pink.shade50 : isMale ? Colors.blue.shade50 : Colors.grey.shade100,
+                      child: Text(
+                        (p['fullName'] ?? p['name'] ?? 'U').toString().substring(0, 1).toUpperCase(),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: isFemale ? Colors.pink.shade700 : isMale ? Colors.blue.shade700 : _adminPrimary,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Expanded(
+                      flex: 2,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -1847,7 +1974,37 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                       ),
                     ),
                     Expanded(
-                      child: Text('PIN: ${p['postcode'] ?? '302017'} • ${p['gender'] ?? 'Not specified'}', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                      flex: 2,
+                      child: Row(
+                        children: [
+                          Text('PIN: ${p['postcode'] ?? '302017'} • ', style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: isFemale ? Colors.pink.shade50 : isMale ? Colors.blue.shade50 : Colors.grey.shade100,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                if (isMale)
+                                  const Icon(Icons.male_rounded, size: 12, color: Colors.blue)
+                                else if (isFemale)
+                                  const Icon(Icons.female_rounded, size: 12, color: Colors.pink),
+                                const SizedBox(width: 2),
+                                Text(
+                                  '${p['gender'] ?? 'Not specified'}',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.bold,
+                                    color: isFemale ? Colors.pink.shade700 : isMale ? Colors.blue.shade700 : Colors.grey.shade700,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                     OutlinedButton.icon(
                       icon: const Icon(Icons.restart_alt_rounded, size: 14, color: _amber600),
