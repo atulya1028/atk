@@ -4,11 +4,20 @@ import '../../common/widgets/novtek_brand_widgets.dart';
 class PathSelectionPage extends StatelessWidget {
   const PathSelectionPage({super.key});
 
+  static const _slate = Color(0xFF0F172A);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: NovtekInteractiveBackground(
-        isDark: true,
+      backgroundColor: _slate,
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [_slate, Color(0xFF1E293B)],
+          ),
+        ),
         child: SafeArea(
           child: LayoutBuilder(
             builder: (context, constraints) {

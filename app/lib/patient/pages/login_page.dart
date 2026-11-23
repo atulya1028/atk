@@ -17,6 +17,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   static const _teal = Color(0xFF4F46E5); // Brand Electric Indigo
+  static const _slate = Color(0xFF0F172A); // Dark Slate 900
   static const _ink = Color(0xFF0F172A);
   static const _muted = Color(0xFF64748B);
   static const _border = Color(0xFFCBD5E1);
@@ -179,9 +180,8 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildLogin(BuildContext context, LoginState state) {
     return Scaffold(
-      body: NovtekInteractiveBackground(
-        isDark: true,
-        child: SafeArea(
+      backgroundColor: _slate,
+      body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
             final compact = constraints.maxHeight < 450;
@@ -517,8 +517,7 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
       ),
-    ),
-  );
+    );
   }
 
   InputDecoration _fieldDecoration(String hint) {
