@@ -25,10 +25,9 @@ class SurveyQuestionPage extends StatefulWidget {
 }
 
 class _SurveyQuestionPageState extends State<SurveyQuestionPage> {
-  // Colours measured from the original screen.
-  static const _teal = Color(0xFF197278);
-  static const _bg = Color(0xFFF9FAFB);
-  static const _optionBorder = Color(0xFF71797A);
+  static const _teal = Color(0xFF4F46E5);
+  static const _bg = Color(0xFFF8FAFC);
+  static const _optionBorder = Color(0xFFCBD5E1);
 
   late final _controller = PageController(
     initialPage: context.read<SurveyQuestionCubit>().state.page.clamp(
@@ -202,27 +201,36 @@ class _ChoiceStep extends StatelessWidget {
                         child: OutlinedButton(
                           onPressed: enabled ? () => onPick(option) : null,
                           style: OutlinedButton.styleFrom(
-                            minimumSize: const Size(0, 40),
+                            minimumSize: const Size(0, 48),
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
+                              horizontal: 16,
+                              vertical: 12,
                             ),
                             foregroundColor: selected == option
                                 ? _SurveyQuestionPageState._teal
-                                : Colors.black,
+                                : const Color(0xFF0F172A),
+                            backgroundColor: selected == option
+                                ? const Color(0xFFEEF2FF)
+                                : Colors.white,
                             side: BorderSide(
                               color: selected == option
                                   ? _SurveyQuestionPageState._teal
                                   : _SurveyQuestionPageState._optionBorder,
+                              width: selected == option ? 2 : 1.2,
                             ),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(12),
                             ),
                           ),
                           child: Text(
                             option,
                             textAlign: TextAlign.center,
-                            style: const TextStyle(fontSize: 16),
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: selected == option
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
                           ),
                         ),
                       ),

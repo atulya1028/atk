@@ -1,21 +1,21 @@
 import 'package:material_ui/material_ui.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 class PathSelectionPage extends StatelessWidget {
   const PathSelectionPage({super.key});
 
-  static const _teal = Color(0xFF197278);
-  static const _ink = Color(0xFF283D3B);
+  static const _slate = Color(0xFF0F172A);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _teal,
+      backgroundColor: _slate,
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [_teal, _ink],
+            colors: [_slate, Color(0xFF1E293B)],
           ),
         ),
         child: SafeArea(
@@ -36,48 +36,34 @@ class PathSelectionPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
-                          children: [
-                            CircleAvatar(
-                              radius: 22,
-                              backgroundColor: Color(0x33FFFFFF),
-                              child: Icon(
-                                Icons.self_improvement,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              'NOVTEK ATK',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 1.7,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
+                        const NovtekBrandLockup(
+                          iconSize: 32,
+                          subtitle: 'CLINICAL ASSESSMENT',
+                          isDark: true,
                         ),
-                        SizedBox(height: wide ? 54 : 38),
+                        SizedBox(height: wide ? 48 : 32),
                         Text(
                           'Choose your path',
                           style: TextStyle(
+                            fontFamily: 'Inter',
                             color: Colors.white,
-                            fontWeight: FontWeight.w700,
-                            fontSize: wide ? 36 : 30,
+                            fontWeight: FontWeight.w800,
+                            fontSize: wide ? 36 : 28,
                             height: 1.15,
+                            letterSpacing: -0.5,
                           ),
                         ),
                         const SizedBox(height: 12),
                         const Text(
-                          'Select the type of support you are looking for.\nWe will guide you through the next steps.',
+                          'Select the type of clinical check-in you would like to begin.\nWe will guide you through each assessment step.',
                           style: TextStyle(
-                            color: Color(0xE6FFFFFF),
+                            fontFamily: 'Inter',
+                            color: Color(0xFF94A3B8),
                             fontSize: 15,
                             height: 1.55,
                           ),
                         ),
-                        SizedBox(height: wide ? 34 : 26),
+                        SizedBox(height: wide ? 32 : 24),
                         if (wide)
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -115,10 +101,11 @@ class PathSelectionPage extends StatelessWidget {
                         const SizedBox(height: 28),
                         const Center(
                           child: Text(
-                            'Your journey starts with one step.',
+                            'Your answers are strictly confidential and HIPAA/GDPR compliant.',
                             style: TextStyle(
-                              color: Colors.white70,
-                              fontSize: 13,
+                              fontFamily: 'Inter',
+                              color: Color(0xFF64748B),
+                              fontSize: 12,
                             ),
                           ),
                         ),
@@ -140,77 +127,78 @@ class _PathCard extends StatelessWidget {
     required this.title,
     required this.description,
     required this.icon,
-    required this.alternate,
+    required this.accentColor,
     required this.onTap,
   });
 
   const _PathCard.addiction({required VoidCallback onTap})
-    : this(
-        title: 'Addiction Assessment',
-        description: 'Substance use and dependency screening',
-        icon: Icons.health_and_safety_outlined,
-        alternate: false,
-        onTap: onTap,
-      );
+      : this(
+          title: 'Addiction Assessment',
+          description: 'Screening for substance dependency & treatment pathways',
+          icon: Icons.health_and_safety_rounded,
+          accentColor: const Color(0xFF4F46E5),
+          onTap: onTap,
+        );
 
   const _PathCard.mentalHealth({required VoidCallback onTap})
-    : this(
-        title: 'Mental Health',
-        description: 'Emotional and psychological well-being',
-        icon: Icons.psychology_outlined,
-        alternate: true,
-        onTap: onTap,
-      );
+      : this(
+          title: 'Mental Health Evaluation',
+          description: 'Emotional balance, anxiety, stress, and wellbeing telemetry',
+          icon: Icons.psychology_rounded,
+          accentColor: const Color(0xFF06B6D4),
+          onTap: onTap,
+        );
 
   final String title;
   final String description;
   final IconData icon;
-  final bool alternate;
+  final Color accentColor;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final foreground = alternate ? Colors.white : const Color(0xFF283D3B);
     return Material(
-      color: alternate ? Colors.white.withValues(alpha: 0.16) : Colors.white,
-      borderRadius: BorderRadius.circular(15),
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(18),
+      elevation: 4,
+      shadowColor: Colors.black.withValues(alpha: 0.12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(18),
         child: Container(
           width: double.infinity,
-          constraints: const BoxConstraints(minHeight: 144),
-          padding: const EdgeInsets.all(24),
+          constraints: const BoxConstraints(minHeight: 140),
+          padding: const EdgeInsets.all(22),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: alternate
-                ? Border.all(color: Colors.white.withValues(alpha: 0.35))
-                : null,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 20,
-                offset: const Offset(0, 10),
-              ),
-            ],
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(color: const Color(0xFFE2E8F0)),
           ),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(12),
+                padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: alternate
-                      ? Colors.white.withValues(alpha: 0.2)
-                      : const Color(0x1A197278),
-                  shape: BoxShape.circle,
+                  gradient: LinearGradient(
+                    colors: [accentColor, accentColor.withValues(alpha: 0.8)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accentColor.withValues(alpha: 0.3),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   icon,
-                  color: alternate ? Colors.white : const Color(0xFF197278),
-                  size: 32,
+                  color: Colors.white,
+                  size: 30,
                 ),
               ),
-              const SizedBox(width: 20),
+              const SizedBox(width: 18),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,29 +206,31 @@ class _PathCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: TextStyle(
-                        color: foreground,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 17,
+                        fontWeight: FontWeight.w800,
+                        color: Color(0xFF0F172A),
+                        letterSpacing: -0.2,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    const SizedBox(height: 5),
                     Text(
                       description,
-                      style: TextStyle(
-                        color: alternate
-                            ? Colors.white.withValues(alpha: 0.85)
-                            : const Color(0xFF667371),
-                        fontSize: 14,
+                      style: const TextStyle(
+                        fontFamily: 'Inter',
+                        fontSize: 13,
+                        color: Color(0xFF64748B),
+                        height: 1.4,
                       ),
                     ),
                   ],
                 ),
               ),
-              Icon(
+              const Icon(
                 Icons.arrow_forward_ios_rounded,
-                color: alternate ? Colors.white70 : const Color(0xFF197278),
-                size: 16,
+                size: 14,
+                color: Color(0xFF94A3B8),
               ),
             ],
           ),
