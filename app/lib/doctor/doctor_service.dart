@@ -44,6 +44,18 @@ class DoctorService {
     }
   }
 
+  static Map<String, dynamic> _safeJsonDecode(String body) {
+    if (body.isEmpty) return <String, dynamic>{};
+    try {
+      final decoded = jsonDecode(body);
+      if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
+      return <String, dynamic>{};
+    } catch (_) {
+      return <String, dynamic>{};
+    }
+  }
+
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     final uri = Uri.parse('$baseUrl/auth/send-otp');
     final response = await _sendSafe(() => http
@@ -54,13 +66,11 @@ class DoctorService {
         )
         .timeout(const Duration(seconds: 60)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        decoded['error'] as String? ?? 'Failed to send doctor verification code.',
+        decoded['error'] as String? ?? 'Failed to send doctor verification code (${response.statusCode}).',
       );
     }
 
@@ -81,13 +91,11 @@ class DoctorService {
         )
         .timeout(const Duration(seconds: 60)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        decoded['error'] as String? ?? 'Invalid or expired verification code.',
+        decoded['error'] as String? ?? 'Invalid or expired verification code (${response.statusCode}).',
       );
     }
 
@@ -111,17 +119,18 @@ class DoctorService {
         .get(uri, headers: headers)
         .timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        decoded['error'] as String? ?? 'Failed to load doctor profile.',
+        decoded['error'] as String? ?? 'Failed to load doctor profile (${response.statusCode}).',
       );
     }
 
-    return (decoded['doctor'] as Map<String, dynamic>?) ?? <String, dynamic>{};
+    final doc = decoded['doctor'];
+    if (doc is Map<String, dynamic>) return doc;
+    if (doc is Map) return Map<String, dynamic>.from(doc);
+    return <String, dynamic>{};
   }
 
   static Future<Map<String, dynamic>> updateProfile({
@@ -145,17 +154,18 @@ class DoctorService {
         )
         .timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        decoded['error'] as String? ?? 'Failed to update doctor profile.',
+        decoded['error'] as String? ?? 'Failed to update doctor profile (${response.statusCode}).',
       );
     }
 
-    return (decoded['doctor'] as Map<String, dynamic>?) ?? <String, dynamic>{};
+    final doc = decoded['doctor'];
+    if (doc is Map<String, dynamic>) return doc;
+    if (doc is Map) return Map<String, dynamic>.from(doc);
+    return <String, dynamic>{};
   }
 
   static Future<Map<String, dynamic>> getPatients() async {
@@ -165,13 +175,11 @@ class DoctorService {
         .get(uri, headers: headers)
         .timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(
-        decoded['error'] as String? ?? 'Failed to load patients list.',
+        decoded['error'] as String? ?? 'Failed to load patients list (${response.statusCode}).',
       );
     }
 

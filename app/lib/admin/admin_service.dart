@@ -57,6 +57,7 @@ class AdminService {
     try {
       final decoded = jsonDecode(body);
       if (decoded is Map<String, dynamic>) return decoded;
+      if (decoded is Map) return Map<String, dynamic>.from(decoded);
       return <String, dynamic>{};
     } catch (_) {
       return <String, dynamic>{};
@@ -140,9 +141,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/stats$q');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load admin statistics.');
@@ -157,9 +156,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/submissions$q');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load submissions.');
@@ -173,9 +170,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/logs');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load audit logs.');
@@ -189,9 +184,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/doctors');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load doctors list.');
@@ -224,9 +217,7 @@ class AdminService {
         )
         .timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to create doctor.');
@@ -258,9 +249,7 @@ class AdminService {
         )
         .timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to update doctor.');
@@ -275,9 +264,7 @@ class AdminService {
     final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to delete doctor.');
     }
   }
@@ -287,9 +274,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/patients');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load patients directory.');
@@ -326,9 +311,7 @@ class AdminService {
         )
         .timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to update patient.');
@@ -343,9 +326,7 @@ class AdminService {
     final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to delete patient.');
     }
   }
@@ -356,9 +337,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/analytics$q');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load analytics.');
@@ -371,9 +350,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/diagnostics');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load diagnostics.');
@@ -386,9 +363,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/diagnostics/test-email');
     final response = await _sendSafe(() => http.post(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to send test email.');
@@ -402,9 +377,7 @@ class AdminService {
     final response = await _sendSafe(() => http.post(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to purge logs.');
     }
   }
@@ -415,9 +388,7 @@ class AdminService {
     final uri = Uri.parse('$baseUrl/admin/survey-editor$q');
     final response = await _sendSafe(() => http.get(uri, headers: headers).timeout(const Duration(seconds: 30)));
 
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    final decoded = _safeJsonDecode(response.body);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw Exception(decoded['error'] as String? ?? 'Failed to load survey editor data.');
@@ -433,9 +404,7 @@ class AdminService {
         .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to save survey settings.');
     }
   }
@@ -448,9 +417,7 @@ class AdminService {
         .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to save question.');
     }
   }
@@ -463,9 +430,7 @@ class AdminService {
         .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to reset survey.');
     }
   }
@@ -487,9 +452,7 @@ class AdminService {
         .timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to update triage.');
     }
   }
@@ -500,9 +463,7 @@ class AdminService {
     final response = await _sendSafe(() => http.delete(uri, headers: headers).timeout(const Duration(seconds: 25)));
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      final decoded = response.body.isEmpty
-          ? <String, dynamic>{}
-          : jsonDecode(response.body) as Map<String, dynamic>;
+      final decoded = _safeJsonDecode(response.body);
       throw Exception(decoded['error'] as String? ?? 'Failed to delete submission.');
     }
   }

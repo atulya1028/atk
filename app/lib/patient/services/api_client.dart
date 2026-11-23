@@ -116,12 +116,27 @@ class ApiClient {
         }
       }
     }
-    final decoded = response.body.isEmpty
-        ? <String, dynamic>{}
-        : jsonDecode(response.body) as Map<String, dynamic>;
+    Map<String, dynamic> decoded = <String, dynamic>{};
+    if (response.body.isNotEmpty) {
+      try {
+        final parsed = jsonDecode(response.body);
+        if (parsed is Map<String, dynamic>) {
+          decoded = parsed;
+        } else if (parsed is Map) {
+          decoded = Map<String, dynamic>.from(parsed);
+        }
+      } catch (_) {
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          throw ApiException(
+            'Server error (${response.statusCode}): ${response.reasonPhrase ?? "Please try again."}',
+          );
+        }
+      }
+    }
     if (response.statusCode < 200 || response.statusCode >= 300) {
       throw ApiException(
-        decoded['error'] as String? ?? 'Request failed. Please try again.',
+        decoded['error'] as String? ??
+            'Request failed (${response.statusCode}). Please try again.',
       );
     }
     return decoded;
