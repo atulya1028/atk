@@ -4,6 +4,7 @@ import 'package:material_ui/material_ui.dart';
 import 'doctor_dashboard_page.dart';
 import 'doctor_profile_setup_page.dart';
 import 'doctor_service.dart';
+import '../common/widgets/novtek_brand_widgets.dart';
 
 class DoctorLoginPage extends StatefulWidget {
   const DoctorLoginPage({super.key});
@@ -177,33 +178,37 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.15),
                         shape: BoxShape.circle,
+                        color: Colors.white.withValues(alpha: 0.12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha: 0.2),
+                            blurRadius: 20,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
                       ),
-                      child: const Icon(
-                        Icons.medical_services_rounded,
-                        size: 46,
-                        color: Colors.white,
-                      ),
+                      child: const NovtekLogoIcon(size: 68),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     const Text(
-                      'Novtek ATK',
+                      'NOVTEK ATK',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.5,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 0.8,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Doctor Portal & Clinical Review',
+                      'Doctor Portal & Clinical Oversight',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.88),
-                        fontSize: 14,
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ],

@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:atk/patient/bloc/home_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key, this.email = ''});
@@ -212,15 +213,19 @@ class _Header extends StatelessWidget {
         Container(
           width: 72,
           height: 72,
-          decoration: const BoxDecoration(
-            color: HomePage._teal,
-            shape: BoxShape.circle,
-          ),
-          child: const Icon(
-            Icons.self_improvement,
+          padding: const EdgeInsets.all(6),
+          decoration: BoxDecoration(
             color: Colors.white,
-            size: 38,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF4F46E5).withValues(alpha: 0.15),
+                blurRadius: 16,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
+          child: const NovtekLogoIcon(size: 60),
         ),
         const SizedBox(width: 16),
         Expanded(

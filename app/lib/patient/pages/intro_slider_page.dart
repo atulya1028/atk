@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:atk/patient/bloc/intro_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 /// Swipeable welcome screens with a centered illustration, text, progress dots,
 /// and a next-step button.
@@ -14,30 +15,30 @@ class IntroSliderPage extends StatefulWidget {
 }
 
 class _IntroSliderPageState extends State<IntroSliderPage> {
-  static const _teal = Color(0xFF197278);
+  static const _indigo = Color(0xFF4F46E5);
+  static const _cyan = Color(0xFF06B6D4);
 
   final PageController _controller = PageController();
 
   static const _slides = <_Slide>[
     _Slide(
-      icon: Icons.check_rounded,
+      useLogo: true,
       title: 'Your companion for a healthier, clearer mind',
-      text: 'Take short, confidential check-ins, see your progress over time and connect with support when you need it.',
+      text: 'Take short, confidential check-ins, see your progress over time, and connect with clinical support when you need it.',
     ),
     _Slide(
       icon: Icons.assignment_turned_in_rounded,
       title: 'Answer simple surveys',
-      text: 'One question at a time. Your answers are saved as you go, so you can stop and continue later.',
+      text: 'One question at a time. Your answers are securely saved as you go, so you can pause and resume whenever convenient.',
     ),
     _Slide(
-      icon: Icons.support_agent_rounded,
+      icon: Icons.health_and_safety_rounded,
       title: 'Get support when you need it',
-      text: 'If a result needs attention, we can connect you with a doctor in your area.',
+      text: 'If an assessment indicates attention is needed, we automatically connect you with authorized clinicians in your postal area.',
     ),
   ];
 
   void _finish() {
-    // '/login' is the login screen route in main.dart
     Navigator.pushReplacementNamed(context, '/login');
   }
 
@@ -46,8 +47,8 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
       _finish();
     } else {
       _controller.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
       );
     }
   }
@@ -62,10 +63,9 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
   Widget build(BuildContext context) {
     return BlocBuilder<IntroCubit, int>(
       builder: (context, page) {
-        final colorScheme = Theme.of(context).colorScheme;
         final isLast = page == _slides.length - 1;
         return Scaffold(
-          backgroundColor: colorScheme.surface,
+          backgroundColor: const Color(0xFFF8FAFC),
           body: SafeArea(
             child: Column(
               children: [
@@ -81,25 +81,35 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                   ),
                 ),
 
+                // Active Indicator Pills
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: List.generate(_slides.length, (i) {
                     final active = i == page;
                     return AnimatedContainer(
-                      duration: const Duration(milliseconds: 250),
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeOut,
                       margin: const EdgeInsets.symmetric(horizontal: 4),
-                      width: active ? 28 : 8,
+                      width: active ? 32 : 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: active ? _teal : const Color(0xFFC5D6D4),
+                        gradient: active
+                            ? const LinearGradient(
+                                colors: [_indigo, _cyan],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              )
+                            : null,
+                        color: active ? null : const Color(0xFFCBD5E1),
                         borderRadius: BorderRadius.circular(10),
                       ),
                     );
                   }),
                 ),
 
+                // CTA Button
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(32, 28, 32, 24),
+                  padding: const EdgeInsets.fromLTRB(32, 28, 32, 28),
                   child: ResponsiveContent(
                     maxWidth: 520,
                     child: ResponsiveAction(
@@ -107,9 +117,11 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                       child: FilledButton(
                         onPressed: () => _next(page),
                         style: FilledButton.styleFrom(
-                          backgroundColor: _teal,
+                          backgroundColor: _indigo,
+                          elevation: 4,
+                          shadowColor: _indigo.withValues(alpha: 0.4),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(16),
                           ),
                         ),
                         child: Text(
@@ -117,6 +129,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w700,
+                            letterSpacing: 0.3,
                           ),
                         ),
                       ),
@@ -136,9 +149,9 @@ class _SlideView extends StatelessWidget {
   final _Slide slide;
   const _SlideView({required this.slide});
 
-  static const _teal = Color(0xFF197278);
-  static const _ink = Color(0xFF283D3B);
-  static const _muted = Color(0xFF4F6463);
+  static const _indigo = Color(0xFF4F46E5);
+  static const _slate = Color(0xFF0F172A);
+  static const _muted = Color(0xFF64748B);
 
   @override
   Widget build(BuildContext context) {
@@ -158,30 +171,59 @@ class _SlideView extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: _teal.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
+          if (slide.useLogo)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: _indigo.withValues(alpha: 0.12),
+                    blurRadius: 32,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: const NovtekLogoIcon(size: 88),
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  colors: [_indigo, Color(0xFF6366F1)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                borderRadius: BorderRadius.circular(28),
+                boxShadow: [
+                  BoxShadow(
+                    color: _indigo.withValues(alpha: 0.28),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Icon(slide.icon, size: 56, color: Colors.white),
             ),
-            child: Icon(slide.icon, size: 64, color: _teal),
-          ),
-          const SizedBox(height: 40),
+          const SizedBox(height: 36),
           Text(
             slide.title,
             textAlign: TextAlign.center,
             style: const TextStyle(
-              color: _ink,
-              fontSize: 28,
-              height: 1.15,
-              fontWeight: FontWeight.w700,
+              color: _slate,
+              fontSize: 26,
+              height: 1.25,
+              fontWeight: FontWeight.w800,
+              letterSpacing: -0.4,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           Text(
             slide.text,
             textAlign: TextAlign.center,
-            style: const TextStyle(color: _muted, fontSize: 16, height: 1.5),
+            style: const TextStyle(color: _muted, fontSize: 15, height: 1.55),
           ),
         ],
       ),
@@ -190,8 +232,14 @@ class _SlideView extends StatelessWidget {
 }
 
 class _Slide {
-  final IconData icon;
+  final IconData? icon;
+  final bool useLogo;
   final String title;
   final String text;
-  const _Slide({required this.icon, required this.title, required this.text});
+  const _Slide({
+    this.icon,
+    this.useLogo = false,
+    required this.title,
+    required this.text,
+  });
 }

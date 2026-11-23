@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:atk/patient/bloc/login_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
 import 'package:atk/patient/services/api_client.dart';
+import '../../common/widgets/novtek_brand_widgets.dart';
 
 /// Passwordless email sign-in with a one-time verification code.
 class LoginPage extends StatefulWidget {
@@ -15,11 +16,12 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  static const _teal = Color(0xFF197278);
-  static const _ink = Color(0xFF283D3B);
-  static const _muted = Color(0xFF4F6463);
-  static const _border = Color(0xFFDDE6E4);
-  static const _danger = Color(0xFFA93A2C);
+  static const _teal = Color(0xFF4F46E5); // Brand Electric Indigo
+  static const _slate = Color(0xFF0F172A); // Dark Slate 900
+  static const _ink = Color(0xFF0F172A);
+  static const _muted = Color(0xFF64748B);
+  static const _border = Color(0xFFCBD5E1);
+  static const _danger = Color(0xFFE11D48);
 
   final _formKey = GlobalKey<FormState>();
   final _email = TextEditingController();
@@ -178,7 +180,7 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget _buildLogin(BuildContext context, LoginState state) {
     return Scaffold(
-      backgroundColor: _teal,
+      backgroundColor: _slate,
       body: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -211,26 +213,30 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.dns_outlined, color: Colors.white70),
-                                tooltip: 'Server Settings',
-                                onPressed: _showServerSettingsDialog,
+                              SizedBox(
+                                width: 44,
+                                height: 44,
+                                child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(Icons.dns_outlined, color: Colors.white70),
+                                  tooltip: 'Server Settings',
+                                  onPressed: _showServerSettingsDialog,
+                                ),
                               ),
                             ],
                           ),
                           if (!compact) const Spacer(),
                           if (!compact)
                             Container(
-                              width: 76,
-                              height: 76,
+                              width: 72,
+                              height: 72,
                               decoration: BoxDecoration(
-                                color: Colors.white.withValues(alpha: 0.14),
+                                color: Colors.white.withValues(alpha: 0.12),
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(
-                                Icons.mail_outline_rounded,
-                                color: Colors.white,
-                                size: 38,
+                              child: const Center(
+                                child: NovtekLogoIcon(size: 48),
                               ),
                             ),
                           if (!compact) const Spacer(),

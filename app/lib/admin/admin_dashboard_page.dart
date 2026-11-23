@@ -1491,33 +1491,146 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   void _openViewResponsesModal(Map<String, dynamic> sub) {
     final answers = (sub['answers'] as Map<String, dynamic>?) ?? {};
+    final patientName = sub['patientName'] ?? sub['email'] ?? 'Participant';
+    final stage = sub['stage'] ?? sub['surveyType'] ?? 'INITIAL';
+    final score = sub['score'] ?? 0;
+    final isCritical = (score is num && score >= 50);
+
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Assessment Responses: ${sub['patientName'] ?? sub['email']}'),
-        content: SizedBox(
-          width: 500,
-          child: SingleChildScrollView(
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+        elevation: 20,
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 580, maxHeight: 680),
+          child: Padding(
+            padding: const EdgeInsets.all(26),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: answers.entries.map((e) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Expanded(child: Text(e.key, style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold))),
-                      Text('${e.value}', style: const TextStyle(fontSize: 11, color: _indigo600)),
-                    ],
+              children: [
+                // Modal Header
+                Row(
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isCritical
+                              ? [_rose600, const Color(0xFFF43F5E)]
+                              : [_indigo600, const Color(0xFF6366F1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        isCritical ? Icons.warning_amber_rounded : Icons.assignment_turned_in_rounded,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Assessment Responses',
+                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17, color: _adminPrimary),
+                          ),
+                          Text(
+                            '$patientName • $stage (Score: $score)',
+                            style: TextStyle(fontSize: 12, color: isCritical ? _rose600 : const Color(0xFF64748B), fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8)),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                const SizedBox(height: 16),
+
+                // Answers List
+                Expanded(
+                  child: answers.isEmpty
+                      ? const Center(
+                          child: Text('No recorded responses for this submission.', style: TextStyle(color: Color(0xFF94A3B8))),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: answers.length,
+                          separatorBuilder: (_, _) => const SizedBox(height: 8),
+                          itemBuilder: (context, idx) {
+                            final entry = answers.entries.elementAt(idx);
+                            return Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                    decoration: BoxDecoration(
+                                      color: _indigo50,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      'Q${idx + 1}',
+                                      style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: _indigo600),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          entry.key,
+                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: Color(0xFF334155)),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          '${entry.value}',
+                                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, color: _indigo600),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
+                ),
+                const SizedBox(height: 16),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: OutlinedButton(
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: const Color(0xFF475569),
+                      side: const BorderSide(color: Color(0xFFCBD5E1)),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                    ),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: const Text('Close', style: TextStyle(fontWeight: FontWeight.w600)),
                   ),
-                );
-              }).toList(),
+                ),
+              ],
             ),
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Close')),
-        ],
       ),
     );
   }
@@ -1594,68 +1707,284 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             itemCount: filtered.length,
-            separatorBuilder: (_, _) => const SizedBox(height: 8),
+            separatorBuilder: (_, _) => const SizedBox(height: 12),
             itemBuilder: (ctx, i) {
               final doc = filtered[i] as Map<String, dynamic>;
               final rawName = (doc['fullName'] ?? doc['name'] ?? '').toString().trim();
-              final displayName = rawName.isNotEmpty ? rawName : 'Unnamed Doctor';
+              final displayName = rawName.isNotEmpty ? rawName : (doc['email'] != null ? doc['email'].toString().split('@').first : 'Practitioner');
               final initials = rawName.length >= 2
                   ? rawName.substring(0, 2).toUpperCase()
                   : (rawName.isNotEmpty ? rawName.toUpperCase() : 'DR');
+              final rawPins = (doc['servicePincode'] ?? '').toString().trim();
+              final pinList = rawPins.isNotEmpty
+                  ? rawPins.split(',').map((p) => p.trim()).where((p) => p.isNotEmpty).toList()
+                  : <String>['302017'];
+              final assignedCount = doc['assignedPatientsCount'] ?? doc['activeAssignedCount'] ?? 0;
 
               return Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(12), border: Border.all(color: Colors.grey.shade200)),
+                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFE2E8F0)),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x080F172A),
+                      blurRadius: 16,
+                      offset: Offset(0, 4),
+                    ),
+                  ],
+                ),
                 child: Row(
                   children: [
-                    CircleAvatar(
-                      backgroundColor: _indigo50,
-                      child: Text(initials, style: const TextStyle(color: _indigo600, fontWeight: FontWeight.bold, fontSize: 12)),
+                    // Clinician Avatar with gradient ring
+                    Container(
+                      width: 48,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [_indigo600, Color(0xFF6366F1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: [
+                          BoxShadow(
+                            color: _indigo600.withValues(alpha: 0.25),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Center(
+                        child: Text(
+                          initials,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
+                      ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 16),
+
+                    // Doctor Info & Verified Status
                     Expanded(
+                      flex: 3,
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Dr. $displayName', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: _adminPrimary)),
-                          Text(doc['email'] ?? '', style: TextStyle(fontSize: 11, color: Colors.grey.shade600)),
+                          Row(
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  'Dr. $displayName',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 15,
+                                    color: _adminPrimary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.verified_rounded,
+                                size: 16,
+                                color: _emerald600,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 3),
+                          Row(
+                            children: [
+                              const Icon(Icons.mail_outline_rounded, size: 13, color: Color(0xFF94A3B8)),
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  doc['email'] ?? '',
+                                  style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ],
                       ),
                     ),
+
+                    // Specialization Badge
                     Expanded(
-                      child: Text(doc['specialization'] ?? 'General / Addiction Medicine', style: const TextStyle(fontSize: 11, color: Colors.grey)),
-                    ),
-                    Expanded(
-                      child: Text('PIN: ${doc['servicePincode'] ?? '302017'}', style: const TextStyle(fontSize: 11, color: _indigo600, fontWeight: FontWeight.bold)),
-                    ),
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit_outlined, size: 16, color: Colors.grey),
-                          onPressed: () => _openAddDoctorDialog(doc),
+                      flex: 2,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: _indigo50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: _indigo600.withValues(alpha: 0.15)),
+                          ),
+                          child: Text(
+                            doc['specialization'] ?? 'Physician',
+                            style: const TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: _indigo600,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.delete_outline, size: 16, color: _rose600),
-                          onPressed: () async {
-                            final id = doc['id'] as String?;
-                            if (id != null) {
-                              try {
-                                await AdminService.deleteDoctor(id);
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Clinician removed successfully.')),
-                                  );
-                                }
-                                _loadAllData();
-                              } catch (e) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Error removing clinician: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
-                                  );
+                      ),
+                    ),
+
+                    // Service Territory Pincodes
+                    Expanded(
+                      flex: 2,
+                      child: Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: pinList.map((pin) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF1F5F9),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFFE2E8F0)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Icon(Icons.pin_drop_outlined, size: 11, color: Color(0xFF64748B)),
+                                const SizedBox(width: 3),
+                                Text(
+                                  pin,
+                                  style: const TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: Color(0xFF334155),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+
+                    // Patients in Territory / Assigned
+                    Expanded(
+                      flex: 2,
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFF8FAFC),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: const Icon(Icons.people_alt_outlined, size: 16, color: Color(0xFF64748B)),
+                          ),
+                          const SizedBox(width: 8),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '$assignedCount Patients',
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: _adminPrimary,
+                                ),
+                              ),
+                              const Text(
+                                'In Coverage Area',
+                                style: TextStyle(fontSize: 10, color: Color(0xFF94A3B8)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    // Action Buttons (Modern Edit & Delete)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Tooltip(
+                          message: 'Edit Clinician Profile',
+                          child: InkWell(
+                            onTap: () => _openAddDoctorDialog(doc),
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFF8FAFC),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: const Color(0xFFE2E8F0)),
+                              ),
+                              child: const Icon(Icons.edit_outlined, size: 16, color: Color(0xFF475569)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Tooltip(
+                          message: 'Remove Clinician',
+                          child: InkWell(
+                            onTap: () async {
+                              final id = doc['id'] as String?;
+                              if (id != null) {
+                                final confirmed = await showDialog<bool>(
+                                  context: context,
+                                  builder: (c) => AlertDialog(
+                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                    title: const Text('Remove Clinician?'),
+                                    content: Text('Are you sure you want to remove Dr. $displayName from the platform? This will unassign any active patients linked to this account.'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(c).pop(false),
+                                        child: const Text('Cancel'),
+                                      ),
+                                      FilledButton(
+                                        style: FilledButton.styleFrom(backgroundColor: _rose600),
+                                        onPressed: () => Navigator.of(c).pop(true),
+                                        child: const Text('Remove'),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                                if (confirmed == true) {
+                                  try {
+                                    await AdminService.deleteDoctor(id);
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Clinician removed successfully.')),
+                                      );
+                                    }
+                                    _loadAllData();
+                                  } catch (e) {
+                                    if (mounted) {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Error removing clinician: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                                      );
+                                    }
+                                  }
                                 }
                               }
-                            }
-                          },
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: _rose50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: const Color(0x33E11D48)),
+                              ),
+                              child: const Icon(Icons.delete_outline_rounded, size: 16, color: _rose600),
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -1669,9 +1998,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
   }
 
   void _openAddDoctorDialog([Map<String, dynamic>? doctor]) {
-    final nameCtrl = TextEditingController(text: (doctor?['fullName'] ?? doctor?['name'] ?? '').toString());
+    final existingName = (doctor?['fullName'] ?? doctor?['name'] ?? '').toString();
+    final nameCtrl = TextEditingController(text: existingName);
     final emailCtrl = TextEditingController(text: (doctor?['email'] ?? '').toString());
-    final specCtrl = TextEditingController(text: (doctor?['specialization'] ?? 'General Medicine').toString());
+    final specCtrl = TextEditingController(text: (doctor?['specialization'] ?? 'Physician').toString());
     final pinCtrl = TextEditingController(text: (doctor?['servicePincode'] ?? '302017').toString());
     final phoneCtrl = TextEditingController(text: (doctor?['phoneNumber'] ?? '').toString());
 
@@ -1682,163 +2012,378 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         String? dialogError;
         return StatefulBuilder(
           builder: (context, setDialogState) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-              title: Text(
-                doctor == null ? 'Add Clinician' : 'Edit Clinician',
-                style: const TextStyle(fontWeight: FontWeight.bold, color: _adminPrimary),
-              ),
-              content: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (dialogError != null) ...[
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
-                          color: _rose50,
-                          borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: const Color(0x4DE11D48)),
-                        ),
-                        child: Row(
+            return Dialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+              elevation: 24,
+              backgroundColor: Colors.white,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 540),
+                child: Padding(
+                  padding: const EdgeInsets.all(28),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Dialog Header with Icon Badge
+                        Row(
                           children: [
-                            const Icon(Icons.error_outline, size: 16, color: _rose600),
-                            const SizedBox(width: 8),
+                            Container(
+                              width: 48,
+                              height: 48,
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [_indigo600, Color(0xFF6366F1)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(14),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _indigo600.withValues(alpha: 0.3),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: Icon(
+                                doctor == null ? Icons.person_add_alt_1_rounded : Icons.edit_note_rounded,
+                                color: Colors.white,
+                                size: 24,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
                             Expanded(
-                              child: Text(
-                                dialogError!,
-                                style: const TextStyle(color: _rose600, fontSize: 12, fontWeight: FontWeight.w600),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    doctor == null ? 'Register New Clinician' : 'Edit Clinician Profile',
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w800,
+                                      fontSize: 18,
+                                      color: _adminPrimary,
+                                      letterSpacing: -0.3,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    doctor == null
+                                        ? 'Add a clinical practitioner and map regional coverage pincodes.'
+                                        : 'Update credentials, service pincodes, and contact details.',
+                                    style: const TextStyle(fontSize: 12, color: Color(0xFF64748B)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8)),
+                              onPressed: isSubmitting ? null : () => Navigator.of(ctx).pop(),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        const Divider(height: 1, color: Color(0xFFF1F5F9)),
+                        const SizedBox(height: 20),
+
+                        // Error Banner
+                        if (dialogError != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: _rose50,
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: const Color(0x4DE11D48)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.error_outline_rounded, size: 18, color: _rose600),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    dialogError!,
+                                    style: const TextStyle(color: _rose600, fontSize: 13, fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+
+                        // Full Name Input
+                        const Text(
+                          'Full Name',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: nameCtrl,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. Dr. Umesh Janwar',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                            prefixIcon: const Icon(Icons.badge_outlined, color: _indigo600, size: 20),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: _indigo600, width: 2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Email Address Input
+                        const Text(
+                          'Email Address',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: emailCtrl,
+                          enabled: doctor == null,
+                          decoration: InputDecoration(
+                            hintText: 'doctor@hospital.org',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                            prefixIcon: const Icon(Icons.alternate_email_rounded, color: _indigo600, size: 20),
+                            filled: true,
+                            fillColor: doctor == null ? const Color(0xFFF8FAFC) : const Color(0xFFF1F5F9),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            helperText: doctor == null ? null : 'Email cannot be changed after initial registration',
+                            helperStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 11),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: _indigo600, width: 2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Specialization Input
+                        const Text(
+                          'Specialization',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: specCtrl,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. Physician, Addiction Medicine, Psychiatry',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                            prefixIcon: const Icon(Icons.medical_information_outlined, color: _indigo600, size: 20),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: _indigo600, width: 2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Service Pincodes Input
+                        const Text(
+                          'Service Pincodes (Territory Coverage)',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: pinCtrl,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. 302017, 302018, 302019',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                            prefixIcon: const Icon(Icons.map_outlined, color: _indigo600, size: 20),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            helperText: 'Comma-separated 6-digit PIN codes for automated patient routing',
+                            helperStyle: const TextStyle(color: Color(0xFF64748B), fontSize: 11),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: _indigo600, width: 2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Phone Number Input
+                        const Text(
+                          'Phone Number',
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155)),
+                        ),
+                        const SizedBox(height: 6),
+                        TextField(
+                          controller: phoneCtrl,
+                          keyboardType: TextInputType.phone,
+                          decoration: InputDecoration(
+                            hintText: 'e.g. 9876543210',
+                            hintStyle: const TextStyle(color: Color(0xFF94A3B8), fontSize: 14),
+                            prefixIcon: const Icon(Icons.phone_outlined, color: _indigo600, size: 20),
+                            filled: true,
+                            fillColor: const Color(0xFFF8FAFC),
+                            contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Color(0xFFCBD5E1)),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: _indigo600, width: 2),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 28),
+
+                        // Dialog Action Buttons
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            OutlinedButton(
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: const Color(0xFF64748B),
+                                side: const BorderSide(color: Color(0xFFCBD5E1)),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+                              ),
+                              onPressed: isSubmitting ? null : () => Navigator.of(ctx).pop(),
+                              child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                            ),
+                            const SizedBox(width: 12),
+                            Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [_indigo600, Color(0xFF4338CA)],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(12),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: _indigo600.withValues(alpha: 0.35),
+                                    blurRadius: 10,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.transparent,
+                                  foregroundColor: Colors.white,
+                                  shadowColor: Colors.transparent,
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                  padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
+                                ),
+                                onPressed: isSubmitting
+                                    ? null
+                                    : () async {
+                                        final fullName = nameCtrl.text.trim();
+                                        final email = emailCtrl.text.trim().toLowerCase();
+                                        if (fullName.length < 2) {
+                                          setDialogState(() => dialogError = 'Please enter a valid full name (at least 2 characters).');
+                                          return;
+                                        }
+                                        if (doctor == null && (!email.contains('@') || !email.contains('.'))) {
+                                          setDialogState(() => dialogError = 'Please enter a valid email address.');
+                                          return;
+                                        }
+
+                                        setDialogState(() {
+                                          isSubmitting = true;
+                                          dialogError = null;
+                                        });
+
+                                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                                        final navigator = Navigator.of(ctx);
+
+                                        try {
+                                          if (doctor == null) {
+                                            await AdminService.createDoctor(
+                                              fullName: fullName,
+                                              email: email,
+                                              specialization: specCtrl.text.trim(),
+                                              servicePincode: pinCtrl.text.trim(),
+                                              phoneNumber: phoneCtrl.text.trim(),
+                                            );
+                                          } else {
+                                            await AdminService.updateDoctor(
+                                              doctor['id'] as String,
+                                              fullName: fullName,
+                                              specialization: specCtrl.text.trim(),
+                                              servicePincode: pinCtrl.text.trim(),
+                                              phoneNumber: phoneCtrl.text.trim(),
+                                            );
+                                          }
+                                          if (ctx.mounted) navigator.pop();
+                                          if (mounted) {
+                                            scaffoldMessenger.showSnackBar(
+                                              SnackBar(
+                                                content: Text(doctor == null ? 'Clinician added successfully.' : 'Clinician updated successfully.'),
+                                                backgroundColor: _emerald600,
+                                              ),
+                                            );
+                                            _loadAllData();
+                                          }
+                                        } catch (e) {
+                                          setDialogState(() {
+                                            isSubmitting = false;
+                                            dialogError = e.toString().replaceFirst('Exception: ', '');
+                                          });
+                                        }
+                                      },
+                                icon: isSubmitting
+                                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                                    : const Icon(Icons.check_circle_outline_rounded, size: 18),
+                                label: Text(
+                                  doctor == null ? 'Save Clinician' : 'Update Clinician',
+                                  style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 14),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                      ),
-                    ],
-                    TextField(
-                      controller: nameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Full Name',
-                        hintText: 'e.g. Dr. Umesh',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
+                      ],
                     ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: emailCtrl,
-                      enabled: doctor == null,
-                      decoration: InputDecoration(
-                        labelText: 'Email Address',
-                        hintText: 'doctor@example.com',
-                        border: OutlineInputBorder(),
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                        helperText: doctor == null ? null : 'Email cannot be changed after registration',
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: specCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Specialization',
-                        hintText: 'e.g. Physician, Addiction Medicine',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: pinCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Service Pincodes (comma separated)',
-                        hintText: 'e.g. 302017, 302018',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: phoneCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Phone Number',
-                        hintText: 'e.g. 9876543210',
-                        border: OutlineInputBorder(),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
-              actions: [
-                TextButton(
-                  onPressed: isSubmitting ? null : () => Navigator.of(ctx).pop(),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(backgroundColor: _indigo600),
-                  onPressed: isSubmitting
-                      ? null
-                      : () async {
-                          final fullName = nameCtrl.text.trim();
-                          final email = emailCtrl.text.trim().toLowerCase();
-                          if (fullName.length < 2) {
-                            setDialogState(() => dialogError = 'Please enter a valid full name (at least 2 characters).');
-                            return;
-                          }
-                          if (doctor == null && (!email.contains('@') || !email.contains('.'))) {
-                            setDialogState(() => dialogError = 'Please enter a valid email address.');
-                            return;
-                          }
-
-                          setDialogState(() {
-                            isSubmitting = true;
-                            dialogError = null;
-                          });
-
-                          final scaffoldMessenger = ScaffoldMessenger.of(context);
-                          final navigator = Navigator.of(ctx);
-
-                          try {
-                            if (doctor == null) {
-                              await AdminService.createDoctor(
-                                fullName: fullName,
-                                email: email,
-                                specialization: specCtrl.text.trim(),
-                                servicePincode: pinCtrl.text.trim(),
-                                phoneNumber: phoneCtrl.text.trim(),
-                              );
-                            } else {
-                              await AdminService.updateDoctor(
-                                doctor['id'] as String,
-                                fullName: fullName,
-                                specialization: specCtrl.text.trim(),
-                                servicePincode: pinCtrl.text.trim(),
-                                phoneNumber: phoneCtrl.text.trim(),
-                              );
-                            }
-                            if (ctx.mounted) navigator.pop();
-                            if (mounted) {
-                              scaffoldMessenger.showSnackBar(
-                                SnackBar(
-                                  content: Text(doctor == null ? 'Clinician added successfully.' : 'Clinician updated successfully.'),
-                                  backgroundColor: _emerald600,
-                                ),
-                              );
-                              _loadAllData();
-                            }
-                          } catch (e) {
-                            setDialogState(() {
-                              isSubmitting = false;
-                              dialogError = e.toString().replaceFirst('Exception: ', '');
-                            });
-                          }
-                        },
-                  child: isSubmitting
-                      ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                      : Text(doctor == null ? 'Save Clinician' : 'Update Clinician'),
-                ),
-              ],
             );
           },
         );
@@ -2628,42 +3173,128 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
   void _openEditThresholdDialog(String key, int currentVal) {
     final ctrl = TextEditingController(text: '$currentVal');
+    final isCritical = key == 'criticalValue';
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('Edit ${key == 'threshold' ? 'Stage 3 Unlock Threshold' : 'Critical Value Threshold'}'),
-        content: TextField(
-          controller: ctrl,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: 'Score Threshold'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              final val = int.tryParse(ctrl.text.trim());
-              if (val != null) {
-                try {
-                  await AdminService.saveSurveySettings({key: val});
-                  if (ctx.mounted) Navigator.of(ctx).pop();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Threshold setting updated successfully.')),
-                    );
-                  }
-                  _loadSurveyEditor();
-                } catch (e) {
-                  if (ctx.mounted) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text('Error updating threshold: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
-                    );
-                  }
-                }
-              }
-            },
-            child: const Text('Save'),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 460),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isCritical
+                              ? [_rose600, const Color(0xFFF43F5E)]
+                              : [_indigo600, const Color(0xFF6366F1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(
+                        isCritical ? Icons.notification_important_rounded : Icons.lock_open_rounded,
+                        color: Colors.white,
+                        size: 20,
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            isCritical ? 'Critical Value Threshold' : 'Stage 3 Unlock Threshold',
+                            style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: _adminPrimary),
+                          ),
+                          Text(
+                            isCritical ? 'Triggers high-priority clinical triage flags' : 'Required score to unlock in-depth modules',
+                            style: const TextStyle(fontSize: 11, color: Color(0xFF64748B)),
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8)),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text('Score Threshold', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155))),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: ctrl,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    prefixIcon: Icon(Icons.speed_rounded, color: isCritical ? _rose600 : _indigo600, size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isCritical ? _rose600 : _indigo600, width: 2)),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF64748B),
+                        side: const BorderSide(color: Color(0xFFCBD5E1)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      ),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: isCritical ? _rose600 : _indigo600,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                      ),
+                      onPressed: () async {
+                        final val = int.tryParse(ctrl.text.trim());
+                        if (val != null) {
+                          try {
+                            await AdminService.saveSurveySettings({key: val});
+                            if (ctx.mounted) Navigator.of(ctx).pop();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Threshold setting updated successfully.')),
+                              );
+                            }
+                            _loadSurveyEditor();
+                          } catch (e) {
+                            if (ctx.mounted) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(content: Text('Error updating threshold: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                              );
+                            }
+                          }
+                        }
+                      },
+                      child: const Text('Save Changes', style: TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -2676,48 +3307,128 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
 
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Edit Follow-Up Email Template'),
-        content: SizedBox(
-          width: 500,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(controller: subjCtrl, decoration: const InputDecoration(labelText: 'Email Subject')),
-              const SizedBox(height: 10),
-              TextField(controller: bodyCtrl, maxLines: 6, decoration: const InputDecoration(labelText: 'Body Template (HTML or text)')),
-            ],
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 540),
+          child: Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [_indigo600, Color(0xFF6366F1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.mark_email_read_rounded, color: Colors.white, size: 20),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Follow-Up Email Template', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: _adminPrimary)),
+                          Text('Dispatched automatically when severe critical scores are flagged', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8)),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text('Email Subject', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155))),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: subjCtrl,
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.title_rounded, color: _indigo600, size: 20),
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _indigo600, width: 2)),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                const Text('Body Template (HTML or Plain Text)', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155))),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: bodyCtrl,
+                  maxLines: 6,
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _indigo600, width: 2)),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF64748B),
+                        side: const BorderSide(color: Color(0xFFCBD5E1)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      ),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _indigo600,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                      ),
+                      onPressed: () async {
+                        try {
+                          await AdminService.saveSurveySettings({
+                            'emailTemplate': {
+                              'subject': subjCtrl.text.trim(),
+                              'bodyHtml': bodyCtrl.text.trim(),
+                            }
+                          });
+                          if (ctx.mounted) Navigator.of(ctx).pop();
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(content: Text('Follow-up email template saved successfully.')),
+                            );
+                          }
+                          _loadSurveyEditor();
+                        } catch (e) {
+                          if (ctx.mounted) {
+                            ScaffoldMessenger.of(ctx).showSnackBar(
+                              SnackBar(content: Text('Error saving template: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                            );
+                          }
+                        }
+                      },
+                      child: const Text('Save Template', style: TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              try {
-                await AdminService.saveSurveySettings({
-                  'emailTemplate': {
-                    'subject': subjCtrl.text.trim(),
-                    'bodyHtml': bodyCtrl.text.trim(),
-                  }
-                });
-                if (ctx.mounted) Navigator.of(ctx).pop();
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Follow-up email template saved successfully.')),
-                  );
-                }
-                _loadSurveyEditor();
-              } catch (e) {
-                if (ctx.mounted) {
-                  ScaffoldMessenger.of(ctx).showSnackBar(
-                    SnackBar(content: Text('Error saving template: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
-                  );
-                }
-              }
-            },
-            child: const Text('Save Template'),
-          ),
-        ],
       ),
     );
   }
@@ -2726,42 +3437,115 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
     final textCtrl = TextEditingController();
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Add Question to Section'),
-        content: TextField(
-          controller: textCtrl,
-          decoration: const InputDecoration(labelText: 'Question Text', hintText: 'e.g. How often do you experience withdrawal?'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(ctx).pop(), child: const Text('Cancel')),
-          FilledButton(
-            onPressed: () async {
-              if (textCtrl.text.trim().isNotEmpty) {
-                try {
-                  await AdminService.saveQuestion({
-                    'sectionId': sectionId,
-                    'text': textCtrl.text.trim(),
-                    'type': 'select',
-                  });
-                  if (ctx.mounted) Navigator.of(ctx).pop();
-                  if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Question added successfully.')),
-                    );
-                  }
-                  _loadSurveyEditor();
-                } catch (e) {
-                  if (ctx.mounted) {
-                    ScaffoldMessenger.of(ctx).showSnackBar(
-                      SnackBar(content: Text('Error adding question: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
-                    );
-                  }
-                }
-              }
-            },
-            child: const Text('Add Question'),
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        backgroundColor: Colors.white,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 500),
+          child: Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      width: 42,
+                      height: 42,
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [_indigo600, Color(0xFF6366F1)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: const Icon(Icons.help_outline_rounded, color: Colors.white, size: 20),
+                    ),
+                    const SizedBox(width: 14),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Add Question to Section', style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16, color: _adminPrimary)),
+                          Text('Configure item prompt and clinical telemetry', style: TextStyle(fontSize: 11, color: Color(0xFF64748B))),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.close_rounded, color: Color(0xFF94A3B8)),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                const Text('Question Text', style: TextStyle(fontSize: 13, fontWeight: FontWeight.w700, color: Color(0xFF334155))),
+                const SizedBox(height: 6),
+                TextField(
+                  controller: textCtrl,
+                  decoration: InputDecoration(
+                    hintText: 'e.g. How often do you experience withdrawal symptoms?',
+                    filled: true,
+                    fillColor: const Color(0xFFF8FAFC),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFCBD5E1))),
+                    focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: _indigo600, width: 2)),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF64748B),
+                        side: const BorderSide(color: Color(0xFFCBD5E1)),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+                      ),
+                      onPressed: () => Navigator.of(ctx).pop(),
+                      child: const Text('Cancel', style: TextStyle(fontWeight: FontWeight.w600)),
+                    ),
+                    const SizedBox(width: 12),
+                    FilledButton(
+                      style: FilledButton.styleFrom(
+                        backgroundColor: _indigo600,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        padding: const EdgeInsets.symmetric(horizontal: 22, vertical: 12),
+                      ),
+                      onPressed: () async {
+                        if (textCtrl.text.trim().isNotEmpty) {
+                          try {
+                            await AdminService.saveQuestion({
+                              'sectionId': sectionId,
+                              'text': textCtrl.text.trim(),
+                              'type': 'select',
+                            });
+                            if (ctx.mounted) Navigator.of(ctx).pop();
+                            if (mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Question added successfully.')),
+                              );
+                              _loadSurveyEditor();
+                            }
+                          } catch (e) {
+                            if (ctx.mounted) {
+                              ScaffoldMessenger.of(ctx).showSnackBar(
+                                SnackBar(content: Text('Error adding question: ${e.toString().replaceFirst('Exception: ', '')}'), backgroundColor: _rose600),
+                              );
+                            }
+                          }
+                        }
+                      },
+                      child: const Text('Add Question', style: TextStyle(fontWeight: FontWeight.w700)),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-        ],
+        ),
       ),
     );
   }
