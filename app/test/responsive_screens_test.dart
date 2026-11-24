@@ -81,10 +81,10 @@ void main() {
                 find.byType(TextFormField),
                 'test@example.invalid',
               );
-              final sendCode = find.text('Send code');
+              final sendCode = find.text('Send OTP');
               expect(
                 tester
-                    .getSize(find.widgetWithText(FilledButton, 'Send code'))
+                    .getSize(find.widgetWithText(FilledButton, 'Send OTP'))
                     .width,
                 size.width >= 768 ? 320 : size.width - 48,
               );

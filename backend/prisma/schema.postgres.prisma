@@ -1,0 +1,171 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email           String?         @unique
+  role            String          @default("user")
+  emailVerifiedAt DateTime?       @map("email_verified_at") @db.Timestamptz(6)
+  phoneNumber     String?         @unique @map("phone_number")
+  createdAt       DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime        @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  profile         Profile?
+  doctor          Doctor?
+  patient         Patient?
+  admin           Admin?
+  refreshTokens   RefreshToken[]
+  surveys         SurveySubmission[]
+  wellbeingCheckIns WellbeingCheckIn[]
+
+  @@map("users")
+}
+
+model OtpChallenge {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String
+  role       String
+  codeHash   String    @map("code_hash")
+  expiresAt  DateTime  @map("expires_at") @db.Timestamptz(6)
+  attempts   Int       @default(0)
+  consumedAt DateTime? @map("consumed_at") @db.Timestamptz(6)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([email, createdAt(sort: Desc)], map: "otp_challenges_email_created_idx")
+  @@map("otp_challenges")
+}
+
+model Profile {
+  userId       String   @id @map("user_id") @db.Uuid
+  fullName     String   @map("full_name")
+  ageGroup     String   @map("age_group")
+  phoneNumber  String?  @map("phone_number")
+  postcode     String
+  gender       String
+  occupation   String
+  maritalStatus String  @map("marital_status")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("profiles")
+}
+
+model Doctor {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @unique @map("user_id") @db.Uuid
+  fullName       String   @map("full_name")
+  email          String   @unique
+  specialization String   @default("General Practitioner")
+  phoneNumber    String?  @map("phone_number")
+  servicePincode String   @default("") @map("service_pincode")
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("doctors")
+}
+
+model Patient {
+  id            String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId        String   @unique @map("user_id") @db.Uuid
+  fullName      String   @map("full_name")
+  email         String?  @unique
+  phoneNumber   String?  @map("phone_number")
+  ageGroup      String   @default("") @map("age_group")
+  gender        String   @default("")
+  postcode      String   @default("")
+  occupation    String   @default("")
+  maritalStatus String   @default("") @map("marital_status")
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("patients")
+}
+
+model Admin {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @unique @map("user_id") @db.Uuid
+  fullName    String   @map("full_name")
+  email       String   @unique
+  phoneNumber String?  @map("phone_number")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("admins")
+}
+
+model RefreshToken {
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz(6)
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt], map: "refresh_tokens_expiry_idx")
+  @@map("refresh_tokens")
+}
+
+model SmsOtpRequest {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  phoneNumber String   @map("phone_number")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([phoneNumber, createdAt(sort: Desc)], map: "sms_otp_requests_phone_created_idx")
+  @@map("sms_otp_requests")
+}
+
+model SchemaMigration {
+  name      String   @id
+  appliedAt DateTime @default(now()) @map("applied_at") @db.Timestamptz(6)
+
+  @@map("schema_migrations")
+}
+
+model SurveySubmission {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @map("user_id") @db.Uuid
+  type        String
+  answers     Json     @default("{}")
+  score       Int?
+  completedAt DateTime? @map("completed_at") @db.Timestamptz(6)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type, updatedAt(sort: Desc)])
+  @@map("survey_submissions")
+}
+
+model SurveyQuestion {
+  id          String   @id
+  surveyType  String   @map("survey_type")
+  questionId  String   @map("question_id")
+  sourceOrder Int      @map("source_order")
+  definition  Json
+  updatedAt   DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@unique([surveyType, questionId], map: "survey_questions_type_question_key")
+  @@index([surveyType, sourceOrder], map: "survey_questions_type_order_idx")
+  @@map("survey_questions")
+}
+
+model WellbeingCheckIn {
+  userId    String   @map("user_id") @db.Uuid
+  topic     String
+  responses Json
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([userId, topic])
+  @@map("wellbeing_check_ins")
+}

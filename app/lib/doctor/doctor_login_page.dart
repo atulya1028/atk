@@ -1,10 +1,11 @@
 import 'dart:async';
+
 import 'package:flutter/services.dart';
 import 'package:material_ui/material_ui.dart';
+
 import 'doctor_dashboard_page.dart';
 import 'doctor_profile_setup_page.dart';
 import 'doctor_service.dart';
-import '../common/widgets/novtek_brand_widgets.dart';
 
 class DoctorLoginPage extends StatefulWidget {
   const DoctorLoginPage({super.key});
@@ -57,7 +58,8 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
       if (!mounted) return;
 
       final isRegistered = result['isRegistered'] as bool? ?? false;
-      final serverMessage = result['message'] as String? ??
+      final serverMessage =
+          result['message'] as String? ??
           (isRegistered
               ? 'This email ID is already registered. Verification code sent.'
               : 'New doctor registration. Verification code sent.');
@@ -67,7 +69,9 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
           content: Row(
             children: [
               Icon(
-                isRegistered ? Icons.check_circle_outline : Icons.mark_email_read_outlined,
+                isRegistered
+                    ? Icons.check_circle_outline
+                    : Icons.mark_email_read_outlined,
                 color: Colors.white,
                 size: 20,
               ),
@@ -80,10 +84,14 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
               ),
             ],
           ),
-          backgroundColor: isRegistered ? _primaryColor : Colors.indigo.shade700,
+          backgroundColor: isRegistered
+              ? _primaryColor
+              : Colors.indigo.shade700,
           duration: const Duration(seconds: 4),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
 
@@ -99,7 +107,9 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
           content: Text(e.toString().replaceFirst('Exception: ', '')),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       );
     } finally {
@@ -113,7 +123,9 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
 
     if (otp.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the 6-digit verification code.')),
+        const SnackBar(
+          content: Text('Please enter the 6-digit verification code.'),
+        ),
       );
       return;
     }
@@ -133,7 +145,7 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
       };
 
       if (!isProfileComplete) {
-        Navigator.of(context).pushReplacement(
+        Navigator.of(context).push(
           MaterialPageRoute<void>(
             builder: (_) => DoctorProfileSetupPage(
               email: email,
@@ -161,334 +173,379 @@ class _DoctorLoginPageState extends State<DoctorLoginPage> {
     }
   }
 
+  void _goBack() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.maybePop();
+    } else {
+      navigator.pushReplacementNamed('/login');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final emailBorder = OutlineInputBorder(
+      borderRadius: BorderRadius.circular(16),
+      borderSide: const BorderSide(color: Color(0xFFECECEC)),
+    );
     return Scaffold(
       backgroundColor: _primaryColor,
       body: SafeArea(
         bottom: false,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 3,
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white.withValues(alpha: 0.12),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha: 0.2),
-                            blurRadius: 20,
-                            offset: const Offset(0, 4),
+        child: LayoutBuilder(
+          builder: (context, viewport) {
+            final headerHeight = (viewport.maxHeight * 0.4).clamp(
+              232.0,
+              double.infinity,
+            );
+            final panelHeight = (viewport.maxHeight - headerHeight).clamp(
+              0.0,
+              double.infinity,
+            );
+            final wide = viewport.maxWidth >= 600;
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Stack(
+                    children: [
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: headerHeight),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 24,
                           ),
-                        ],
-                      ),
-                      child: const NovtekLogoIcon(size: 68),
-                    ),
-                    const SizedBox(height: 14),
-                    const Text(
-                      'NOVTEK ATK',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        letterSpacing: 0.8,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Doctor Portal & Clinical Oversight',
-                      style: TextStyle(
-                        color: Colors.white.withValues(alpha: 0.88),
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 7,
-              child: Container(
-                width: double.infinity,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(32),
-                    topRight: Radius.circular(32),
-                  ),
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 24),
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Center(
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(maxWidth: 500),
-                      child: Form(
-                        key: _formKey,
-                        child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        // Role Badge
-                        Center(
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: _primaryColor.withValues(alpha: 0.1),
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: const Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.verified_user_outlined, size: 16, color: _primaryColor),
-                                SizedBox(width: 6),
-                                Text(
-                                  'Authorized Clinician Access',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
-                                    color: _primaryColor,
-                                  ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircleAvatar(
+                                radius: wide ? 50 : 40,
+                                backgroundColor: const Color(0x26FFFFFF),
+                                child: Icon(
+                                  Icons.medical_services_rounded,
+                                  color: Colors.white,
+                                  size: wide ? 60 : 48,
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Doctor Sign In',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: _secondaryColor,
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        Text(
-                          'Enter your registered doctor email to view assigned patients and assessment scores.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: Colors.grey.shade600,
-                            height: 1.4,
-                          ),
-                        ),
-                        const SizedBox(height: 24),
-                        TextFormField(
-                          controller: _emailController,
-                          enabled: !_isOtpSent && !_isLoading,
-                          keyboardType: TextInputType.emailAddress,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          inputFormatters: [
-                            FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                            TextInputFormatter.withFunction((oldValue, newValue) {
-                              return newValue.copyWith(
-                                text: newValue.text.toLowerCase(),
-                              );
-                            }),
-                          ],
-                          decoration: InputDecoration(
-                            labelText: 'Doctor Email Address (Lowercase)',
-                            hintText: 'doctor@hospital.org',
-                            prefixIcon: const Icon(Icons.local_hospital_outlined),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          validator: (v) {
-                            final email = (v ?? '').trim();
-                            if (email.isEmpty) {
-                              return 'Doctor email address is required';
-                            }
-                            if (email.contains(RegExp(r'[A-Z]'))) {
-                              return 'Email must not contain uppercase letters';
-                            }
-                            if (email.contains(' ')) {
-                              return 'Email cannot contain spaces';
-                            }
-                            final emailRegex = RegExp(r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$');
-                            if (!emailRegex.hasMatch(email)) {
-                              return 'Enter a valid lowercase email (e.g. doctor@hospital.org)';
-                            }
-                            return null;
-                          },
-                        ),
-                        if (_isOtpSent) ...[
-                          const SizedBox(height: 16),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: (_isRegisteredEmail ? _primaryColor : Colors.indigo).withValues(alpha: 0.08),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: (_isRegisteredEmail ? _primaryColor : Colors.indigo).withValues(alpha: 0.25),
                               ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  _isRegisteredEmail
-                                      ? Icons.verified_user_outlined
-                                      : Icons.person_add_alt_1_outlined,
-                                  color: _isRegisteredEmail ? _primaryColor : Colors.indigo,
-                                  size: 18,
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Doctor Portal',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.w700,
                                 ),
-                                const SizedBox(width: 8),
-                                Expanded(
-                                  child: Text(
-                                    _isRegisteredEmail
-                                        ? 'Email ID is already registered. Code sent to sign in.'
-                                        : 'New doctor registration. Code sent to complete setup.',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      color: _isRegisteredEmail ? _primaryColor : Colors.indigo,
-                                    ),
-                                  ),
+                              ),
+                              const SizedBox(height: 10),
+                              const Text(
+                                'Novtek Healthcare Assessment',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Color(0xDEFFFFFF),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                              ],
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Positioned(
+                        top: 8,
+                        left: 8,
+                        child: BackButton(
+                          color: Colors.white,
+                          onPressed: _goBack,
+                        ),
+                      ),
+                    ],
+                  ),
+                  Container(
+                    constraints: BoxConstraints(minHeight: panelHeight),
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(40),
+                      ),
+                    ),
+                    padding: EdgeInsets.fromLTRB(
+                      wide ? 32 : 24,
+                      wide ? 40 : 28,
+                      wide ? 32 : 24,
+                      32,
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const Text(
+                            'Doctor Login',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: _secondaryColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          const SizedBox(height: 14),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Sign in to manage patient care & assessments',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Color(0xFF757575),
+                              fontSize: 14,
+                            ),
+                          ),
+                          const SizedBox(height: 26),
                           TextFormField(
-                            controller: _otpController,
-                            enabled: !_isLoading,
-                            keyboardType: TextInputType.number,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            controller: _emailController,
+                            enabled: !_isOtpSent && !_isLoading,
+                            keyboardType: TextInputType.emailAddress,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              LengthLimitingTextInputFormatter(6),
+                              FilteringTextInputFormatter.deny(RegExp(r'\s')),
+                              TextInputFormatter.withFunction((
+                                oldValue,
+                                newValue,
+                              ) {
+                                return newValue.copyWith(
+                                  text: newValue.text.toLowerCase(),
+                                );
+                              }),
                             ],
                             decoration: InputDecoration(
-                              labelText: '6-Digit Verification Code',
-                              hintText: '123456',
-                              prefixIcon: const Icon(Icons.lock_outline),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(15),
+                              hintText: 'Doctor Email Address',
+                              hintStyle: const TextStyle(
+                                color: Color(0xFF9E9E9E),
+                              ),
+                              prefixIcon: const Icon(
+                                Icons.mail_outline_rounded,
+                                color: Color(0xFF3D4748),
+                              ),
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                                vertical: 13,
+                              ),
+                              border: emailBorder,
+                              enabledBorder: emailBorder,
+                              focusedBorder: emailBorder.copyWith(
+                                borderSide: const BorderSide(
+                                  color: _primaryColor,
+                                ),
                               ),
                             ),
                             validator: (v) {
-                              final code = (v ?? '').trim();
-                              if (code.isEmpty) {
-                                return 'Verification code is required';
+                              final email = (v ?? '').trim();
+                              if (email.isEmpty) {
+                                return 'Doctor email address is required';
                               }
-                              if (code.length != 6 || !RegExp(r'^\d{6}$').hasMatch(code)) {
-                                return 'Enter the full 6-digit verification code';
+                              if (email.contains(RegExp(r'[A-Z]'))) {
+                                return 'Email must not contain uppercase letters';
+                              }
+                              if (email.contains(' ')) {
+                                return 'Email cannot contain spaces';
+                              }
+                              final emailRegex = RegExp(
+                                r'^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$',
+                              );
+                              if (!emailRegex.hasMatch(email)) {
+                                return 'Enter a valid lowercase email (e.g. doctor@hospital.org)';
                               }
                               return null;
                             },
                           ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: TextButton.icon(
-                              onPressed: _isLoading
-                                  ? null
-                                  : () {
-                                      setState(() {
-                                        _isOtpSent = false;
-                                        _otpController.clear();
-                                        _resendTimer?.cancel();
-                                        _secondsRemaining = 0;
-                                      });
-                                    },
-                              icon: const Icon(Icons.edit_outlined, size: 14),
-                              label: const Text('Change email', style: TextStyle(fontSize: 12)),
-                            ),
-                          ),
-                        ],
-                        const SizedBox(height: 20),
-                        FilledButton(
-                          onPressed: _isLoading
-                              ? null
-                              : (_isOtpSent ? _verifyOtp : _sendOtp),
-                          style: FilledButton.styleFrom(
-                            backgroundColor: _primaryColor,
-                            minimumSize: const Size(double.infinity, 52),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                          ),
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : Text(
-                                  _isOtpSent ? 'Verify & Access Portal' : 'Send Login Code',
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                          if (_isOtpSent) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 10,
+                              ),
+                              decoration: BoxDecoration(
+                                color:
+                                    (_isRegisteredEmail
+                                            ? _primaryColor
+                                            : Colors.indigo)
+                                        .withValues(alpha: 0.08),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color:
+                                      (_isRegisteredEmail
+                                              ? _primaryColor
+                                              : Colors.indigo)
+                                          .withValues(alpha: 0.25),
                                 ),
-                        ),
-                        if (_isOtpSent) ...[
-                          const SizedBox(height: 16),
-                          Center(
-                            child: _secondsRemaining > 0
-                                ? Text(
-                                    'Resend code in ${_secondsRemaining}s',
-                                    style: TextStyle(
-                                      color: Colors.grey.shade600,
-                                      fontSize: 13,
-                                    ),
-                                  )
-                                : TextButton(
-                                    onPressed: _isLoading ? null : _sendOtp,
-                                    child: const Text('Resend Login Code'),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _isRegisteredEmail
+                                        ? Icons.verified_user_outlined
+                                        : Icons.person_add_alt_1_outlined,
+                                    color: _isRegisteredEmail
+                                        ? _primaryColor
+                                        : Colors.indigo,
+                                    size: 18,
                                   ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            'Verification codes expire in 10 minutes.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey.shade500,
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _isRegisteredEmail
+                                          ? 'Email ID is already registered. Code sent to sign in.'
+                                          : 'New doctor registration. Code sent to complete setup.',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w600,
+                                        color: _isRegisteredEmail
+                                            ? _primaryColor
+                                            : Colors.indigo,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            TextButton.icon(
-                              onPressed: () {
-                                Navigator.of(context).pushReplacementNamed('/login');
+                            const SizedBox(height: 14),
+                            TextFormField(
+                              controller: _otpController,
+                              enabled: !_isLoading,
+                              keyboardType: TextInputType.number,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(6),
+                              ],
+                              decoration: InputDecoration(
+                                labelText: '6-Digit Verification Code',
+                                hintText: '123456',
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              validator: (v) {
+                                final code = (v ?? '').trim();
+                                if (code.isEmpty) {
+                                  return 'Verification code is required';
+                                }
+                                if (code.length != 6 ||
+                                    !RegExp(r'^\d{6}$').hasMatch(code)) {
+                                  return 'Enter the full 6-digit verification code';
+                                }
+                                return null;
                               },
-                              icon: const Icon(Icons.arrow_back, size: 16),
-                              label: const Text('Patient Sign In'),
-                              style: TextButton.styleFrom(
-                                foregroundColor: Colors.grey.shade700,
+                            ),
+                            const SizedBox(height: 8),
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton.icon(
+                                onPressed: _isLoading
+                                    ? null
+                                    : () {
+                                        setState(() {
+                                          _isOtpSent = false;
+                                          _otpController.clear();
+                                          _resendTimer?.cancel();
+                                          _secondsRemaining = 0;
+                                        });
+                                      },
+                                icon: const Icon(Icons.edit_outlined, size: 14),
+                                label: const Text(
+                                  'Change email',
+                                  style: TextStyle(fontSize: 12),
+                                ),
                               ),
                             ),
                           ],
-                        ),
-                      ],
+                          const SizedBox(height: 28),
+                          FilledButton(
+                            onPressed: _isLoading
+                                ? null
+                                : (_isOtpSent ? _verifyOtp : _sendOtp),
+                            style: FilledButton.styleFrom(
+                              backgroundColor: _primaryColor,
+                              foregroundColor: Colors.white,
+                              minimumSize: const Size(double.infinity, 46),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                            ),
+                            child: _isLoading
+                                ? const SizedBox(
+                                    width: 22,
+                                    height: 22,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      color: Colors.white,
+                                    ),
+                                  )
+                                : Text(
+                                    _isOtpSent
+                                        ? 'Verify & Access Portal'
+                                        : 'Send OTP',
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                          if (_isOtpSent) ...[
+                            const SizedBox(height: 16),
+                            Center(
+                              child: _secondsRemaining > 0
+                                  ? Text(
+                                      'Resend code in ${_secondsRemaining}s',
+                                      style: TextStyle(
+                                        color: Colors.grey.shade600,
+                                        fontSize: 13,
+                                      ),
+                                    )
+                                  : TextButton(
+                                      onPressed: _isLoading ? null : _sendOtp,
+                                      child: const Text('Resend Login Code'),
+                                    ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Verification codes expire in 10 minutes.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey.shade500,
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 20),
+                          Center(
+                            child: TextButton.icon(
+                              onPressed: () =>
+                                  Navigator.of(context)
+                                      .pushReplacementNamed('/login'),
+                              icon: const Icon(
+                                Icons.person_outline_rounded,
+                                size: 18,
+                              ),
+                              label: const Text('Login as Patient / User'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: _primaryColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ),
-          ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

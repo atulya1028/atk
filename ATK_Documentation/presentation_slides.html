@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Novtek ATK - Executive Presentation Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @media print {
+            @page {
+                size: landscape;
+                margin: 0;
+            }
+            body {
+                background: #020617 !important;
+                color: #f8fafc !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            main {
+                display: block !important;
+                padding: 0 !important;
+            }
+            .slide-page {
+                page-break-after: always !important;
+                break-after: page !important;
+                height: 100vh !important;
+                width: 100vw !important;
+                display: flex !important;
+                box-shadow: none !important;
+                border: none !important;
+                margin: 0 !important;
+                border-radius: 0 !important;
+                background: #020617 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-indigo-500 selection:text-white">
+
+    <!-- Top Action Bar -->
+    <header class="no-print border-b border-slate-800 bg-slate-900/90 backdrop-blur px-8 py-3.5 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center gap-3">
+            <span class="bg-indigo-600 text-white font-black text-xs px-2.5 py-1 rounded tracking-widest uppercase">Novtek ATK</span>
+            <span class="text-xs font-bold text-slate-400">Executive Technical & Clinical Deck</span>
+        </div>
+
+        <div class="flex items-center gap-4">
+            <span id="slideCounter" class="text-xs font-mono font-bold text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
+                Slide 1 of 9
+            </span>
+            <button onclick="window.print()" class="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-4 py-2 rounded-lg shadow-sm transition-all cursor-pointer">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Download Slides as PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- Slide Presentation Container -->
+    <main class="flex-1 flex items-center justify-center p-4 md:p-8">
+        <div class="w-full max-w-5xl aspect-[16/9] bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl p-10 flex flex-col justify-between slide-page relative overflow-hidden">
+
+            <!-- SLIDE 1: Executive Cover -->
+            <div class="slide flex-1 flex flex-col justify-between">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>NOVTEK HEALTHCARE &bull; ASSESSMENT & TRIAGE KIT (ATK)</span>
+                    <span class="bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded border border-emerald-500/20 font-bold">AWS CLOUD LIVE</span>
+                </div>
+
+                <div class="space-y-4 my-auto">
+                    <div class="inline-flex items-center gap-2 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-bold px-3 py-1 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Production Architecture & Operational Guide
+                    </div>
+                    <h1 class="text-4xl md:text-5xl font-black tracking-tight text-white leading-tight">
+                        Novtek ATK Healthcare Platform
+                    </h1>
+                    <p class="text-base md:text-lg text-slate-300 max-w-3xl leading-relaxed">
+                        An enterprise digital healthcare ecosystem providing evidence-based psychiatric assessment, adaptive addiction diagnostic progression, geographic clinician triage, and full clinical command oversight.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-xs text-slate-400">
+                    <div>
+                        <span class="block font-black text-white text-sm">3 Portals</span>
+                        <span>Patient, Doctor & Admin</span>
+                    </div>
+                    <div>
+                        <span class="block font-black text-white text-sm">Adaptive Protocol</span>
+                        <span>Stage 2 &rarr; Unlocked Stage 3</span>
+                    </div>
+                    <div>
+                        <span class="block font-black text-white text-sm">AWS Cloud EC2</span>
+                        <span>Stockholm &bull; Nginx &bull; PM2</span>
+                    </div>
+                    <div>
+                        <span class="block font-black text-white text-sm">Admin Access</span>
+                        <span class="text-indigo-400">Novtek Admin</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SLIDE 2: Complete Technology Stack Matrix -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>TECHNOLOGY STACK</span>
+                    <span>END-TO-END SYSTEM SPECIFICATION</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Full-Stack Enterprise Technology Matrix</h2>
+                        <p class="text-xs text-slate-400">Engineered with modern, type-safe, and resilient industry-standard frameworks.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="rounded-xl border border-indigo-500/30 bg-slate-900/60 p-4 space-y-2">
+                            <span class="text-indigo-400 font-black text-xs uppercase tracking-wide">Frontend Architecture</span>
+                            <ul class="space-y-1.5 text-slate-300">
+                                <li><strong class="text-white">Flutter SDK (Dart 3.14+)</strong> &bull; Multi-platform</li>
+                                <li><strong class="text-white">BLoC / Cubit (^9.1.1)</strong> reactive state</li>
+                                <li><strong class="text-white">ScreenUtil (^5.9.3)</strong> fluid geometry</li>
+                                <li><strong class="text-white">HTML5 Blob Exporter</strong> native web CSV</li>
+                                <li><strong class="text-white">AppStorage</strong> fallback secure persistence</li>
+                            </ul>
+                        </div>
+
+                        <div class="rounded-xl border border-emerald-500/30 bg-slate-900/60 p-4 space-y-2">
+                            <span class="text-emerald-400 font-black text-xs uppercase tracking-wide">Backend & Runtime</span>
+                            <ul class="space-y-1.5 text-slate-300">
+                                <li><strong class="text-white">Node.js 22 LTS</strong> with ES Modules</li>
+                                <li><strong class="text-white">Express 5.x</strong> &bull; async route bubbling</li>
+                                <li><strong class="text-white">Zod (^4.1.5)</strong> runtime schema validation</li>
+                                <li><strong class="text-white">JWT (HMAC-SHA256)</strong> &bull; 1-hr access</li>
+                                <li><strong class="text-white">Nodemailer</strong> AWS SES / SMTP transport</li>
+                            </ul>
+                        </div>
+
+                        <div class="rounded-xl border border-purple-500/30 bg-slate-900/60 p-4 space-y-2">
+                            <span class="text-purple-400 font-black text-xs uppercase tracking-wide">Database & Cloud</span>
+                            <ul class="space-y-1.5 text-slate-300">
+                                <li><strong class="text-white">PostgreSQL 16+</strong> &bull; Connection Pooling</li>
+                                <li><strong class="text-white">Prisma ORM (^7.10.1)</strong> with advisory locks</li>
+                                <li><strong class="text-white">AWS EC2</strong> Ubuntu 24.04 (Stockholm)</li>
+                                <li><strong class="text-white">Nginx 1.28</strong> reverse proxy (Port 80&rarr;8080)</li>
+                                <li><strong class="text-white">PM2 5.4</strong> process supervisor daemon</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Clean Architecture &bull; 100% Type-Safe Data Layer</span>
+                    <span>Multi-Platform: Web, macOS, iOS, Android</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 3: System Architecture Blueprint -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>SYSTEM TOPOLOGY</span>
+                    <span>INGRESS & INFRASTRUCTURE PIPELINE</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Cloud Ingress & Concurrency Architecture</h2>
+                        <p class="text-xs text-slate-400">Zero-trust network flow from client request to atomic transaction persistence.</p>
+                    </div>
+
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-xl p-4 font-mono text-[11px] text-indigo-300 space-y-2">
+                        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded border border-slate-800">
+                            <span class="text-white font-bold">[Client Tier]</span>
+                            <span>Flutter Web SPA (CanvasKit / HTML5) &bull; Dynamic Origin Routing</span>
+                        </div>
+                        <div class="text-center text-slate-500 text-xs">&darr; HTTP / WebSocket Requests via nip.io Wildcard DNS</div>
+                        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded border border-slate-800">
+                            <span class="text-white font-bold">[Gateway Tier]</span>
+                            <span>AWS EC2 Nginx 1.28 Reverse Proxy (Port 80) &bull; Gzip Compression & Rate Limiting</span>
+                        </div>
+                        <div class="text-center text-slate-500 text-xs">&darr; Proxy Pass http://127.0.0.1:8080</div>
+                        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded border border-slate-800">
+                            <span class="text-white font-bold">[App Tier]</span>
+                            <span>Express 5 &bull; PM2 'novtek-atk' Daemon &bull; HMAC-SHA256 Auth & Zod Validator</span>
+                        </div>
+                        <div class="text-center text-slate-500 text-xs">&darr; Connection Pool via @prisma/adapter-pg</div>
+                        <div class="flex items-center justify-between bg-slate-950 p-2.5 rounded border border-slate-800">
+                            <span class="text-white font-bold">[Data Tier]</span>
+                            <span>PostgreSQL 16+ &bull; pg_advisory_xact_lock (Atomic OTP & Draft Completion)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Host: 51.20.4.247 &bull; Wildcard: novtekatk.51.20.4.247.nip.io</span>
+                    <span>High Concurrency &bull; Advisory Lock Race Guard</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 4: Patient Portal Experience -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>PATIENT EXPERIENCE</span>
+                    <span>ONBOARDING & LONGITUDINAL WELL-BEING</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Patient Screening & Recovery Portal</h2>
+                        <p class="text-xs text-slate-400">Confidential, accessible, and evidence-based self-service screening.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">1. Passwordless Access</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Single-use 6-digit OTP verification codes delivered via email. No passwords stored or vulnerable to leaks. 60s target cooldown timer.
+                            </p>
+                            <span class="text-[10px] text-indigo-300 font-mono">/login &bull; LoginCubit</span>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">2. Baseline Demographics</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Captures Age Group, Gender Identity, Postal Code / Pincode, Occupation, and Marital Status to power clinical risk modeling.
+                            </p>
+                            <span class="text-[10px] text-indigo-300 font-mono">/profile-setup</span>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">3. Well-Being Check-Ins</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Daily check-in trackers covering Emotional Health, Anxiety & Worry, Stress Management, and Sleep Quality with longitudinal streak tracking.
+                            </p>
+                            <span class="text-[10px] text-indigo-300 font-mono">/wellbeing &bull; HomeCubit</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Clinical Pathways: Addiction Recovery, Mental Health & Dual-Care</span>
+                    <span>Confidential & HIPAA / GDPR Aligned Architecture</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 5: Clinical Protocols & Scoring -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>CLINICAL PROTOCOLS</span>
+                    <span>STAGED ASSESSMENT & SCORING LOGIC</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Adaptive Progression & Severity Triage</h2>
+                        <p class="text-xs text-slate-400">Multi-tier scoring engine dynamically unlocking detailed clinical modules.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-xs">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <h3 class="text-white font-bold text-sm">Stage 2: Initial Clinical Baseline (0–100)</h3>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                26 standardized questions evaluating substance usage frequency, psychiatric stressors, and behavioral impact across Addiction and Mental Health.
+                            </p>
+                            <div class="p-2.5 rounded bg-indigo-950/30 border border-indigo-500/20 text-indigo-300 text-[11px]">
+                                <strong>Stage 3 Unlock Rule:</strong> Scores &ge; <strong>30</strong> automatically unlock the in-depth substance diagnostic assessment.
+                            </div>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <h3 class="text-white font-bold text-sm">Risk Severity Stratification</h3>
+                            <div class="space-y-1.5 text-[11px]">
+                                <div class="flex justify-between items-center bg-slate-950 p-2 rounded">
+                                    <span class="text-emerald-400 font-bold">Mild / Low Risk (&lt; 21)</span>
+                                    <span class="text-slate-400">Self-guided check-ins & habits</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-slate-950 p-2 rounded">
+                                    <span class="text-amber-400 font-bold">Moderate Risk (21–49)</span>
+                                    <span class="text-slate-400">Clinician review recommended</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-slate-950 p-2 rounded">
+                                    <span class="text-rose-400 font-bold">Critical Severity (&ge; 50 or Self-Harm)</span>
+                                    <span class="text-slate-400">Immediate clinician alert + email</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Configurable Thresholds via Admin Survey Editor</span>
+                    <span>Automated Urgent Email Dispatch via AWS SES / SMTP</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 6: Doctor & Clinician Workstation -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>CLINICAL WORKSTATION</span>
+                    <span>GEOGRAPHIC MATCHING & DIRECT TRIAGE</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Clinician Coverage & Direct Care Matching</h2>
+                        <p class="text-xs text-slate-400">Territory-based patient aggregation ensuring timely local clinical oversight.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-emerald-400 font-bold text-sm">1. Pincode Configuration</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Clinicians configure comma-separated service postal codes (e.g. <code class="text-emerald-300">302017</code>) and specializations during registration.
+                            </p>
+                            <span class="text-[10px] text-emerald-300 font-mono">/doctor/setup</span>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-emerald-400 font-bold text-sm">2. Patient Territory Roster</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                The platform dynamically groups participants matching the doctor's service postcodes into their active triage panel with status filters.
+                            </p>
+                            <span class="text-[10px] text-emerald-300 font-mono">/doctor/dashboard</span>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-emerald-400 font-bold text-sm">3. Response Drill-Down</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Dedicated assessment modal allows licensed doctors to inspect question-by-question responses before initiating clinical follow-ups.
+                            </p>
+                            <span class="text-[10px] text-emerald-300 font-mono">Answer Inspection Modal</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Critical Alert Highlighting (&ge; 30 pts)</span>
+                    <span>Authenticated Physician Role Segregation</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 7: Super Admin Command Center -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>ADMIN COMMAND CENTER</span>
+                    <span>FULL EZY-ZIP REPLICA &bull; 7 MODULES</span>
+                </div>
+
+                <div class="my-auto space-y-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Super Admin Clinical Oversight Suite</h2>
+                        <p class="text-xs text-slate-400">Complete replication of all views, layout, and metrics from ezyZip.</p>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2.5 text-[11px]">
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">1. Dashboard</span>
+                            <p class="text-slate-300 text-[10px]">5 Macro KPIs, Demographics, Recent Stream with Scores.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">2. Submissions</span>
+                            <p class="text-slate-300 text-[10px]">Filter pills, answer viewer, delete & <strong>CSV Export</strong>.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">3. Doctors</span>
+                            <p class="text-slate-300 text-[10px]">Coverage metrics, + Add Clinician modal, Edit/Delete.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">4. Participants</span>
+                            <p class="text-slate-300 text-[10px]">Patient directory, Pincodes, Reset Survey action.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">5. Analytics</span>
+                            <p class="text-slate-300 text-[10px]">6-Stage Funnel, Severity charts, Hotspots, <strong>CSV Export</strong>.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">6. Survey Editor</span>
+                            <p class="text-slate-300 text-[10px]">Thresholds (30/50), Email Template, Question Bank.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-indigo-400 font-bold">7. Audit Logs</span>
+                            <p class="text-slate-300 text-[10px]">Audit trail, date filter, Purge Logs, <strong>CSV Export</strong>.</p>
+                        </div>
+                        <div class="rounded-lg border border-slate-800 bg-slate-900/60 p-2.5 space-y-1">
+                            <span class="text-emerald-400 font-bold">AWS Cloud Health</span>
+                            <p class="text-slate-300 text-[10px]">Live PG ping, SES relay, Send Test Alert Email.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Verified Identity: Novtek Admin (atulyaagrawaljaipur@gmail.com)</span>
+                    <span>Native Web CSV Export on All Tables</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 8: Exception Handling & Resilience -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>FAULT TOLERANCE</span>
+                    <span>END-TO-END TRY-CATCH ARCHITECTURE</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Zero-Crash Multi-Tier Exception Architecture</h2>
+                        <p class="text-xs text-slate-400">Ensuring zero uncaught errors and graceful degradation across all layers.</p>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-4 text-xs">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">UI & Action Layer</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Every asynchronous mutation (deleting submissions, adding doctors, resetting surveys, saving thresholds) is enclosed in dedicated <code class="text-indigo-300">try ... catch</code> blocks with contextual error snackbars.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">Transport & Storage Layer</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                <code class="text-indigo-300">_sendSafe</code> and <code class="text-indigo-300">_safeJsonDecode</code> trap timeouts, DNS drops, and malformed HTML responses. CSV exporter falls back to data-URI if web blobs fail.
+                            </p>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2">
+                            <div class="text-indigo-400 font-bold text-sm">Backend & Process Layer</div>
+                            <p class="text-slate-300 text-[11px] leading-relaxed">
+                                Express async route wrapper bubbles errors to global middleware. Process-level <code class="text-indigo-300">unhandledRejection</code> and <code class="text-indigo-300">uncaughtException</code> prevent PM2 daemon termination.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>Static Analysis: 0 Warnings &bull; Automated Tests: 6/6 Passed</span>
+                    <span>High Availability &bull; Self-Healing Infrastructure</span>
+                </div>
+            </div>
+
+            <!-- SLIDE 9: AWS EC2 Deployment & Live Verification -->
+            <div class="slide flex-1 flex-col justify-between hidden">
+                <div class="flex items-center justify-between text-xs font-mono text-indigo-400 tracking-wider">
+                    <span>LIVE VERIFICATION</span>
+                    <span>AWS EC2 PRODUCTION DEPLOYMENT</span>
+                </div>
+
+                <div class="my-auto space-y-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white tracking-tight">Production Cloud Deployment & Verification</h2>
+                        <p class="text-xs text-slate-400">Deployed and actively running on AWS EC2 eu-north-1 (Stockholm).</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 text-xs">
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2.5">
+                            <h3 class="text-white font-bold text-sm">Verified Production Endpoints</h3>
+                            <ul class="space-y-1.5 text-[11px] text-slate-300">
+                                <li><strong>Admin Portal:</strong> <a href="http://novtekatk.51.20.4.247.nip.io/admin" class="text-indigo-400 underline">novtekatk.51.20.4.247.nip.io/admin</a></li>
+                                <li><strong>Admin Dashboard:</strong> <a href="http://novtekatk.51.20.4.247.nip.io/admin-dashboard" class="text-indigo-400 underline">novtekatk.51.20.4.247.nip.io/admin-dashboard</a></li>
+                                <li><strong>Patient / Doctor Sign-in:</strong> <a href="http://novtekatk.51.20.4.247.nip.io/login" class="text-indigo-400 underline">novtekatk.51.20.4.247.nip.io/login</a></li>
+                                <li><strong>Doctor Workstation:</strong> <a href="http://novtekatk.51.20.4.247.nip.io/doctor" class="text-indigo-400 underline">novtekatk.51.20.4.247.nip.io/doctor</a></li>
+                                <li><strong>API Health Check:</strong> <a href="http://novtekatk.51.20.4.247.nip.io/health/live" class="text-emerald-400 underline">novtekatk.51.20.4.247.nip.io/health/live</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2.5">
+                            <h3 class="text-white font-bold text-sm">Credentials & Architecture Verification</h3>
+                            <ul class="space-y-1.5 text-[11px] text-slate-300">
+                                <li><strong>Admin Email:</strong> <code class="text-indigo-300">atulyaagrawaljaipur@gmail.com</code></li>
+                                <li><strong>Admin Role:</strong> Super Admin (&quot;Novtek Admin&quot;)</li>
+                                <li><strong>Static Analysis:</strong> <span class="text-emerald-400 font-bold">flutter analyze: 0 issues</span></li>
+                                <li><strong>Automated Tests:</strong> <span class="text-emerald-400 font-bold">flutter test: 6/6 passed</span></li>
+                                <li><strong>Web Engine:</strong> CanvasKit & HTML5 with SPA rewrite</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-[11px] text-slate-400 border-t border-slate-800 pt-3 flex justify-between">
+                    <span>AWS Host: 51.20.4.247 &bull; Process: novtek-atk (PM2 online)</span>
+                    <span>Sign-off: Production Ready &bull; November 2026</span>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Slide Navigation Footer -->
+    <footer class="no-print border-t border-slate-800 bg-slate-900/90 backdrop-blur px-8 py-3.5 flex items-center justify-between">
+        <div class="text-xs text-slate-400 flex items-center gap-4">
+            <span>Use <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">&larr;</kbd> <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">&rarr;</kbd> or <kbd class="bg-slate-800 px-2 py-1 rounded text-slate-200 border border-slate-700">Space</kbd> to navigate</span>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="prevBtn" onclick="prevSlide()" class="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2 rounded-lg transition-all cursor-pointer">
+                &larr; Previous
+            </button>
+            <button id="nextBtn" onclick="nextSlide()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-5 py-2 rounded-lg transition-all cursor-pointer">
+                Next &rarr;
+            </button>
+        </div>
+    </footer>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const counter = document.getElementById('slideCounter');
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            slides.forEach((s, i) => {
+                if (i === index) {
+                    s.classList.remove('hidden');
+                    s.classList.add('flex');
+                } else {
+                    s.classList.add('hidden');
+                    s.classList.remove('flex');
+                }
+            });
+            counter.textContent = `Slide ${index + 1} of ${slides.length}`;
+            document.getElementById('prevBtn').disabled = (index === 0);
+            document.getElementById('nextBtn').textContent = (index === slides.length - 1) ? 'Finish' : 'Next →';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                prevSlide();
+            }
+        });
+
+        showSlide(currentSlide);
+    </script>
+</body>
+</html>

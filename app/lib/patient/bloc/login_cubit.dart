@@ -46,6 +46,11 @@ class LoginCubit extends Cubit<LoginState> {
 
   void showError(String message) => emit(state.copyWith(error: message));
 
+  void resetOtp() {
+    _timer?.cancel();
+    emit(state.copyWith(otpSent: false, seconds: 0, clearError: true));
+  }
+
   Future<void> sendCode(String email, {String role = 'user'}) async {
     emit(state.copyWith(loading: true, clearError: true));
     try {

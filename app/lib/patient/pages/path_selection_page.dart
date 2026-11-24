@@ -36,6 +36,8 @@ class PathSelectionPage extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        if (ModalRoute.of(context)?.canPop ?? false)
+                          const BackButton(color: Colors.white),
                         const NovtekBrandLockup(
                           iconSize: 32,
                           subtitle: 'CLINICAL ASSESSMENT',

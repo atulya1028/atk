@@ -144,9 +144,13 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          initialRoute: '/intro',
+          initialRoute: '/',
 
           routes: {
+            '/': (context) => BlocProvider(
+              create: (_) => IntroCubit(),
+              child: const IntroSliderPage(),
+            ),
             '/intro': (context) => BlocProvider(
               create: (_) => IntroCubit(),
               child: const IntroSliderPage(),
@@ -233,6 +237,7 @@ class MyApp extends StatelessWidget {
               case '/doctor':
               case '/doctor/login':
               case '/doctor-login':
+              case '/doctorlogin':
                 return MaterialPageRoute(
                   settings: settings,
                   builder: (_) => const DoctorLoginPage(),

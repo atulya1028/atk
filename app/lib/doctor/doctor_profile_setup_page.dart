@@ -176,7 +176,6 @@ class _DoctorProfileSetupPageState extends State<DoctorProfileSetupPage> {
         backgroundColor: Colors.white,
         foregroundColor: _secondaryColor,
         elevation: 1,
-        automaticallyImplyLeading: false,
       ),
       body: SafeArea(
         child: SingleChildScrollView(

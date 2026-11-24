@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:atk/patient/bloc/login_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
 import 'package:atk/patient/services/api_client.dart';
+
 import '../../common/widgets/novtek_brand_widgets.dart';
 
 /// Passwordless email sign-in with a one-time verification code.
@@ -29,75 +30,12 @@ class _LoginPageState extends State<LoginPage> {
   final _nodes = List.generate(6, (_) => FocusNode());
   bool _isDoctorMode = false;
 
+  bool _isEmailEdit = false;
+
   @override
   void initState() {
     super.initState();
     ApiClient.loadSavedBaseUrl();
-  }
-
-  void _showServerSettingsDialog() {
-    final controller = TextEditingController(text: ApiClient.baseUrl);
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Server Connection'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Backend API URL for your network:',
-              style: TextStyle(fontSize: 13, color: Colors.black54),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: controller,
-              decoration: const InputDecoration(
-                labelText: 'Backend URL',
-                hintText: 'http://novtekatk.51.20.4.247.nip.io',
-                border: OutlineInputBorder(),
-              ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 4,
-              children: [
-                ActionChip(
-                  label: const Text('AWS Cloud (51.20.4.247)'),
-                  onPressed: () => controller.text = 'http://novtekatk.51.20.4.247.nip.io',
-                ),
-                ActionChip(
-                  label: const Text('Wi-Fi (192.168.31.29)'),
-                  onPressed: () => controller.text = 'http://192.168.31.29:3000',
-                ),
-                ActionChip(
-                  label: const Text('Emulator (10.0.2.2)'),
-                  onPressed: () => controller.text = 'http://10.0.2.2:3000',
-                ),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: const Text('Cancel'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              ApiClient.setBaseUrl(controller.text);
-              Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Server set to ${ApiClient.baseUrl}')),
-              );
-              setState(() {});
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -116,15 +54,14 @@ class _LoginPageState extends State<LoginPage> {
 
   // ---------- Validation ----------
 
- String? _validateEmail(String? value) {
-  final email = (value ?? '').trim();
-  if (email.isEmpty) return 'Please enter your email address';
-  if (!RegExp(r'^[^\s@A-Z]+@[^\s@A-Z]+\.[^\s@A-Z]+$').hasMatch(email)) {
-    return 'Enter a valid lowercase email address';
+  String? _validateEmail(String? value) {
+    final email = (value ?? '').trim();
+    if (email.isEmpty) return 'Please enter your email address';
+    if (!RegExp(r'^[^\s@A-Z]+@[^\s@A-Z]+\.[^\s@A-Z]+$').hasMatch(email)) {
+      return 'Enter a valid lowercase email address';
+    }
+    return null;
   }
-  return null;
-}
-
 
   String? _validateCode() {
     final code = _code;
@@ -138,7 +75,10 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _sendCode() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     try {
-      await context.read<LoginCubit>().sendCode(_email.text.trim(), role: _isDoctorMode ? 'doctor' : 'user');
+      await context.read<LoginCubit>().sendCode(
+        _email.text.trim(),
+        role: _isDoctorMode ? 'doctor' : 'user',
+      );
       if (mounted && context.read<LoginCubit>().state.otpSent) {
         _nodes.first.requestFocus();
       }
@@ -152,7 +92,11 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     try {
-      await context.read<LoginCubit>().verify(_email.text.trim(), _code, role: _isDoctorMode ? 'doctor' : 'user');
+      await context.read<LoginCubit>().verify(
+        _email.text.trim(),
+        _code,
+        role: _isDoctorMode ? 'doctor' : 'user',
+      );
     } catch (_) {}
   }
 
@@ -178,7 +122,18 @@ class _LoginPageState extends State<LoginPage> {
           );
         }
       },
-      builder: (context, state) => _buildLogin(context, state),
+      builder: (context, state) {
+        final isFirst = ModalRoute.isFirstOf(context) ?? true;
+        return PopScope<Object?>(
+          canPop: !isFirst,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop && isFirst) {
+              Navigator.of(context).pushReplacementNamed('/intro');
+            }
+          },
+          child: _buildLogin(context, state),
+        );
+      },
     );
   }
 
@@ -211,21 +166,11 @@ class _LoginPageState extends State<LoginPage> {
                                 height: 44,
                                 child: BackButton(
                                   color: Colors.white,
-                                  onPressed: () => Navigator.pushReplacementNamed(
+                                  onPressed: () =>
+                                      Navigator.pushReplacementNamed(
                                     context,
                                     '/intro',
                                   ),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 44,
-                                height: 44,
-                                child: IconButton(
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  icon: const Icon(Icons.dns_outlined, color: Colors.white70),
-                                  tooltip: 'Server Settings',
-                                  onPressed: _showServerSettingsDialog,
                                 ),
                               ),
                             ],
@@ -264,21 +209,21 @@ class _LoginPageState extends State<LoginPage> {
                         child: Form(
                           key: _formKey,
                           child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               Text(
-                                _isDoctorMode ? 'Doctor Portal' : 'Welcome back',
+                                _isDoctorMode ? 'Doctor Portal' : 'Hello',
                                 style: const TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
                                   color: _ink,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                _isDoctorMode
-                                    ? 'Enter your registered clinician email address. We will send you a verification code.'
-                                    : 'Enter your email address. We will send you a verification code. No password needed.',
+                                "Sign in to manage patient care & assessments",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   height: 1.5,
@@ -287,37 +232,52 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 28),
 
-                              // Email address
-                              const Text(
-                                'Email address',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
                               const SizedBox(height: 8),
                               TextFormField(
                                 maxLength: 50,
                                 controller: _email,
-                                enabled: !state.otpSent,
+                                enabled: !state.otpSent || _isEmailEdit,
                                 keyboardType: TextInputType.emailAddress,
                                 autofillHints: const [AutofillHints.email],
                                 autovalidateMode:
                                     AutovalidateMode.onUserInteraction,
                                 textInputAction: TextInputAction.done,
                                 onFieldSubmitted: (_) => _sendCode(),
-                                decoration: _fieldDecoration('you@example.com'),
+                                decoration: _fieldDecoration('Enter Email'),
                                 inputFormatters: [
-                                  FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                                  TextInputFormatter.withFunction((oldValue, newValue) {
+                                  FilteringTextInputFormatter.deny(
+                                    RegExp(r'\s'),
+                                  ),
+                                  TextInputFormatter.withFunction((
+                                    oldValue,
+                                    newValue,
+                                  ) {
                                     return newValue.copyWith(
                                       text: newValue.text.toLowerCase(),
                                     );
                                   }),
                                 ],
                                 validator: _validateEmail,
+                                readOnly: state.otpSent && !_isEmailEdit,
                               ),
-
+                              state.otpSent && ! _isEmailEdit
+                              ? Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
+                                children: [
+                                  TextButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isEmailEdit = false;
+                                        for (final box in _boxes) {
+                                          box.clear();
+                                        }
+                                      });
+                                      context.read<LoginCubit>().resetOtp();
+                                    },
+                                    child: Text("Change email"),
+                                  ),
+                                ],
+                              ) : SizedBox.shrink(),
                               // Code boxes
                               if (state.otpSent) ...[
                                 const SizedBox(height: 24),
@@ -420,7 +380,7 @@ class _LoginPageState extends State<LoginPage> {
                                                       .shrinkWrap,
                                             ),
                                             child: const Text(
-                                              'Resend code',
+                                              'Resend OTP',
                                               style: TextStyle(
                                                 fontSize: 13,
                                                 fontWeight: FontWeight.w700,
@@ -468,7 +428,7 @@ class _LoginPageState extends State<LoginPage> {
                                       : Text(
                                           state.otpSent
                                               ? 'Verify and continue'
-                                              : 'Send code',
+                                              : 'Send OTP',
                                           style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.w700,
@@ -491,14 +451,18 @@ class _LoginPageState extends State<LoginPage> {
                                   },
                                   child: Text.rich(
                                     TextSpan(
-                                      text: _isDoctorMode ? 'Are you a patient? ' : 'Are you a doctor? ',
+                                      text: _isDoctorMode
+                                          ? 'Are you a patient? '
+                                          : 'Login as doctor? ',
                                       style: const TextStyle(
                                         fontSize: 14,
                                         color: _muted,
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: _isDoctorMode ? 'Patient sign in' : 'Doctor sign in',
+                                          text: _isDoctorMode
+                                              ? 'Patient sign in'
+                                              : '',
                                           style: const TextStyle(
                                             color: _teal,
                                             fontWeight: FontWeight.w700,
@@ -526,6 +490,7 @@ class _LoginPageState extends State<LoginPage> {
 
   InputDecoration _fieldDecoration(String hint) {
     return InputDecoration(
+      prefixIcon: const Icon(Icons.email_outlined, color: _muted),
       hintText: hint,
       filled: true,
       fillColor: Colors.white,

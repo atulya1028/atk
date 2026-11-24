@@ -136,207 +136,235 @@ class _ProfileSetupPageState extends State<ProfileSetupPage> {
     }
   }
 
+  void _goToLogin() {
+    Navigator.of(context).pushNamedAndRemoveUntil('/login', (_) => false);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: widget.isEditing
+              ? () => Navigator.maybePop(context)
+              : _goToLogin,
+        ),
         title: Text(widget.isEditing ? 'Edit Profile' : 'Complete Profile'),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : _loadError != null
-          ? Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(_loadError ?? ""),
-                  TextButton(
-                    onPressed: _loadProfile,
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
-              child: ResponsiveContent(
-                maxWidth: 600,
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Text(
-                        widget.isEditing
-                            ? 'Update your personal information below.'
-                            : 'Please complete your profile to continue.',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+      body: PopScope<Object?>(
+        canPop: widget.isEditing,
+        onPopInvokedWithResult: (didPop, result) {
+          if (!didPop && !widget.isEditing) _goToLogin();
+        },
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : _loadError != null
+            ? Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_loadError ?? ""),
+                    TextButton(
+                      onPressed: _loadError == 'Please sign in again.'
+                          ? _goToLogin
+                          : _loadProfile,
+                      child: Text(
+                        _loadError == 'Please sign in again.'
+                            ? 'Sign in'
+                            : 'Retry',
                       ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        maxLength: 30,
-                        enabled: !_isSaving,
-                        controller: _nameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Full Name',
+                    ),
+                  ],
+                ),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.all(24.0),
+                child: ResponsiveContent(
+                  maxWidth: 600,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          widget.isEditing
+                              ? 'Update your personal information below.'
+                              : 'Please complete your profile to continue.',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
-                        validator: (v) {
-                          if ((v == null || v.trim().isEmpty)) {
-                            return 'Full Name is mandatory';
-                          }
-                          if ((v.trim().length < 2 || v.trim().length > 100)) {
-                            return 'Please enter a valid name';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: _selectedAgeGroup,
-                        decoration: const InputDecoration(
-                          labelText: 'Age Group',
+                        const SizedBox(height: 24),
+                        TextFormField(
+                          maxLength: 30,
+                          enabled: !_isSaving,
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            labelText: 'Full Name',
+                          ),
+                          validator: (v) {
+                            if ((v == null || v.trim().isEmpty)) {
+                              return 'Full Name is mandatory';
+                            }
+                            if ((v.trim().length < 2 ||
+                                v.trim().length > 100)) {
+                              return 'Please enter a valid name';
+                            }
+                            return null;
+                          },
                         ),
-                        items: _withSavedOption(_ageGroups, _selectedAgeGroup)
-                            .map(
-                              (group) => DropdownMenuItem(
-                                value: group,
-                                child: Text(group),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: _isSaving
-                            ? null
-                            : (v) => setState(() => _selectedAgeGroup = v),
-                        validator: (v) =>
-                            v == null ? 'Age selection is mandatory' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        maxLength: 15,
-                        enabled: !_isSaving,
-                        controller: _phoneController,
-                        decoration: const InputDecoration(
-                          labelText: 'Phone Number (Optional)',
-                        ),
-                        keyboardType: TextInputType.phone,
-                        validator: (v) {
-                          if (v == null || v.trim().isEmpty) return null;
-                          final phoneRegex = RegExp(r'^\+?[\d\s\-]{8,15}$');
-                          if ((!phoneRegex.hasMatch(v.trim()))) {
-                            return 'Please enter a valid phone number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        maxLength: 8,
-                        enabled: !_isSaving,
-                        controller: _pinController,
-                        decoration: const InputDecoration(
-                          labelText: 'Pincode / Postcode (Mandatory)',
-                          hintText: 'e.g. 302017 or SW1A 1AA',
-                        ),
-                        keyboardType: TextInputType.text,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9\s]')),
-                          LengthLimitingTextInputFormatter(8),
-                        ],
-                        validator: (v) {
-                          final value = (v ?? '').trim();
-                          if (value.isEmpty) {
-                            return 'Pincode is mandatory';
-                          }
-                          if (value.length < 2 || value.length > 8) {
-                            return 'Pincode must be between 2 and 8 characters';
-                          }
-                          if (!RegExp(r'^[a-zA-Z0-9\s]{2,8}$').hasMatch(value)) {
-                            return 'Pincode can only contain text and numbers (max 8 characters)';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: _selectedGender,
-                        decoration: const InputDecoration(
-                          labelText: 'Gender (Mandatory)',
-                        ),
-                        items: _withSavedOption(_genders, _selectedGender)
-                            .map(
-                              (g) => DropdownMenuItem(value: g, child: Text(g)),
-                            )
-                            .toList(),
-                        onChanged: _isSaving
-                            ? null
-                            : (v) => setState(() => _selectedGender = v),
-                        validator: (v) =>
-                            v == null ? 'Gender is mandatory' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        enabled: !_isSaving,
-                        controller: _occupationController,
-                        decoration: const InputDecoration(
-                          labelText: 'Occupation (Mandatory)',
-                        ),
-                        validator: (v) => v == null || v.trim().isEmpty
-                            ? 'Occupation is mandatory'
-                            : v.trim().length > 100
-                            ? 'Use 100 characters or fewer'
-                            : null,
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        isExpanded: true,
-                        initialValue: _selectedMaritalStatus,
-                        decoration: const InputDecoration(
-                          labelText: 'Marital Status (Mandatory)',
-                        ),
-                        items:
-                            _withSavedOption(
-                                  _maritalOptions,
-                                  _selectedMaritalStatus,
-                                )
-                                .map(
-                                  (g) => DropdownMenuItem(
-                                    value: g,
-                                    child: Text(g),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: _isSaving
-                            ? null
-                            : (v) => setState(() => _selectedMaritalStatus = v),
-                        validator: (v) =>
-                            v == null ? 'Marital status is mandatory' : null,
-                      ),
-                      const SizedBox(height: 32),
-                      ResponsiveAction(
-                        child: FilledButton(
-                          onPressed: _isSaving ? null : _submitProfile,
-                          child: _isSaving
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : Text(
-                                  widget.isEditing
-                                      ? 'Save Changes'
-                                      : 'Save & Continue',
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          initialValue: _selectedAgeGroup,
+                          decoration: const InputDecoration(
+                            labelText: 'Age Group',
+                          ),
+                          items: _withSavedOption(_ageGroups, _selectedAgeGroup)
+                              .map(
+                                (group) => DropdownMenuItem(
+                                  value: group,
+                                  child: Text(group),
                                 ),
+                              )
+                              .toList(),
+                          onChanged: _isSaving
+                              ? null
+                              : (v) => setState(() => _selectedAgeGroup = v),
+                          validator: (v) =>
+                              v == null ? 'Age selection is mandatory' : null,
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          maxLength: 15,
+                          enabled: !_isSaving,
+                          controller: _phoneController,
+                          decoration: const InputDecoration(
+                            labelText: 'Phone Number (Optional)',
+                          ),
+                          keyboardType: TextInputType.phone,
+                          validator: (v) {
+                            if (v == null || v.trim().isEmpty) return null;
+                            final phoneRegex = RegExp(r'^\+?[\d\s\-]{8,15}$');
+                            if ((!phoneRegex.hasMatch(v.trim()))) {
+                              return 'Please enter a valid phone number';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          maxLength: 8,
+                          enabled: !_isSaving,
+                          controller: _pinController,
+                          decoration: const InputDecoration(
+                            labelText: 'Pincode / Postcode (Mandatory)',
+                            hintText: 'e.g. 302017 or SW1A 1AA',
+                          ),
+                          keyboardType: TextInputType.text,
+                          inputFormatters: [
+                            FilteringTextInputFormatter.allow(
+                              RegExp(r'[a-zA-Z0-9\s]'),
+                            ),
+                            LengthLimitingTextInputFormatter(8),
+                          ],
+                          validator: (v) {
+                            final value = (v ?? '').trim();
+                            if (value.isEmpty) {
+                              return 'Pincode is mandatory';
+                            }
+                            if (value.length < 2 || value.length > 8) {
+                              return 'Pincode must be between 2 and 8 characters';
+                            }
+                            if (!RegExp(r'^[a-zA-Z0-9\s]{2,8}$')
+                                .hasMatch(value)) {
+                              return 'Pincode can only contain text and numbers (max 8 characters)';
+                            }
+                            return null;
+                          },
+                        ),
+
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          initialValue: _selectedGender,
+                          decoration: const InputDecoration(
+                            labelText: 'Gender (Mandatory)',
+                          ),
+                          items: _withSavedOption(_genders, _selectedGender)
+                              .map(
+                                (g) =>
+                                    DropdownMenuItem(value: g, child: Text(g)),
+                              )
+                              .toList(),
+                          onChanged: _isSaving
+                              ? null
+                              : (v) => setState(() => _selectedGender = v),
+                          validator: (v) =>
+                              v == null ? 'Gender is mandatory' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          enabled: !_isSaving,
+                          controller: _occupationController,
+                          decoration: const InputDecoration(
+                            labelText: 'Occupation (Mandatory)',
+                          ),
+                          validator: (v) => v == null || v.trim().isEmpty
+                              ? 'Occupation is mandatory'
+                              : v.trim().length > 100
+                              ? 'Use 100 characters or fewer'
+                              : null,
+                        ),
+                        const SizedBox(height: 16),
+                        DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          initialValue: _selectedMaritalStatus,
+                          decoration: const InputDecoration(
+                            labelText: 'Marital Status (Mandatory)',
+                          ),
+                          items:
+                              _withSavedOption(
+                                    _maritalOptions,
+                                    _selectedMaritalStatus,
+                                  )
+                                  .map(
+                                    (g) => DropdownMenuItem(
+                                      value: g,
+                                      child: Text(g),
+                                    ),
+                                  )
+                                  .toList(),
+                          onChanged: _isSaving
+                              ? null
+                              : (v) =>
+                                    setState(() => _selectedMaritalStatus = v),
+                          validator: (v) =>
+                              v == null ? 'Marital status is mandatory' : null,
+                        ),
+                        const SizedBox(height: 32),
+                        ResponsiveAction(
+                          child: FilledButton(
+                            onPressed: _isSaving ? null : _submitProfile,
+                            child: _isSaving
+                                ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                : Text(
+                                    widget.isEditing
+                                        ? 'Save Changes'
+                                        : 'Save & Continue',
+                                  ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
+      ),
     );
   }
 }

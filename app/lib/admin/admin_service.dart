@@ -64,6 +64,37 @@ class AdminService {
     }
   }
 
+  static Future<void> signInWithPassword(String password) async {
+    final uri = Uri.parse('$baseUrl/auth/admin/password');
+    final isLocalOrInsecureAllowed =
+        const {'localhost', '127.0.0.1', '::1'}.contains(uri.host) ||
+        uri.host.contains('nip.io') ||
+        RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$').hasMatch(uri.host);
+    if (uri.scheme != 'https' && !isLocalOrInsecureAllowed) {
+      throw Exception('Master password sign-in requires HTTPS.');
+    }
+    final response = await _sendSafe(
+      () => http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'password': password}),
+      ).timeout(const Duration(seconds: 30)),
+    );
+    final result = _safeJsonDecode(response.body);
+    final token = result['accessToken'];
+    final user = result['user'];
+    if (response.statusCode != 200 ||
+        token is! String || token.isEmpty ||
+        user is! Map || user['role'] != 'admin' || user['email'] is! String) {
+      throw Exception(result['error'] ?? 'Unable to sign in. Please try again.');
+    }
+
+    await AppStorage.delete(key: 'atk_admin_refresh_token');
+    await AppStorage.write(key: 'atk_admin_email', value: user['email'] as String);
+    await AppStorage.write(key: 'atk_admin_token', value: token);
+    _cachedToken = token;
+  }
+
   static Future<Map<String, dynamic>> sendOtp(String email) async {
     final uri = Uri.parse('$baseUrl/auth/send-otp');
     final response = await _sendSafe(() => http

@@ -36,8 +36,8 @@ class ApiClient {
       if (origin.isNotEmpty && !origin.startsWith('null') && !origin.startsWith('file://')) {
         final uri = Uri.tryParse(origin);
         if (uri != null && (uri.host == 'localhost' || uri.host == '127.0.0.1')) {
-          if (uri.port != 3000) {
-            return 'http://${uri.host}:3000';
+          if (uri.port != 8080) {
+            return 'http://${uri.host}:8080';
           }
         }
         return origin;
@@ -47,7 +47,7 @@ class ApiClient {
       // Default to live AWS Cloud server for physical devices & emulators
       return 'http://novtekatk.51.20.4.247.nip.io';
     }
-    return 'http://localhost:3000';
+    return 'http://localhost:8080';
   }
 
   static void _requireSecureTransport() {
@@ -151,15 +151,20 @@ class ApiClient {
       '/auth/verify-otp',
       body: {'email': email, 'otp': otp, 'role': role},
     );
-    final accessToken = result['accessToken'] as String?;
+    final accessToken = (result['accessToken'] ?? result['token']) as String?;
+    if (accessToken == null || accessToken.isEmpty) {
+      throw const ApiException('Sign-in did not return a session. Please try again.');
+    }
     final refreshToken = result['refreshToken'] as String?;
-    if (accessToken != null) {
-      await AppStorage.write(key: 'atk_access_token', value: accessToken);
-    }
-    if (refreshToken != null) {
+    if (refreshToken != null && refreshToken.isNotEmpty) {
       await AppStorage.write(key: 'atk_refresh_token', value: refreshToken);
+    } else {
+      await AppStorage.delete(key: 'atk_refresh_token');
     }
-    return result['isProfileComplete'] as bool? ?? false;
+    await AppStorage.write(key: 'atk_access_token', value: accessToken);
+    final user = result['user'] as Map<String, dynamic>?;
+    return (result['isProfileComplete'] ?? user?['isProfileComplete']) as bool? ??
+        false;
   }
 
   static Future<bool> _refreshSession() async {

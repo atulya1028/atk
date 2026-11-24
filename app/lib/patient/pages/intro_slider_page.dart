@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:atk/patient/bloc/intro_cubit.dart';
 import 'package:atk/patient/widgets/responsive_content.dart';
+
 import '../../common/widgets/novtek_brand_widgets.dart';
 
 /// Swipeable welcome screens with a centered illustration, text, progress dots,
@@ -23,23 +24,23 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
   static const _slides = <_Slide>[
     _Slide(
       useLogo: true,
-      title: 'Your companion for a healthier, clearer mind',
-      text: 'Take short, confidential check-ins, see your progress over time, and connect with clinical support when you need it.',
+      title: 'Welcome to NovTek ATK',
+      text: 'Your companion on the journey to a healthier, addiction free life.',
     ),
     _Slide(
       icon: Icons.assignment_turned_in_rounded,
-      title: 'Answer simple surveys',
-      text: 'One question at a time. Your answers are securely saved as you go, so you can pause and resume whenever convenient.',
+      title: 'Take Surveys',
+      text: 'Answer simple, confidential surveys to track your progress and get insights.',
     ),
     _Slide(
       icon: Icons.health_and_safety_rounded,
       title: 'Get support when you need it',
-      text: 'If an assessment indicates attention is needed, we automatically connect you with authorized clinicians in your postal area.',
+      text: 'Access resources and suppport to help you stay on track and motivaed.`',
     ),
   ];
 
   void _finish() {
-    Navigator.pushReplacementNamed(context, '/login');
+    Navigator.pushNamed(context, '/login');
   }
 
   void _next(int page) {
