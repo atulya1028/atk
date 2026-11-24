@@ -956,23 +956,7 @@ app.post(
               "Complete the initial assessment with a score of 30 or more to unlock this survey.",
           });
     }
-    if (parsed.data.type === "MENTAL") {
-      const initial = await prisma.surveySubmission.findFirst({
-        where: {
-          userId: req.user.sub,
-          type: "INITIAL",
-          completedAt: { not: null },
-        },
-        orderBy: { completedAt: "desc" },
-      });
-      if (!initial)
-        return res
-          .status(403)
-          .json({
-            error:
-              "Complete the initial assessment before starting the mental health assessment.",
-          });
-    }
+
     const questions = await questionsForType(parsed.data.type);
     if (!questions.length)
       return res

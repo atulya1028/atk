@@ -192,7 +192,10 @@ class HomePage extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  _AssessmentCard(onTap: () => _openAssessment(context)),
+                  _AssessmentCard(
+                    onTap: () => _openAssessment(context),
+                    isCompleted: (state.completedSurveys ?? 0) > 0,
+                  ),
                 ],
               ),
             ),
@@ -223,7 +226,10 @@ class HomePage extends StatelessWidget {
           const SizedBox(height: 12),
           _StatCard.days(value: state.surveyDays?.toString() ?? '—'),
           const SizedBox(height: 24),
-          _AssessmentCard(onTap: () => _openAssessment(context)),
+          _AssessmentCard(
+            onTap: () => _openAssessment(context),
+            isCompleted: (state.completedSurveys ?? 0) > 0,
+          ),
         ],
       ),
     );
@@ -450,8 +456,12 @@ class _QuoteCard extends StatelessWidget {
 }
 
 class _AssessmentCard extends StatelessWidget {
-  const _AssessmentCard({required this.onTap});
+  const _AssessmentCard({
+    required this.onTap,
+    this.isCompleted = false,
+  });
   final VoidCallback onTap;
+  final bool isCompleted;
 
   @override
   Widget build(BuildContext context) {
@@ -475,22 +485,26 @@ class _AssessmentCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Start Initial Assessment',
-                      style: TextStyle(
+                      isCompleted
+                          ? 'Retake Initial Assessment'
+                          : 'Start Initial Assessment',
+                      style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
                         fontSize: 17,
                       ),
                     ),
-                    SizedBox(height: 5),
+                    const SizedBox(height: 5),
                     Text(
-                      'Complete this first step in your journey.',
-                      style: TextStyle(color: Colors.white, fontSize: 14),
+                      isCompleted
+                          ? 'Review or update your clinical assessment.'
+                          : 'Complete this first step in your journey.',
+                      style: const TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ],
                 ),

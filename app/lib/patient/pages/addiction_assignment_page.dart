@@ -34,6 +34,9 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
       final score = await _takeSurvey(type);
       if (score != null && mounted) {
         await _showScoreDialog(type, score);
+        if (type == 'INITIAL' && score > 30 && mounted) {
+          Navigator.pushNamed(context, '/mental_health');
+        }
       }
     } on ApiException catch (error) {
       if (mounted) {
@@ -174,7 +177,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                     Expanded(
                       child: Text(
                         isStage3Unlocked
-                            ? 'Score >= 30: Stage 3 Detailed Assessment is unlocked!'
+                            ? 'Score > 30: Proceeding to Mental Assessment...'
                             : 'Assessment recorded.',
                         style: TextStyle(
                           fontSize: 12,
@@ -199,7 +202,11 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
-            child: const Text('View Dashboard'),
+            child: Text(
+              (type == 'INITIAL' && score > 30)
+                  ? 'Proceed to Mental Assessment'
+                  : 'View Dashboard',
+            ),
           ),
         ],
       ),
@@ -309,20 +316,38 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
       color: _primary,
       onTap: () => _openSurvey('INITIAL'),
     ),
-    if (state.initialDone) ...[
+    const SizedBox(height: 16),
+    DashboardActionTile(
+      icon: Icons.psychology_outlined,
+      title: state.mentalInProgress
+          ? 'Resume Mental Assessment'
+          : state.mentalDone
+          ? 'Retake Mental Assessment'
+          : 'Start Mental Assessment',
+      description: state.mentalInProgress
+          ? 'Continue where you left off.'
+          : state.mentalDone
+          ? 'Completed • Score: ${state.mentalScore ?? 0} pts'
+          : 'Complete a short mental health check-in.',
+      color: _dark,
+      onTap: () => _openSurvey(state.initialDone ? 'MENTAL' : 'MENTAL_STANDALONE'),
+    ),
+    if (state.detailedUnlocked) ...[
       const SizedBox(height: 16),
       DashboardActionTile(
-        icon: Icons.psychology_outlined,
-        title: state.mentalInProgress
-            ? 'Resume Mental Health Assessment'
-            : state.mentalDone
-            ? 'Retake Mental Health Assessment'
-            : 'Start Mental Health Assessment',
-        description: state.mentalDone
-            ? 'Completed • Score: ${state.mentalScore ?? 0} pts'
-            : 'Complete a short mental health check-in.',
-        color: _dark,
-        onTap: () => _openSurvey('MENTAL'),
+        icon: Icons.assignment_outlined,
+        title: state.detailedInProgress
+            ? 'Resume Detailed Assessment'
+            : state.detailedDone
+            ? 'Retake Detailed Assessment'
+            : 'Start Detailed Assessment',
+        description: state.detailedInProgress
+            ? 'Continue where you left off.'
+            : state.detailedDone
+            ? 'Completed • Score: ${state.detailedScore ?? 0} pts'
+            : 'Clinical addiction evaluation for deep behavioral profiling.',
+        color: const Color(0xFF0284C7),
+        onTap: () => _openSurvey('DETAILED'),
       ),
     ],
   ];

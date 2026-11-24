@@ -22,12 +22,14 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
 
   int _tab = 0;
   int? _score;
+  int? _initialScore;
   String? _name;
   int _completedSurveys = 0;
   int _totalAnswers = 0;
   int _daysActive = 0;
   bool _openingAssessment = false;
   String? _assessmentStatus;
+  String? _initialStatus;
 
   @override
   void initState() {
@@ -60,19 +62,73 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
         _totalAnswers = stats?['totalAnswers'] as int? ?? 0;
         _daysActive = stats?['surveyDays'] as int? ?? 0;
         if (!_openingAssessment && _assessmentStatus == null) {
-          _assessmentStatus = status['standaloneMentalStatus'] as String?;
+          _assessmentStatus = status['standaloneMentalStatus'] as String? ??
+              (status['mental'] as Map<String, dynamic>?)?['status'] as String?;
           final mental = status['mental'] as Map<String, dynamic>?;
           if (_assessmentStatus == 'COMPLETED') {
             _score = mental?['score'] as int?;
           }
         }
+        final initial = status['initial'] as Map<String, dynamic>?;
+        _initialStatus = initial?['status'] as String?;
+        if (initial?['hasCompleted'] == true) {
+          _initialStatus = 'COMPLETED';
+        }
+        _initialScore = initial?['score'] as int?;
       });
     } on ApiException {
       // The assessment action can still be used if status is unavailable.
     }
   }
 
-  Future<void> _openAssessment() async {
+  Future<void> _openInitialAssessment() async {
+    setState(() => _openingAssessment = true);
+    try {
+      final response = await ApiClient.startSurvey('INITIAL');
+      if (!mounted) return;
+      final args = SurveyArgs.fromJson(response);
+      setState(() => _initialStatus = 'IN_PROGRESS');
+      final completed = await Navigator.of(context).push<int>(
+        MaterialPageRoute(
+          builder: (_) => BlocProvider(
+            create: (_) => SurveyQuestionCubit(args),
+            child: SurveyQuestionPage(args: args),
+          ),
+        ),
+      );
+      if (!mounted || completed == null) return;
+      setState(() {
+        _initialStatus = 'COMPLETED';
+        _initialScore = completed;
+      });
+      await _showInitialScoreDialog(completed);
+      if (mounted) await _loadAssessmentStatus();
+      if (completed > 30 && mounted) {
+        await _openMentalAssessment();
+      }
+    } on ApiException catch (error) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.message)));
+      }
+    } on FormatException {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('The assessment data is invalid.')),
+        );
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not connect to the assessment.')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _openingAssessment = false);
+    }
+  }
+
+  Future<void> _openMentalAssessment() async {
     setState(() => _openingAssessment = true);
     try {
       final response = await ApiClient.startSurvey('MENTAL_STANDALONE');
@@ -115,6 +171,141 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
     } finally {
       if (mounted) setState(() => _openingAssessment = false);
     }
+  }
+
+  Future<void> _showInitialScoreDialog(int score) async {
+    final isOver30 = score > 30;
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4F46E5).withValues(alpha: 0.12),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.check_circle_rounded,
+                color: Color(0xFF4F46E5),
+                size: 26,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(
+              child: Text(
+                'Initial Assessment Complete',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: ink,
+                ),
+              ),
+            ),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Your initial screening responses have been evaluated.',
+              style: TextStyle(color: Colors.grey, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 20),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4F46E5).withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: const Color(0xFF4F46E5).withValues(alpha: 0.2),
+                ),
+              ),
+              child: Column(
+                children: [
+                  const Text(
+                    'CLINICAL SCORE',
+                    style: TextStyle(
+                      fontSize: 11,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF4F46E5),
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    '$score',
+                    style: const TextStyle(
+                      fontSize: 42,
+                      fontWeight: FontWeight.w900,
+                      color: ink,
+                    ),
+                  ),
+                  Text(
+                    'points',
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isOver30
+                    ? const Color(0xFFE8F5E9)
+                    : const Color(0xFFFFF3E0),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    isOver30 ? Icons.psychology_rounded : Icons.info_outline,
+                    color: isOver30
+                        ? const Color(0xFF2E7D32)
+                        : const Color(0xFFE65100),
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      isOver30
+                          ? 'Score > 30: Proceeding to Mental Assessment...'
+                          : 'Initial assessment recorded.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: isOver30
+                            ? const Color(0xFF1B5E20)
+                            : const Color(0xFFBF360C),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx),
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFF4F46E5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Text(
+              isOver30 ? 'Proceed to Mental Assessment' : 'Continue',
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showMentalScoreDialog(int score) async {
@@ -244,16 +435,36 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
             icon: Icons.assignment_turned_in,
             title: _openingAssessment
                 ? 'Opening assessment…'
-                : switch (_assessmentStatus) {
+                : switch (_initialStatus) {
                     'IN_PROGRESS' => 'Resume Initial Assessment',
                     'COMPLETED' => 'Retake Initial Assessment',
                     _ => 'Start Initial Assessment',
                   },
+            description: _initialStatus == 'IN_PROGRESS'
+                ? 'Continue where you left off.'
+                : _initialStatus == 'COMPLETED'
+                    ? 'Completed • Score: ${_initialScore ?? 0} pts'
+                    : 'Complete this first step in your journey.',
+            color: const Color(0xFF4F46E5),
+            onTap: _openingAssessment ? null : _openInitialAssessment,
+          ),
+          const SizedBox(height: 16),
+          DashboardActionTile(
+            icon: Icons.psychology_outlined,
+            title: _openingAssessment
+                ? 'Opening assessment…'
+                : switch (_assessmentStatus) {
+                    'IN_PROGRESS' => 'Resume Mental Assessment',
+                    'COMPLETED' => 'Retake Mental Assessment',
+                    _ => 'Start Mental Assessment',
+                  },
             description: _assessmentStatus == 'IN_PROGRESS'
                 ? 'Continue where you left off.'
-                : 'Complete this first step in your journey.',
+                : _assessmentStatus == 'COMPLETED'
+                    ? 'Completed • Score: ${_score ?? 0} pts'
+                    : 'Emotional balance, anxiety, stress, and wellbeing telemetry.',
             color: teal,
-            onTap: _openingAssessment ? null : _openAssessment,
+            onTap: _openingAssessment ? null : _openMentalAssessment,
           ),
         ],
       ),
@@ -264,9 +475,26 @@ class _MentalHealthPageState extends State<MentalHealthPage> {
           child: ListTile(
             leading: const Icon(
               Icons.assignment_turned_in_outlined,
+              color: Color(0xFF4F46E5),
+            ),
+            title: const Text('Initial Assessment'),
+            subtitle: Text(switch (_initialStatus) {
+              'IN_PROGRESS' => 'In progress',
+              'COMPLETED' => 'Completed',
+              _ => 'Not started',
+            }),
+            trailing:
+                _initialScore == null ? null : Text('$_initialScore points'),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Card(
+          child: ListTile(
+            leading: const Icon(
+              Icons.psychology_outlined,
               color: teal,
             ),
-            title: const Text('Mental Health Assessment'),
+            title: const Text('Mental Assessment'),
             subtitle: Text(status),
             trailing: _score == null ? null : Text('$_score points'),
           ),
