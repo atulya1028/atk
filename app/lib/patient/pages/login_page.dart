@@ -223,12 +223,15 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                "Sign in to manage patient care & assessments",
+                                _isDoctorMode
+                                    ? "Sign in to manage patient care & assessments"
+                                    : "Continue your journey to wellness",
                                 style: const TextStyle(
                                   fontSize: 15,
                                   height: 1.5,
                                   color: _muted,
                                 ),
+                                textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 28),
 
