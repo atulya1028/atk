@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:atk/common/services/http_helpers.dart';
 import 'package:http/http.dart' as http;
 import '../patient/services/api_client.dart';
 import '../patient/services/app_storage.dart';
@@ -32,45 +33,20 @@ class AdminService {
     await AppStorage.delete(key: 'atk_admin_email');
   }
 
-  static Future<Map<String, String>> _authHeaders() async {
-    final token = await getToken();
-    return {
-      'Content-Type': 'application/json',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
-  }
+  static Future<Map<String, String>> _authHeaders() =>
+      AtkHttpHelpers.authHeaders(getToken);
 
-  static Future<http.Response> _sendSafe(Future<http.Response> Function() action) async {
-    try {
-      return await action();
-    } catch (e) {
-      if (e is Exception) {
-        final msg = e.toString().replaceFirst('Exception: ', '');
-        throw Exception(msg);
-      }
-      throw Exception('Network connection error: $e');
-    }
-  }
+  static Future<http.Response> _sendSafe(
+    Future<http.Response> Function() action,
+  ) => AtkHttpHelpers.sendSafe(action);
 
-  static Map<String, dynamic> _safeJsonDecode(String body) {
-    if (body.isEmpty) return <String, dynamic>{};
-    try {
-      final decoded = jsonDecode(body);
-      if (decoded is Map<String, dynamic>) return decoded;
-      if (decoded is Map) return Map<String, dynamic>.from(decoded);
-      return <String, dynamic>{};
-    } catch (_) {
-      return <String, dynamic>{};
-    }
-  }
+  static Map<String, dynamic> _safeJsonDecode(String body) =>
+      AtkHttpHelpers.safeJsonDecode(body);
 
   static Future<void> signInWithPassword(String password) async {
     final uri = Uri.parse('$baseUrl/auth/admin/password');
-    final isLocalOrInsecureAllowed =
-        const {'localhost', '127.0.0.1', '::1'}.contains(uri.host) ||
-        uri.host.contains('nip.io') ||
-        RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$').hasMatch(uri.host);
-    if (uri.scheme != 'https' && !isLocalOrInsecureAllowed) {
+    if (uri.scheme != 'https' &&
+        !AtkHttpHelpers.isLocalOrAllowedHttpHost(uri)) {
       throw Exception('Master password sign-in requires HTTPS.');
     }
     final response = await _sendSafe(

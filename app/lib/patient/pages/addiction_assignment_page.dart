@@ -76,6 +76,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
       'MENTAL' || 'MENTAL_STANDALONE' => 'Mental Health Assessment Complete',
       _ => 'Assessment Complete',
     };
+    final shouldProceedToMental = type == 'INITIAL' && score > 30;
     final isStage3Unlocked = score >= 30;
     await showDialog<void>(
       context: context,
@@ -176,8 +177,10 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
                     const SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        isStage3Unlocked
+                        shouldProceedToMental
                             ? 'Score > 30: Proceeding to Mental Assessment...'
+                            : isStage3Unlocked
+                            ? 'Score >= 30: Stage 3 Detailed Assessment is unlocked!'
                             : 'Assessment recorded.',
                         style: TextStyle(
                           fontSize: 12,
@@ -203,7 +206,7 @@ class _AddictionAssignmentPageState extends State<AddictionAssignmentPage> {
               ),
             ),
             child: Text(
-              (type == 'INITIAL' && score > 30)
+              shouldProceedToMental
                   ? 'Proceed to Mental Assessment'
                   : 'View Dashboard',
             ),

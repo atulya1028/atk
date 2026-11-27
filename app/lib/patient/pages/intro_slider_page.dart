@@ -35,7 +35,7 @@ class _IntroSliderPageState extends State<IntroSliderPage> {
     _Slide(
       icon: Icons.health_and_safety_rounded,
       title: 'Get support when you need it',
-      text: 'Access resources and suppport to help you stay on track and motivaed.`',
+      text: 'Access resources and support to help you stay on track and motivated.',
     ),
   ];
 

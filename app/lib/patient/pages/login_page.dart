@@ -28,9 +28,6 @@ class _LoginPageState extends State<LoginPage> {
   final _email = TextEditingController();
   final _boxes = List.generate(6, (_) => TextEditingController());
   final _nodes = List.generate(6, (_) => FocusNode());
-  bool _isDoctorMode = false;
-
-  bool _isEmailEdit = false;
 
   @override
   void initState() {
@@ -75,10 +72,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _sendCode() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
     try {
-      await context.read<LoginCubit>().sendCode(
-        _email.text.trim(),
-        role: _isDoctorMode ? 'doctor' : 'user',
-      );
+      await context.read<LoginCubit>().sendCode(_email.text.trim());
       if (mounted && context.read<LoginCubit>().state.otpSent) {
         _nodes.first.requestFocus();
       }
@@ -92,11 +86,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     try {
-      await context.read<LoginCubit>().verify(
-        _email.text.trim(),
-        _code,
-        role: _isDoctorMode ? 'doctor' : 'user',
-      );
+      await context.read<LoginCubit>().verify(_email.text.trim(), _code);
     } catch (_) {}
   }
 
@@ -212,9 +202,9 @@ class _LoginPageState extends State<LoginPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Text(
-                                _isDoctorMode ? 'Doctor Portal' : 'Hello',
-                                style: const TextStyle(
+                              const Text(
+                                'Hello',
+                                style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.w800,
                                   color: _ink,
@@ -222,11 +212,9 @@ class _LoginPageState extends State<LoginPage> {
                                 textAlign: TextAlign.center,
                               ),
                               const SizedBox(height: 8),
-                              Text(
-                                _isDoctorMode
-                                    ? "Sign in to manage patient care & assessments"
-                                    : "Continue your journey to wellness",
-                                style: const TextStyle(
+                              const Text(
+                                'Continue your journey to wellness',
+                                style: TextStyle(
                                   fontSize: 15,
                                   height: 1.5,
                                   color: _muted,
@@ -239,7 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextFormField(
                                 maxLength: 50,
                                 controller: _email,
-                                enabled: !state.otpSent || _isEmailEdit,
+                                enabled: !state.otpSent,
                                 keyboardType: TextInputType.emailAddress,
                                 autofillHints: const [AutofillHints.email],
                                 autovalidateMode:
@@ -261,26 +249,23 @@ class _LoginPageState extends State<LoginPage> {
                                   }),
                                 ],
                                 validator: _validateEmail,
-                                readOnly: state.otpSent && !_isEmailEdit,
+                                readOnly: state.otpSent,
                               ),
-                              state.otpSent && ! _isEmailEdit
-                              ? Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  TextButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _isEmailEdit = false;
+                              if (state.otpSent)
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
                                         for (final box in _boxes) {
                                           box.clear();
                                         }
-                                      });
-                                      context.read<LoginCubit>().resetOtp();
-                                    },
-                                    child: Text("Change email"),
-                                  ),
-                                ],
-                              ) : SizedBox.shrink(),
+                                        context.read<LoginCubit>().resetOtp();
+                                      },
+                                      child: const Text('Change email'),
+                                    ),
+                                  ],
+                                ),
                               // Code boxes
                               if (state.otpSent) ...[
                                 const SizedBox(height: 24),
@@ -443,30 +428,21 @@ class _LoginPageState extends State<LoginPage> {
                               Center(
                                 child: TextButton(
                                   onPressed: () {
-                                    setState(() {
-                                      _isDoctorMode = !_isDoctorMode;
-                                      _email.clear();
-                                      for (final c in _boxes) {
-                                        c.clear();
-                                      }
-                                    });
-                                    context.read<LoginCubit>().clearError();
+                                    Navigator.of(
+                                      context,
+                                    ).pushReplacementNamed('/doctor');
                                   },
-                                  child: Text.rich(
+                                  child: const Text.rich(
                                     TextSpan(
-                                      text: _isDoctorMode
-                                          ? 'Are you a patient? '
-                                          : 'Login as doctor? ',
-                                      style: const TextStyle(
+                                      text: 'Are you a doctor? ',
+                                      style: TextStyle(
                                         fontSize: 14,
                                         color: _muted,
                                       ),
                                       children: [
                                         TextSpan(
-                                          text: _isDoctorMode
-                                              ? 'Patient sign in'
-                                              : '',
-                                          style: const TextStyle(
+                                          text: 'Doctor sign in',
+                                          style: TextStyle(
                                             color: _teal,
                                             fontWeight: FontWeight.w700,
                                           ),

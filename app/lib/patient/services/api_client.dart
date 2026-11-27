@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:atk/common/services/http_helpers.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'app_storage.dart';
@@ -52,15 +53,9 @@ class ApiClient {
 
   static void _requireSecureTransport() {
     final parsed = Uri.tryParse(_baseUrl);
-    final host = parsed?.host.toLowerCase() ?? '';
-    final isLocalOrIp = host == 'localhost' ||
-        host == '127.0.0.1' ||
-        host.isEmpty ||
-        RegExp(r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$').hasMatch(host) ||
-        host.contains('nip.io') ||
-        host.contains('duckdns.org') ||
-        host.contains('novtek');
-    if (kReleaseMode && !isLocalOrIp && parsed?.scheme != 'https') {
+    if (kReleaseMode &&
+        !AtkHttpHelpers.isLocalOrAllowedHttpHost(parsed) &&
+        parsed?.scheme != 'https') {
       throw const ApiException('The production API must use HTTPS.');
     }
   }

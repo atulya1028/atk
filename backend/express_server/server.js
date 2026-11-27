@@ -1,4 +1,3 @@
-import "dotenv/config";
 import crypto from "node:crypto";
 import path from "node:path";
 import fs from "node:fs";
@@ -7,80 +6,31 @@ import cors from "cors";
 import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
 import { z } from "zod";
 import { prisma } from "./db.js";
+import { restoreInitialAnswers } from "./survey_question_bank.js";
 import {
-  isInitialQuestion,
-  restoreInitialAnswers,
-} from "./survey_question_bank.js";
-
-const required = ["DATABASE_URL", "JWT_SECRET"];
-for (const key of required)
-  if (!process.env[key]) throw new Error(`${key} is required`);
-if (process.env.JWT_SECRET.length < 32)
-  throw new Error("JWT_SECRET must be at least 32 characters");
-const mailConfig = [
-  "SMTP_HOST",
-  "SMTP_USER",
-  "SMTP_PASSWORD",
-  "OTP_FROM_EMAIL",
-];
-const configuredMailKeys = mailConfig.filter((key) => process.env[key]);
-if (
-  configuredMailKeys.length > 0 &&
-  configuredMailKeys.length !== mailConfig.length
-)
-  throw new Error(
-    "Configure all SMTP email credentials or leave them all blank",
-  );
-const emailEnabled = configuredMailKeys.length === mailConfig.length;
-if (process.env.NODE_ENV === "production") {
-  if (!emailEnabled)
-    throw new Error("SMTP email credentials are required in production");
-  if (
-    !(process.env.APP_ORIGINS || "")
-      .split(",")
-      .map((value) => value.trim())
-      .filter(Boolean).length
-  )
-    throw new Error("Set APP_ORIGINS explicitly in production");
-}
+  emailEnabled,
+  isAllowedOrigin,
+  mailer,
+  production,
+} from "./config.js";
+import {
+  asyncRoute,
+  authenticate,
+  authenticateAdmin,
+  hashToken,
+} from "./middleware/auth.js";
+import {
+  isAnswerValid,
+  mentalSurveyTypes,
+  publicSurveyQuestions,
+  questionsForType,
+  surveyScore,
+  surveyTypes,
+} from "./services/scoring.js";
 
 const app = express();
-const production = process.env.NODE_ENV === "production";
-const origins = (process.env.APP_ORIGINS || "")
-  .split(",")
-  .map((x) => x.trim())
-  .filter(Boolean);
-const isAllowedOrigin = (origin) => {
-  if (!origin) return true;
-  if (!origins.length) return true;
-  if (origins.includes(origin)) return true;
-  try {
-    const url = new URL(origin);
-    if (["localhost", "127.0.0.1"].includes(url.hostname)) return true;
-    if (
-      url.hostname.endsWith(".nip.io") ||
-      url.hostname.endsWith(".duckdns.org") ||
-      url.hostname.includes("novtek") ||
-      url.hostname === "51.20.4.247" ||
-      url.hostname === "3.25.123.28"
-    ) return true;
-  } catch {}
-  return false;
-};
-const mailer = emailEnabled
-  ? nodemailer.createTransport({
-      host: process.env.SMTP_HOST,
-      port: Number(process.env.SMTP_PORT || 587),
-      secure: Number(process.env.SMTP_PORT || 587) === 465,
-      auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASSWORD },
-      connectionTimeout: 15000,
-      greetingTimeout: 10000,
-      socketTimeout: 20000,
-    })
-  : null;
 
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
@@ -151,10 +101,6 @@ const profileSchema = z.object({
   occupation: z.string().trim().min(1).max(100),
   maritalStatus: z.string().trim().min(1).max(40),
 });
-const hashToken = (token) =>
-  crypto.createHash("sha256").update(token).digest("hex");
-const asyncRoute = (fn) => (req, res, next) =>
-  Promise.resolve(fn(req, res, next)).catch(next);
 
 app.post(
   "/auth/admin/password",
@@ -565,22 +511,6 @@ app.post(
   }),
 );
 
-async function authenticate(req, res, next) {
-  const token = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
-  if (!token) return res.status(401).json({ error: "Sign in to continue." });
-  try {
-    req.user = jwt.verify(token, process.env.JWT_SECRET, {
-      issuer: "atk-api",
-      audience: "atk-app",
-    });
-    next();
-  } catch {
-    res
-      .status(401)
-      .json({ error: "Your session has expired. Please sign in again." });
-  }
-}
-
 app.get(
   "/user/profile",
   authenticate,
@@ -682,180 +612,10 @@ app.put(
   }),
 );
 
-const surveyTypes = ["INITIAL", "DETAILED", "MENTAL", "MENTAL_STANDALONE"];
-const mentalSurveyTypes = ["MENTAL", "MENTAL_STANDALONE"];
-const detailedSurveyQuestions = [
-  "How often do you use more than you planned to?",
-  "How often have you tried to cut down without success?",
-  "How often does it affect your work or studies?",
-  "How often does it cause problems with family or friends?",
-  "How often do you feel unable to stop even when you want to?",
-].map((text, id) => ({
-  id,
-  text,
-  options: ["Never", "Sometimes", "Often", "Almost always"].map(
-    (label, index) => ({ label, score: index * 5 }),
-  ),
-}));
-const questionsForType = async (type) => {
-  if (type === "DETAILED") return detailedSurveyQuestions;
-  const rows = await prisma.surveyQuestion.findMany({
-    where: { surveyType: type === "MENTAL_STANDALONE" ? "MENTAL" : type },
-    orderBy: [{ sourceOrder: "asc" }, { questionId: "asc" }],
-  });
-  const questionIds = new Set();
-  const prompts = new Set();
-  return rows
-    .map((row) => row.definition)
-    .filter((question) => {
-      if (
-        type === "INITIAL" &&
-        !isInitialQuestion(question.id, question.sectionSlug)
-      )
-        return false;
-      const id = String(question.id);
-      const prompt = question.text
-        .normalize("NFKC")
-        .toLowerCase()
-        .replace(/[^\p{L}\p{N}]+/gu, " ")
-        .trim();
-      if (questionIds.has(id) || prompts.has(prompt)) return false;
-      questionIds.add(id);
-      prompts.add(prompt);
-      return true;
-    });
-};
-const publicSurveyQuestions = (questions) =>
-  questions.map((question) => ({
-    id: question.id,
-    text: question.text,
-    kind: question.kind ?? "choice",
-    options: question.options.map(({ label }) => ({ label })),
-    ...(question.min == null ? {} : { min: question.min }),
-    ...(question.max == null ? {} : { max: question.max }),
-    ...(question.section == null ? {} : { section: question.section }),
-    ...(question.sectionSlug == null
-      ? {}
-      : { sectionSlug: question.sectionSlug }),
-    ...(question.sectionOrder == null
-      ? {}
-      : { sectionOrder: question.sectionOrder }),
-    ...(question.logic == null ? {} : { logic: question.logic }),
-  }));
-const isAnswerValid = (question, value) => {
-  if (!Number.isInteger(value)) return false;
-  if (question.kind === "number")
-    return value >= question.min && value <= question.max;
-  return value >= 0 && value < question.options.length;
-};
 const surveyTypeSchema = z.object({ type: z.enum(surveyTypes) });
 const surveyAnswersSchema = z.object({
   answers: z.record(z.string(), z.number().int()),
 });
-const calculateOptionScore = (question, selectedIndex) => {
-  if (selectedIndex == null || selectedIndex < 0) return 0;
-  if (!question.options || !question.options[selectedIndex]) {
-    if (question.kind === "number" && typeof selectedIndex === "number") {
-      return Math.min(10, Math.max(0, selectedIndex));
-    }
-    return 0;
-  }
-  const option = question.options[selectedIndex];
-  if (typeof option.score === "number") return option.score;
-  const label = (option.label || "").trim().toLowerCase();
-  const qText = (question.text || "").toLowerCase();
-
-  // Severe risk indicators (10 points)
-  if (
-    label === "suicidal" ||
-    label === "impaired" ||
-    label === "relapsed" ||
-    label === "significant issues" ||
-    (label === "yes" && (
-      qText.includes("harming yourself") ||
-      qText.includes("ending your life") ||
-      qText.includes("seizures") ||
-      qText.includes("delirium tremens") ||
-      qText.includes("hospital admission") ||
-      qText.includes("lost control") ||
-      qText.includes("liver disease") ||
-      qText.includes("pancreatitis") ||
-      qText.includes("drive or operate") ||
-      qText.includes("daily tasks")
-    ))
-  ) {
-    return 10;
-  }
-
-  // Clinical symptom / risk indicators (5 points)
-  if (
-    label === "abnormal" ||
-    label === "poor" ||
-    label === "severe" ||
-    label === "almost always" ||
-    label === "nearly always" ||
-    label === "daily" ||
-    label === "binge" ||
-    (label === "yes" && (
-      qText.includes("substance") ||
-      qText.includes("alcohol") ||
-      qText.includes("withdrawal") ||
-      qText.includes("cravings") ||
-      qText.includes("blackouts") ||
-      qText.includes("morning") ||
-      qText.includes("treatment") ||
-      qText.includes("tolerance") ||
-      qText.includes("tremors") ||
-      qText.includes("shaking") ||
-      qText.includes("sweating") ||
-      qText.includes("nausea") ||
-      qText.includes("anxiety") ||
-      qText.includes("palpitations") ||
-      qText.includes("medical problems") ||
-      qText.includes("social, occupational") ||
-      qText.includes("financial") ||
-      qText.includes("legal") ||
-      qText.includes("risk-taking") ||
-      qText.includes("audit")
-    ))
-  ) {
-    return 5;
-  }
-
-  // Moderate indicators (3 points)
-  if (
-    label === "partial" ||
-    label === "partially reliable" ||
-    label === "fair" ||
-    label === "moderate" ||
-    label === "unstable" ||
-    label === "unemployed" ||
-    label === "often" ||
-    label === "weekly" ||
-    label === "yes"
-  ) {
-    return 3;
-  }
-
-  // Mild indicators (2 points)
-  if (label === "sometimes" || label === "mild" || label === "occasional") {
-    return 2;
-  }
-
-  return 0;
-};
-
-const surveyScore = (type, answers, questions) => {
-  if (!answers || !questions || !questions.length) return 0;
-  let total = 0;
-  for (const question of questions) {
-    const rawAnswer = answers[question.id] ?? answers[String(question.id)];
-    if (rawAnswer !== undefined) {
-      total += calculateOptionScore(question, rawAnswer);
-    }
-  }
-  return total;
-};
 
 app.get(
   "/v1/surveys/status",
@@ -1470,29 +1230,6 @@ app.get(
     });
   }),
 );
-
-async function authenticateAdmin(req, res, next) {
-  const token = req.headers.authorization?.match(/^Bearer (.+)$/)?.[1];
-  if (!token)
-    return res.status(401).json({ error: "Admin authorization required." });
-  try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET, {
-      issuer: "atk-api",
-      audience: "atk-app",
-    });
-    if (payload.role !== "admin") {
-      return res
-        .status(403)
-        .json({ error: "Access denied: Administrator privileges required." });
-    }
-    req.user = payload;
-    next();
-  } catch {
-    res
-      .status(401)
-      .json({ error: "Your session has expired. Please sign in again." });
-  }
-}
 
 app.get(
   "/admin/profile",
